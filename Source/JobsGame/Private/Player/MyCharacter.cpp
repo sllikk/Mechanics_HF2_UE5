@@ -57,9 +57,9 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
-	TArray<AActor> InteractActor;
+	TArray<AActor*> InteractActor;
 	
-
+	InteractActor.
 
 
 
