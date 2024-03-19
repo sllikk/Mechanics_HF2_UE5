@@ -57,6 +57,13 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
+	TArray<AActor> InteractActor;
+	
+
+
+
+
+
 }
 
 
@@ -87,8 +94,9 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMyCharacter::StartCrouch);
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMyCharacter::StopCrouch);
 
-		}
-		
+			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
+
+		}		
 	}	
 	
 	else
@@ -159,3 +167,31 @@ void AMyCharacter::StopCrouch()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
 	UnCrouch();
 }
+
+
+void AMyCharacter::Interact()
+{
+	if (FirstPersonCamera == nullptr) return;
+	{
+		TArray<FHitResult> HitResult;
+
+		FVector Start = FirstPersonCamera->GetComponentLocation();
+		FVector End = Start + FirstPersonCamera->GetForwardVector() * 200.0f;
+	}
+
+	
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -27,6 +27,9 @@ class JOBSGAME_API AWoodDoor : public AActor
 	UPROPERTY(VisibleInstanceOnly, Category = "StaticMesh", meta = (AllowPrivateAccess = true))
 	TObjectPtr<UStaticMeshComponent> DoorFrameComponent;
 
+	UPROPERTY(VisibleInstanceOnly, Category = "StaticMesh", meta = (AllowPrivateAccess = true))
+	TObjectPtr<UBoxComponent> BoxCollision;
+
 public:	
 
 	AWoodDoor();

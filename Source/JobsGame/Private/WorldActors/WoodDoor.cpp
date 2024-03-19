@@ -2,6 +2,8 @@
 
 #include "WorldActors/WoodDoor.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Logging/LogMacros.h"
 
 DEFINE_LOG_CATEGORY(LogLoandingResource);
@@ -23,6 +25,9 @@ AWoodDoor::AWoodDoor()
 
 	DoorComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	DoorFrameComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrameMesh"));
+	
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
+	BoxCollision->SetupAttachment(DoorComponent);
 
 	//Array load resource
 	TArray<FLoadResource> ResourceToLoad = {
@@ -110,8 +115,12 @@ void AWoodDoor::BeginPlay()
 	}
 
 
-
-
+	if (CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &AWoodDoor::OpenDoor);
+		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+	}
 
 }
 

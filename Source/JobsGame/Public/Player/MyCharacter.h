@@ -8,6 +8,7 @@
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
+class AWoodDoor;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
@@ -96,7 +97,15 @@ protected:
 	void StartCrouch();
 	void StopCrouch();
 
+	void Interact();
+
 #pragma endregion
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, Category = "DoorActor")
+	TObjectPtr<AWoodDoor> WoodDoor;
+
 
 
 
