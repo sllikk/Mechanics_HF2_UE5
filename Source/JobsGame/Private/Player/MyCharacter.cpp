@@ -12,6 +12,7 @@
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 
+
 AMyCharacter::AMyCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -22,7 +23,6 @@ AMyCharacter::AMyCharacter()
 	GetCharacterMovement()->GravityScale = m_GravityScale;
 	GetCharacterMovement()->AirControl = m_AirControl;
 	GetCharacterMovement()->MaxFlySpeed = m_MaxSpeedFly;
-
 
 	FirstPersonCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	FirstPersonCamera->SetupAttachment(GetCapsuleComponent());
@@ -35,6 +35,7 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+
 }
 
 
@@ -42,6 +43,7 @@ AMyCharacter::~AMyCharacter()
 {
 
 }
+
 
 void AMyCharacter::BeginPlay()
 {
@@ -72,7 +74,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	if (UEnhancedInputComponent* EInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		if (UEnhancedInputComponent* EnhancedInput = dynamic_cast<UEnhancedInputComponent*>(EInputComponent))
-		{
+		{						
 			EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
 			EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
 
@@ -87,10 +89,11 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 		}
 		
-	}
+	}	
+	
 	else
 	{
-		UE_LOG(LogCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component!'"));
+		UE_LOG(LogCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component!'"));	
 	}
 
 }

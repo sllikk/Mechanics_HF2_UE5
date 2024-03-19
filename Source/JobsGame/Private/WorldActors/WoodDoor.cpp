@@ -24,7 +24,7 @@ AWoodDoor::AWoodDoor()
 	DoorComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	DoorFrameComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrameMesh"));
 
-	
+	//Array load resource
 	TArray<FLoadResource> ResourceToLoad = {
 
 	{"/Game/WorldActors/Door/sDoor", nullptr },
