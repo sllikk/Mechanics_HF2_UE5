@@ -129,6 +129,8 @@ private:
 	float m_MassCharacter = 85.0f;
 	UPROPERTY(Config)
 	float m_JumpHeight = 300.0f;
+	UPROPERTY(Config)
+	float m_LineTraceLength = 180;
 
 private:
 

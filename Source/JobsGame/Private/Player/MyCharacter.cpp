@@ -57,11 +57,6 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
-	TArray<AActor*> InteractActor;
-	
-	InteractActor.
-
-
 
 
 }
@@ -171,16 +166,22 @@ void AMyCharacter::StopCrouch()
 
 void AMyCharacter::Interact()
 {
+	
 	if (FirstPersonCamera == nullptr) return;
 	{
 		TArray<FHitResult> HitResult;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
 
 		FVector Start = FirstPersonCamera->GetComponentLocation();
-		FVector End = Start + FirstPersonCamera->GetForwardVector() * 200.0f;
+		FVector End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
+		
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_EngineTraceChannel1));
+
+
 	}
-
-	
-
+		
 
 
 }

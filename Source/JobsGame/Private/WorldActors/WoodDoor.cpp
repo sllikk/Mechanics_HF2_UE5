@@ -115,12 +115,12 @@ void AWoodDoor::BeginPlay()
 	}
 
 
-	if (CurveFloat)
-	{
-		FOnTimelineFloat TimelineProgress;
-		TimelineProgress.BindDynamic(this, &AWoodDoor::OpenDoor);
-		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
-	}
+//	if (CurveFloat)
+//	{
+//		FOnTimelineFloat TimelineProgress;
+	//	TimelineProgress.BindDynamic(this, &AWoodDoor::OpenDoor);
+	//	Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+//	}
 
 }
 
