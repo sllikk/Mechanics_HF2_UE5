@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "Components/TimelineComponent.h"
 #include "WoodDoor.generated.h"
+class AMyCharacter;
 class UStaticMeshComponent;
 class UBoxComponent;
 class UCurveFloat;
@@ -33,6 +34,10 @@ class JOBSGAME_API AWoodDoor : public AActor
 public:	
 
 	AWoodDoor();
+
+	UPROPERTY(VisibleDefaultsOnly)
+	TObjectPtr<AMyCharacter> Character;
+
 
 protected:
 	

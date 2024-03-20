@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Player/MyCharacter.h"
+#include "WorldActors/WoodDoor.h" 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -169,21 +170,38 @@ void AMyCharacter::Interact()
 	
 	if (FirstPersonCamera == nullptr) return;
 	{
-		TArray<FHitResult> HitResult;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredActor(this);
-
+		
 		FVector Start = FirstPersonCamera->GetComponentLocation();
 		FVector End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_EngineTraceChannel1));
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+		
+		for (auto& ObjectType : ObjectTypes)
+		{
+			FHitResult HitResult;
+			FCollisionQueryParams QueryParams;
+			QueryParams.AddIgnoredActor(this);
 
+			if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(ObjectType), QueryParams))
+			{				
+				if (HitResult.bBlockingHit)
+				{
+					AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
+						
+					if (DoorWood)
+					{
+						DoorWood->Character = this;
+						DoorWood->Interact();
+					}
+				
+				}
+			}
 
+		}
+		
 	}
 		
-
-
 }
 
 

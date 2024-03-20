@@ -25,7 +25,8 @@ AWoodDoor::AWoodDoor()
 
 	DoorComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	DoorFrameComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorFrameMesh"));
-	
+	DoorComponent->SetCollisionProfileName(TEXT("DoorChannel"));
+
 	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxCollision"));
 	BoxCollision->SetupAttachment(DoorComponent);
 
