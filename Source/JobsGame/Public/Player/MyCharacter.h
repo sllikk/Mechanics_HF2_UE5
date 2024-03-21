@@ -138,5 +138,10 @@ private:
 	TObjectPtr<USoundBase> SprintSound;
 
 
+private:
+
+	void AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams);
+
+
 
 };

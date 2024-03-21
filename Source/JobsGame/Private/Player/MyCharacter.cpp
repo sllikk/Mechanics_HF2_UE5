@@ -11,7 +11,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
- 
+
+
 DEFINE_LOG_CATEGORY(LogCharacter)
 
 
@@ -166,42 +167,55 @@ void AMyCharacter::StopCrouch()
 }
 
 
+void AMyCharacter::AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams)
+{
+	TArray<AActor*> IgnoredActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), GroupName, IgnoredActors);
+	
+	for  (AActor* ActorIgnor : IgnoredActors)
+	{
+		QueryParams.AddIgnoredActor(ActorIgnor);
+	}
+}
+
+
 void AMyCharacter::Interact()
 {
 	
 	if (FirstPersonCamera == nullptr) return;
 	{
-		
+		FHitResult HitResult;
+		FCollisionQueryParams QueryParams;
+		AddIgnoredActorToLineTrace("IgnoreGroup", QueryParams);
+		AddIgnoredActorToLineTrace("IgnoreGroup2", QueryParams);
+
 		FVector Start = FirstPersonCamera->GetComponentLocation();
 		FVector End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
 		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
 		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel2));
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
 		
 		for (auto& ObjectType : ObjectTypes)
 		{
-			FHitResult HitResult;
-			FCollisionQueryParams QueryParams;
-			QueryParams.AddIgnoredActor(this);
-
+			
 			if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(ObjectType), QueryParams))
 			{				
 				
 				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
-				
-				if (HitResult.bBlockingHit)
-				{
-					AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
+
+				AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
 						
 					if (DoorWood)
 					{
 						DoorWood->Character = this;
 						DoorWood->Interact();
+					
 					}
 				
-				}
+				
 			}
 
 		}
