@@ -71,6 +71,10 @@ AWoodDoor::AWoodDoor()
 				CurveFloat = LoadCurveFloat;
 			}	
 		}
+		else
+		{
+			UE_LOG(LogLoandingResource, Warning, TEXT("Eror ResourceLoad!!!!! "))
+		}
 	}
 
 
@@ -116,12 +120,12 @@ void AWoodDoor::BeginPlay()
 	}
 
 
-//	if (CurveFloat)
-//	{
-//		FOnTimelineFloat TimelineProgress;
-	//	TimelineProgress.BindDynamic(this, &AWoodDoor::OpenDoor);
-	//	Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
-//	}
+	if (CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &AWoodDoor::OpenDoor);
+		Timeline.AddInterpFloat(CurveFloat, TimelineProgress);
+	}
 
 }
 
@@ -129,15 +133,22 @@ void AWoodDoor::BeginPlay()
 void AWoodDoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	Timeline.TickTimeline(DeltaTime);
 
 }
 
 void AWoodDoor::Interact()
 {
+	if ()
+	{
+
+	}
 }
 
 void AWoodDoor::OpenDoor(float Value)
 {
+
 }
 
 void AWoodDoor::DoorOnsameSide()
