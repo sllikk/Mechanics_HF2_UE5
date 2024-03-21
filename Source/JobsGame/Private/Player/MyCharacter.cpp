@@ -10,7 +10,8 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-
+#include "DrawDebugHelpers.h"
+ 
 DEFINE_LOG_CATEGORY(LogCharacter)
 
 
@@ -185,6 +186,11 @@ void AMyCharacter::Interact()
 
 			if (GetWorld()->LineTraceSingleByObjectType(HitResult, Start, End, FCollisionObjectQueryParams(ObjectType), QueryParams))
 			{				
+				
+				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
+				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
+				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
+				
 				if (HitResult.bBlockingHit)
 				{
 					AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
