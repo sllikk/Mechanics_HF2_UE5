@@ -1,6 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WorldActors/Door.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/MyCharacter.h"
 
 DEFINE_LOG_CATEGORY(LOG_LOADING_RESOURCE);
 DEFINE_LOG_CATEGORY(LogDoor);
@@ -80,6 +82,15 @@ void ADoor::BeginPlay()
 
 	}
 
+	if (CurveFloat)
+	{
+		FOnTimelineFloat TimelineProgress;
+		TimelineProgress.BindDynamic(this, &ADoor::OpenDoor);
+		Timeline.AddInterpFloat(CurveFloat ,TimelineProgress);
+	}
+	
+	
+	
 }	
 
 
@@ -87,18 +98,37 @@ void ADoor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Timeline.TickTimeline(DeltaTime);
 	
 }
 
 void ADoor::Interact()
 {
+	if (blsDoorClossed)
+	{
+		DoorOnsameSide();
+		Timeline.Play();
+	
+	}
+	else
+	{
+		Timeline.Reverse();
+	}
+	blsDoorClossed = !blsDoorClossed;
 }
 
 void ADoor::OpenDoor(float Value)
 {
+	// Door Rotate 
+	float Angle = blsDoorOnsameSide ? -m_DoorRotateAngle : m_DoorRotateAngle;
+	FRotator Rotator = FRotator(0.0f, m_DoorRotateAngle * Value, 0.0f);
+	DoorComponent->SetRelativeRotation(Rotator);
 }
 
 void ADoor::DoorOnsameSide()
 {
+	FVector CharacterVector = Character->GetActorForwardVector();
+	FVector DoorVector = GetActorForwardVector();
+	blsDoorOnsameSide = (FVector::DotProduct(CharacterVector, DoorVector)) >=0;
 }
 

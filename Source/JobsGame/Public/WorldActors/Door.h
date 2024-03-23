@@ -11,6 +11,7 @@ class UStaticMeshComponent;
 class UBoxComponent;
 class USoundBase;
 class UCurveFloat;
+class AMyCharacter;
 struct FTimeline;
 
 DECLARE_LOG_CATEGORY_EXTERN(LOG_LOADING_RESOURCE, Log, All);
@@ -57,19 +58,25 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "CurveFloat")
 	TObjectPtr<UCurveFloat> CurveFloat;
-	
-	FTimeline Timeline;
-	
+
+	UFUNCTION(BlueprintCallable)
 	void OpenDoor(float Value);
+
+	UFUNCTION()
 	void DoorOnsameSide();
 
+	FTimeline Timeline;
 	bool blsDoorClossed;
 	bool blsDoorOnsameSide;
 	float m_DoorRotateAngle = 90.0f;
 
+private:	
+
+	TObjectPtr<AMyCharacter> Character;
 	
 };
 
+// Struct load to resource in object 
 struct FInfoLoadResourse
 {
 	FString ResourceLoadPath; 
