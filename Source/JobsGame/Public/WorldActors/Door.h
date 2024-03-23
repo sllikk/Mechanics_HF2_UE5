@@ -55,7 +55,7 @@ public:
 
 private:
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, Category = "CurveFloat")
 	TObjectPtr<UCurveFloat> CurveFloat;
 	
 	FTimeline Timeline;

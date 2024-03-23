@@ -42,9 +42,6 @@ ADoor::ADoor()
 			DoorFrameComponent->SetStaticMesh(DoorFrameMesh);
 		}
 	}
-	
-	SetRootComponent(DoorComponent);
-	DoorFrameComponent->SetupAttachment(DoorComponent);
 
 }
 
