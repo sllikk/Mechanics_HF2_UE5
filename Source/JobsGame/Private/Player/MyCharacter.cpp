@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Player/MyCharacter.h"
-#include "WorldActors/WoodDoor.h" 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -206,13 +205,12 @@ void AMyCharacter::Interact()
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
 
-				AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
+				//AWoodDoor* DoorWood = Cast<AWoodDoor>(HitResult.GetActor());
 						
-					if (DoorWood)
+					//if (DoorWood)
 					{
-						DoorWood->Character = this;
-						DoorWood->Interact();
-					
+	//					DoorWood->Character = this;
+//						DoorWood->Interact();
 					}
 				
 				
