@@ -25,12 +25,20 @@ AHopperMine::AHopperMine()
 		UE_LOG(LogLoadResourceMine, Warning, TEXT("Eror find object mesh"));
 	}
 	
+	HopperMeshComponent->SetWorldScale3D(FVector(25.0f,25.0f,30.0f));
 }
 
 
 void AHopperMine::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HopperMeshComponent->SetSimulatePhysics(true);
+	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 30, true);
+
+
+
+
 	
 }
 
