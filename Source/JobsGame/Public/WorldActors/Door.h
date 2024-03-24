@@ -28,8 +28,8 @@ class JOBSGAME_API ADoor : public AActor
 	UPROPERTY(EditInstanceOnly, Category = "StaticMesh", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> DoorFrameComponent;
 
-	UPROPERTY(EditInstanceOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> BoxCollision;
+	//UPROPERTY(EditInstanceOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
+	//TObjectPtr<UBoxComponent> BoxCollision;
 
 	
 public:	
@@ -46,6 +46,8 @@ public:
 	
 	void Interact();
 
+	TObjectPtr<AMyCharacter> Character;
+	
 public:	
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Audio")
@@ -62,7 +64,7 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void OpenDoor(float Value);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DoorOnsameSide();
 
 	FTimeline Timeline;
@@ -72,7 +74,7 @@ private:
 
 private:	
 
-	TObjectPtr<AMyCharacter> Character;
+
 	
 };
 

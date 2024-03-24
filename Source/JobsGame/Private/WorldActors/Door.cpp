@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WorldActors/Door.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/MyCharacter.h"
 
@@ -25,6 +26,7 @@ ADoor::ADoor()
 	for (FInfoLoadResourse& Resourse : ResourseToLoad)
 	{
 		Resourse.LoadingResource = LoadObject<UObject>(nullptr, *Resourse.ResourceLoadPath);
+
 		if (!Resourse.LoadingResource)
 		{
 			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find object !!!!!!!!!"))
@@ -40,11 +42,13 @@ ADoor::ADoor()
 			DoorComponent->SetStaticMesh(DoorMesh);
 		}
 		if (DoorFrameMesh)
-		{
+		{ 
 			DoorFrameComponent->SetStaticMesh(DoorFrameMesh);
 		}
 	}
 
+	DoorComponent->SetupAttachment(RootComponent);
+	DoorFrameComponent->SetupAttachment(RootComponent);
 }
 
 
@@ -104,11 +108,13 @@ void ADoor::Tick(float DeltaTime)
 
 void ADoor::Interact()
 {
+	UE_LOG(LogDoor, Warning, TEXT("INTERACT!!"));
+	
 	if (blsDoorClossed)
 	{
 		DoorOnsameSide();
 		Timeline.Play();
-	
+
 	}
 	else
 	{
@@ -127,8 +133,13 @@ void ADoor::OpenDoor(float Value)
 
 void ADoor::DoorOnsameSide()
 {
-	FVector CharacterVector = Character->GetActorForwardVector();
-	FVector DoorVector = GetActorForwardVector();
-	blsDoorOnsameSide = (FVector::DotProduct(CharacterVector, DoorVector)) >=0;
+	if (Character)
+	{
+		FVector CharacterVector = Character->GetActorForwardVector();
+		FVector DoorVector = GetActorForwardVector();
+		blsDoorOnsameSide = blsDoorOnsameSide = (FVector::DotProduct(CharacterVector, DoorVector)) >=0;
+	
+	}
+	
 }
 

@@ -22,7 +22,7 @@ ABatteryKit::ABatteryKit()
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BatteryKit"));
 		MeshComponent->SetStaticMesh(StaticMesh.Object);
 		MeshComponent->SetSimulatePhysics(true);
-		MeshComponent->SetMassScale("BaatteryKit", 35.0f);
+		MeshComponent->SetMassScale("BatteryKit", 35.0f);
 		MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
 		SetRootComponent(MeshComponent);	
 	
