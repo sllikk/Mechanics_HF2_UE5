@@ -4,23 +4,56 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Logging/LogMacros.h"
 #include "HopperMine.generated.h"
+class UStaticMeshComponent;
+class USoundBase;
+class USphereComponent;
 
-UCLASS()
+DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogHopper, Log, All);
+
+UCLASS(Config = Game)
 class JOBSGAME_API AHopperMine : public AActor
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, Category = "Mesh", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UStaticMeshComponent> HopperMeshComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "SphereComponent", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> DetectedSphere;
+
 	
+	UPROPERTY(EditDefaultsOnly, Category = "SphereComponent", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USphereComponent> ActiveSphere;
+
 public:	
-	// Sets default values for this actor's properties
+	
 	AHopperMine();
 
 protected:
-	// Called when the game starts or when spawned
+	
 	virtual void BeginPlay() override;
 
+	virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
+	
+	virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
+	
 public:	
-	// Called every frame
+	
 	virtual void Tick(float DeltaTime) override;
+	
+private:
 
+	void ActivateMine();
+	
+	
 };
+
+struct FLoadResource
+{
+	FString ResourcePath;
+	UObject* LoadedResource;
+};
+
