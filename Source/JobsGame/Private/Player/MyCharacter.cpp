@@ -186,24 +186,19 @@ void AMyCharacter::Interact()
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
+		QueryParams.TraceTag = "InteractChannel";
 		AddIgnoredActorToLineTrace("IgnoreGroup", QueryParams);
 		AddIgnoredActorToLineTrace("IgnoreGroup2", QueryParams);
 
 		FVector Start = FirstPersonCamera->GetComponentLocation();
 		FVector End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
-	//	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-	//	ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_GameTraceChannel2));
-		
-	//	for (auto& ObjectType : ObjectTypes)
-		//{
-			
-			if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel2, QueryParams))
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
 			{				
 				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
-
+ 
 				ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor());
 						
 					if (DoorWood)
@@ -213,10 +208,7 @@ void AMyCharacter::Interact()
 					}
 			}
 		}
-		
 	}
-		
-//}
 
 
 
