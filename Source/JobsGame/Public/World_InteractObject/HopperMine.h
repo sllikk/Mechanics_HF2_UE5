@@ -63,14 +63,14 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(CallInEditor)
-	void OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+void OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UFUNCTION(CallInEditor)
 	void OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	
-	
+		int32 OtherBodyIndex);
+
+
 public:	
 	
 	virtual void Tick(float DeltaTime) override;
@@ -79,9 +79,16 @@ public:
 	
 private:
 
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TArray<USoundBase*> MineSound;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UAudioComponent* AudioComponent;
 	TObjectPtr<AMyCharacter> MyCharacter;
 	EStatMine StatMine;
-
+	
+private:
+	
+	bool blsDetectedSound;
 	
 };
 
