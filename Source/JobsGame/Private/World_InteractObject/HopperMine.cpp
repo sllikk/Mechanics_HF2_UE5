@@ -57,13 +57,21 @@ void AHopperMine::BeginPlay()
 	HopperMeshComponent->SetSimulatePhysics(true);
 	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 	
-	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusOverlap);
-	//DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine);
+	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
+	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
 	
 	
 }
 
-void AHopperMine::OnDetectionRadiusOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+
+void AHopperMine::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+}
+
+
+void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	// Detected AMyCharacter
@@ -79,12 +87,12 @@ void AHopperMine::OnDetectionRadiusOverlap(UPrimitiveComponent* OverlappedCompon
 	
 }
 
-
-void AHopperMine::Tick(float DeltaTime)
+void AHopperMine::OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Super::Tick(DeltaTime);
 
 }
+
 
 void AHopperMine::ActivateMine()
 {
