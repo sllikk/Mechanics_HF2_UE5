@@ -4,6 +4,7 @@
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
+#include "WorldActors/Door.h"
 
 DEFINE_LOG_CATEGORY(LogLoadResourceMine);
 DEFINE_LOG_CATEGORY(LogHopper);
@@ -46,20 +47,47 @@ AHopperMine::AHopperMine()
 	DetectedSphere->SetupAttachment(HopperMeshComponent);
 	DetectedSphere->InitSphereRadius(45.0f);
 
-} 
+}
 
 
 void AHopperMine::BeginPlay()
 {
 	Super::BeginPlay();
 
+	TArray<USoundBase*> MineSound;
+	TArray<FLoadSoundResource> ResourcesToLoad = {
+	{"/Game/Sound/Sound_InteractObj/Cue/Mine_active_loop_Cue", nullptr},
+	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deactivate_Cue", nullptr},
+	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deploy_Cue", nullptr},
+	
+	};
+	ResourcesToLoad.Reserve(3);	
+	
+	for (FLoadSoundResource& Resource : ResourcesToLoad)
+	{
+		Resource.LoadedResource = LoadObject<UObject>(nullptr,*Resource.ResourcePath);
+		if (!Resource.LoadedResource)
+		{
+			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find sound object"));
+		}
+	}
+	for (const FLoadSoundResource& Resource : ResourcesToLoad)
+	{
+		USoundBase* ArrayLoadedSound = Cast<USoundBase>(Resource.LoadedResource);
+
+		if (ArrayLoadedSound)
+		{
+			MineSound.Add(ArrayLoadedSound);
+		}		
+		
+	}
+
 	// Physics Mine
 	HopperMeshComponent->SetSimulatePhysics(true);
 	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
-	
+
 	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
 	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
-	
 	
 }
 
@@ -74,17 +102,23 @@ void AHopperMine::Tick(float DeltaTime)
 void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// Detected AMyCharacter
-	if (OtherActor != nullptr)
+	if(StatMine == EStatMine::ACTIVATE)
 	{
-		MyCharacter = Cast<AMyCharacter>(OtherActor);
-		if (MyCharacter)
+		if (OtherActor != nullptr)
 		{
-			UE_LOG(LogHopper, Warning, TEXT("Detected MyCharacter"));
-			
+			MyCharacter = Cast<AMyCharacter>(OtherActor);
+			if (MyCharacter)
+			{
+				UE_LOG(LogHopper, Warning, TEXT("Detected MyCharacter"));
+				
+				
+				
+
+
+				
+			}
 		}
-	}
-	
+	}	
 }
 
 void AHopperMine::OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

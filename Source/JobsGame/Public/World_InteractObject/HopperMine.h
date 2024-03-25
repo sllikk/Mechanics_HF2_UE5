@@ -80,6 +80,8 @@ public:
 private:
 
 	TObjectPtr<AMyCharacter> MyCharacter;
+	EStatMine StatMine;
+
 	
 };
 
