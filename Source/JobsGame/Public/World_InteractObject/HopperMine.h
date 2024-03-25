@@ -9,6 +9,7 @@
 class UStaticMeshComponent;
 class USoundBase;
 class USphereComponent;
+class UPointLightComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHopper, Log, All);
@@ -28,6 +29,9 @@ class JOBSGAME_API AHopperMine : public AActor
 	UPROPERTY(EditDefaultsOnly, Category = "SphereComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> ActiveSphere;
 
+	UPROPERTY(EditAnywhere, Category = "LightComponent", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UPointLightComponent> LightDetector;
+	
 public:	
 	
 	AHopperMine();
