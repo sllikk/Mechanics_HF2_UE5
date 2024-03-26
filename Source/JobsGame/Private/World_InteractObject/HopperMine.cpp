@@ -2,7 +2,7 @@
 
 #include "World_InteractObject/HopperMine.h"
 #include "Components/AudioComponent.h"
-#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
@@ -14,13 +14,12 @@ DEFINE_LOG_CATEGORY(LogHopper);
 
 AHopperMine::AHopperMine()
 {
- 	
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Loading and Settings mine and Mine Component 
 	HopperMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HopperMesh")); 
-	DetectedSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedSphere"));
-	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DetectedBox"));
+	DetectedCollision = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedSphere"));
+	ActivateCollision = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedBox"));
 	LightDetector = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightDetector"));
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
@@ -47,10 +46,10 @@ AHopperMine::AHopperMine()
 	LightDetector->bAffectsWorld = true;	
 
 
-	DetectedSphere->SetupAttachment(HopperMeshComponent);
-	DetectedSphere->InitSphereRadius(5.0f);
+	DetectedCollision->SetupAttachment(HopperMeshComponent);
+	DetectedCollision->InitSphereRadius(5.0f);
 	
-	BoxCollision->SetupAttachment(HopperMeshComponent);
+	ActivateCollision->SetupAttachment(HopperMeshComponent);
 
 }
 

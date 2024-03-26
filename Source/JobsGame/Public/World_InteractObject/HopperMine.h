@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Logging/LogMacros.h"
 #include "HopperMine.generated.h"
+class UCapsuleComponent;
 class AMyCharacter;
 class UStaticMeshComponent;
 class USoundBase;
@@ -46,10 +47,10 @@ class JOBSGAME_API AHopperMine : public AActor
 	TObjectPtr<UStaticMeshComponent> HopperMeshComponent;
 
 	UPROPERTY(EditDefaultsOnly, Category = "SphereComponent", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> DetectedSphere;
+	TObjectPtr<USphereComponent> ActivateCollision;
 
 	UPROPERTY(EditDefaultsOnly, Category = "BoxComponent", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> BoxCollision;
+	TObjectPtr<USphereComponent> DetectedCollision;
 	
 	UPROPERTY(EditAnywhere, Category = "LightComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> LightDetector;
