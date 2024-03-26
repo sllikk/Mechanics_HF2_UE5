@@ -89,9 +89,11 @@ void AHopperMine::BeginPlay()
 	HopperMeshComponent->SetSimulatePhysics(true);
 	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 
+	//Collision Detected
 	DetectedCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
 	DetectedCollision->OnComponentEndOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
-	
+	// Collision Activate
+	ActivateCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::BeginActivateMine);	
 }
 
 
@@ -104,25 +106,24 @@ void AHopperMine::Tick(float DeltaTime)
 
 
 
-
+// Detection Actors and Player
 void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	MyCharacter = Cast<AMyCharacter>(OtherActor);
-	
+
 	if (MineSound.IsValidIndex(0))
 	{
-		UE_LOG(LogHopper, Warning, TEXT("ACTIVATE MyCharacter"));
-		AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[0] , HopperMeshComponent);
 		if (LightDetector != nullptr)
 		{
+			UE_LOG(LogHopper, Warning, TEXT("Detected "));
+			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[0] , HopperMeshComponent);
 			LightDetector->SetVisibility(true);
 			LightDetector->SetLightColor(FLinearColor(1.0f, 0.0f,0.0f));
 		}
 		
 	}
 	
-
 }
 
 
@@ -133,16 +134,32 @@ void AHopperMine::OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		if (MineSound.IsValidIndex(0))
 		{
-			UE_LOG(LogHopper, Warning, TEXT("DEACTIVATE MyCharacter"));
+			UE_LOG(LogHopper, Warning, TEXT("OnDetected"));
 			AudioComponent->Stop();
 			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[1] , HopperMeshComponent);
 			LightDetector->SetVisibility(false);
 		}
 	
 	}
-	
+}
 
-	
+
+// Activate Mine
+void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	MyCharacter = Cast<AMyCharacter>(OtherActor);
+
+	if (MyCharacter)
+	{
+		if (MineSound.IsValidIndex(0))
+		{
+			UE_LOG(LogHopper, Warning, TEXT("MINE ACTIVATE"));
+			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[2], HopperMeshComponent);
+		}
+
+	}
+
 }
 
 
