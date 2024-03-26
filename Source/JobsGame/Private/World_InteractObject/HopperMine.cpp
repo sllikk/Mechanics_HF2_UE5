@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "World_InteractObject/HopperMine.h"
-
 #include "Components/AudioComponent.h"
+#include "Components/BoxComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
@@ -20,7 +20,7 @@ AHopperMine::AHopperMine()
 	// Loading and Settings mine and Mine Component 
 	HopperMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HopperMesh")); 
 	DetectedSphere = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedSphere"));
-	//ActiveSphere = CreateDefaultSubobject<USphereComponent>(TEXT("ActivationSphere"));
+	BoxCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("DetectedBox"));
 	LightDetector = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightDetector"));
 	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
@@ -46,10 +46,11 @@ AHopperMine::AHopperMine()
 	LightDetector->IntensityUnits = ELightUnits::Lumens;	
 	LightDetector->bAffectsWorld = true;	
 
-	// Sphere Component	
+
 	DetectedSphere->SetupAttachment(HopperMeshComponent);
-	DetectedSphere->InitSphereRadius(45.0f);
+	DetectedSphere->InitSphereRadius(5.0f);
 	
+	BoxCollision->SetupAttachment(HopperMeshComponent);
 
 }
 
@@ -65,7 +66,7 @@ void AHopperMine::BeginPlay()
 	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deploy_Cue", nullptr},
 	
 	};
-	ResourcesToLoad.Reserve(3);	
+	
 	
 	for (FLoadSoundResource& Resource : ResourcesToLoad)
 	{
@@ -85,14 +86,13 @@ void AHopperMine::BeginPlay()
 		}		
 		
 	}
-	
-	
+
 	// Physics Mine
 	HopperMeshComponent->SetSimulatePhysics(true);
 	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 
-	DetectedSphere->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
-	DetectedSphere->OnComponentEndOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
+	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
+	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
 	
 }
 
