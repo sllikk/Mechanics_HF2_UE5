@@ -2,7 +2,6 @@
 
 #include "World_InteractObject/HopperMine.h"
 #include "Components/AudioComponent.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
@@ -45,11 +44,11 @@ AHopperMine::AHopperMine()
 	LightDetector->IntensityUnits = ELightUnits::Lumens;	
 	LightDetector->bAffectsWorld = true;	
 
+	ActivateCollision->SetupAttachment(HopperMeshComponent);
+	ActivateCollision->InitSphereRadius(5.0f);
 
 	DetectedCollision->SetupAttachment(HopperMeshComponent);
-	DetectedCollision->InitSphereRadius(5.0f);
 	
-	ActivateCollision->SetupAttachment(HopperMeshComponent);
 
 }
 
@@ -90,8 +89,8 @@ void AHopperMine::BeginPlay()
 	HopperMeshComponent->SetSimulatePhysics(true);
 	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 
-	BoxCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
-	BoxCollision->OnComponentEndOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
+	DetectedCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
+	DetectedCollision->OnComponentEndOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusEndOverlap);
 	
 }
 
@@ -116,6 +115,8 @@ void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedC
 		UE_LOG(LogHopper, Warning, TEXT("ACTIVATE MyCharacter"));
 		AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[0] , HopperMeshComponent);
 	}
+	
+
 }
 
 

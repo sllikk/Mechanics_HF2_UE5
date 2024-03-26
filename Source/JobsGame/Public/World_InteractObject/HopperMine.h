@@ -6,12 +6,10 @@
 #include "GameFramework/Actor.h"
 #include "Logging/LogMacros.h"
 #include "HopperMine.generated.h"
-class UCapsuleComponent;
 class AMyCharacter;
 class UStaticMeshComponent;
 class USoundBase;
 class USphereComponent;
-class UBoxComponent;
 class UPointLightComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
