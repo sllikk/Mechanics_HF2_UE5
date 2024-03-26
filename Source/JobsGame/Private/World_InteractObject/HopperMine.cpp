@@ -39,8 +39,8 @@ AHopperMine::AHopperMine()
 	// Light component
 	LightDetector->SetupAttachment(HopperMeshComponent);
 	LightDetector->SetWorldLocation(FVector(0.0f, 0.0f, 0.32));
-	LightDetector->Intensity = 10000.0f;	
 	LightDetector->AttenuationRadius = 30.0f;
+	LightDetector->SetVisibility(false);
 	LightDetector->IntensityUnits = ELightUnits::Lumens;	
 	LightDetector->bAffectsWorld = true;	
 
@@ -114,6 +114,12 @@ void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedC
 	{
 		UE_LOG(LogHopper, Warning, TEXT("ACTIVATE MyCharacter"));
 		AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[0] , HopperMeshComponent);
+		if (LightDetector != nullptr)
+		{
+			LightDetector->SetVisibility(true);
+			LightDetector->SetLightColor(FLinearColor(1.0f, 0.0f,0.0f));
+		}
+		
 	}
 	
 
@@ -130,6 +136,7 @@ void AHopperMine::OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedCom
 			UE_LOG(LogHopper, Warning, TEXT("DEACTIVATE MyCharacter"));
 			AudioComponent->Stop();
 			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[1] , HopperMeshComponent);
+			LightDetector->SetVisibility(false);
 		}
 	
 	}
