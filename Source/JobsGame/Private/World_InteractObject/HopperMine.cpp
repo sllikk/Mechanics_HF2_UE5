@@ -114,12 +114,13 @@ void AHopperMine::OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedC
 
 	if (MineSound.IsValidIndex(0))
 	{
-		if (LightDetector != nullptr)
-		{
 			UE_LOG(LogHopper, Warning, TEXT("Detected "));
 			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[0] , HopperMeshComponent);
-			LightDetector->SetVisibility(true);
-			LightDetector->SetLightColor(FLinearColor(1.0f, 0.0f,0.0f));
+
+		if (LightDetector != nullptr)
+		{
+		LightDetector->SetVisibility(true);
+		LightDetector->SetLightColor(FLinearColor(1.0f, 0.0f,0.0f));
 		}
 		
 	}
@@ -150,12 +151,14 @@ void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AA
 {
 	MyCharacter = Cast<AMyCharacter>(OtherActor);
 
-	if (MyCharacter)
+	if (MyCharacter && OtherActor == MyCharacter)
 	{
 		if (MineSound.IsValidIndex(0))
 		{
 			UE_LOG(LogHopper, Warning, TEXT("MINE ACTIVATE"));
+			AudioComponent->Stop();
 			AudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[2], HopperMeshComponent);
+			
 		}
 
 	}
