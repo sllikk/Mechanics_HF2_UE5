@@ -10,6 +10,7 @@ class AMyCharacter;
 class UStaticMeshComponent;
 class USoundBase;
 class USphereComponent;
+class UAudioComponent;
 class UPointLightComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
@@ -72,26 +73,35 @@ void OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AAc
 	UFUNCTION(CallInEditor)
 	void BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+
 	
 	
 public:	
 	
 	virtual void Tick(float DeltaTime) override;
-	
+
+	UFUNCTION(CallInEditor)
 	virtual  void ActivateMine();
 	
+	UFUNCTION(CallInEditor)
+	void Explode();
+
 private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> MineSound;
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	UAudioComponent* AudioComponent;
+	TArray<UAudioComponent*> AudioComponent;
 	TObjectPtr<AMyCharacter> MyCharacter;
 	EStatMine StatMine;
 	
 private:
 	
-	bool blsDetectedSound;
+	bool blsActivate;
 	
+	FTimerHandle TimerHandle;
+
+
 };
 
