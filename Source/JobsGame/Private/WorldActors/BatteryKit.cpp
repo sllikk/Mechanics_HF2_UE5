@@ -15,32 +15,42 @@ ABatteryKit::ABatteryKit()
 
 	m_Amounth = 15.0f;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> StaticMesh(TEXT("/Game/WorldActors/RestoreKits/BatteryKit_Box"));
-	if (StaticMesh.Succeeded())
-	{
+	// Load Mesh in Battery Kit
+	FSoftObjectPath MeshAsset(TEXT("/Game/WorldActors/RestoreKits/BatteryKit_Box"));
+	UStaticMesh* StaticMesh = nullptr;
 
+	if (MeshAsset.IsValid())
+	{
+		StaticMesh = Cast<UStaticMesh>(MeshAsset.TryLoad());
+	}
+	if (StaticMesh != nullptr)
+	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BatteryKit"));
-		MeshComponent->SetStaticMesh(StaticMesh.Object);
-		MeshComponent->SetSimulatePhysics(true);
-		MeshComponent->SetMassScale("BatteryKit", 35.0f);
+		MeshComponent->SetStaticMesh(StaticMesh);
+		
 		MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
 		SetRootComponent(MeshComponent);	
-	
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 		CollisionSphere->InitSphereRadius(110.0f);
 		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
 		CollisionSphere->SetupAttachment(MeshComponent);
-	
 	}
 	else
 	{
 		UE_LOG(LogBatteryKit, Warning, TEXT("Eror find object!!!!"));
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> Sound(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Battery_Cue"));
-	if (Sound.Succeeded())
+	// Load PickUp Sound
+	FSoftObjectPath SoundFinder(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Battery_Cue"));
+	USoundBase* SoundBase = nullptr;
+
+	if (SoundFinder.IsValid())
 	{
-		SoundPickup = Sound.Object;
+		SoundBase = Cast<USoundBase>(SoundFinder.TryLoad());
+	}
+	if (SoundBase != nullptr)
+	{
+		SoundPickup = SoundBase;
 	}
 	else
 	{
@@ -54,6 +64,8 @@ void ABatteryKit::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetMassScale("BatteryKit", 35.0f);
 }
 
 
@@ -70,14 +82,11 @@ void ABatteryKit::NotifyActorBeginOverlap(AActor* OtherActor)
 				if (SoundPickup != nullptr)
 				{
 					UGameplayStatics::PlaySoundAtLocation(this, SoundPickup, GetActorLocation());
+					Destroy();
 				}
-				
-				Destroy();
 			}
-			
-			
 		}
-}
+	}
 
 
 

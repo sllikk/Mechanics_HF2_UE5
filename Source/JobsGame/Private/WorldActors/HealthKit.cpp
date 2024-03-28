@@ -17,13 +17,18 @@ AHealthKit::AHealthKit()
 
 	m_Amounth = 25.0f;
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAssets(TEXT("/Game/WorldActors/RestoreKits/HealthKit_Box"));	
-	if (MeshAssets.Succeeded())
+	// Load Mesh in Health Kit
+	FSoftObjectPath MeshAssets(TEXT("/Game/WorldActors/RestoreKits/HealthKit_Box"));	
+	UStaticMesh* StaticMesh = nullptr;
+
+	if (MeshAssets.IsValid())
+	{
+		StaticMesh = Cast<UStaticMesh>(MeshAssets.TryLoad());
+	}
+	if (StaticMesh != nullptr)
 	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HealthKit"));
-		MeshComponent->SetStaticMesh(MeshAssets.Object);
-		MeshComponent->SetSimulatePhysics(true);
-		MeshComponent->SetMassScale("HealthKit", 35.0f);
+		MeshComponent->SetStaticMesh(StaticMesh);
 		MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
 		SetRootComponent(MeshComponent);
 		
@@ -31,18 +36,24 @@ AHealthKit::AHealthKit()
 		CollisionSphere->InitSphereRadius(110.0f);
 		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
 		CollisionSphere->SetupAttachment(MeshComponent);
-		
 	}
 	else
 	{
-		UE_LOG(LogHealthKit, Warning, TEXT("Eror find object!!!!"));
+		FString NameActor = MeshComponent->GetName();
+		UE_LOG(LogHealthKit, Warning, TEXT("Eror find object: %ls"), *NameActor);
 	}
 
-	static ConstructorHelpers::FObjectFinder<USoundBase> Sound(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Health_Cue"));
-	if (Sound.Succeeded())
+	// Load PickUp Sound
+	FSoftObjectPath SoundFinder(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Health_Cue"));
+	USoundBase* SoundBase = nullptr;
+
+	if (SoundFinder.IsValid())
 	{
-		
-		SoundPickup = Sound.Object;
+		SoundBase = Cast<USoundBase>(SoundFinder.TryLoad());
+	}
+	if (SoundBase != nullptr)
+	{
+		SoundPickup = SoundBase;
 	}
 	else
 	{
@@ -57,7 +68,9 @@ void AHealthKit::BeginPlay()
 {
 	Super::BeginPlay();
 	
-
+	MeshComponent->SetSimulatePhysics(true);
+	MeshComponent->SetMassScale("HealthKit", 35.0f);
+	
 }
 
 void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -73,13 +86,10 @@ void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
 			if (SoundPickup != nullptr)
 			{
 				UGameplayStatics::PlaySoundAtLocation(this, SoundPickup, GetActorLocation());
+				Destroy();
 			}
-		
-			Destroy();
 		}
-
 	}
-
 }
 
 
