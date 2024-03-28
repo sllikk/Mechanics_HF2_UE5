@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "SpawnHopperMine.generated.h"
+#include "SpawnMine.generated.h"
 
 UCLASS()
-class JOBSGAME_API ASpawnHopperMine : public AActor
+class JOBSGAME_API ASpawnMine : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ASpawnHopperMine();
+	ASpawnMine();
 
 protected:
 	// Called when the game starts or when spawned
