@@ -20,30 +20,13 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "NiagaraFluids",
+			"Enabled": true
 		}
 	],
 	"TargetPlatforms": [
 		"Windows"
-	],
-	
-	"Collision": {
-		"DefaultPreset": {
-			"ObjectType": "InteractObject",
-			"ResponseToChannels": {
-				"Visibility": "Block",
-				"Camera": "Block",
-				"WorldStatic": "Overlap",
-				"WorldDynamic": "Overlap",
-				"Pawn": "Overlap",
-				"PhysicsBody": "Block",
-				"Vehicle": "Block",
-				"Destructible": "Overlap"
-			}
-		},
-		"GroupMappings": {
-			"IgnoreGroup": [ "Pawn", "PhysicsBody", "Destructible" ],
-			"IgnoreGroup2": [ "WorldStatic", "WorldDynamic" ]
-		}
-	}
-
+	]
 }

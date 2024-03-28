@@ -56,11 +56,14 @@ AHopperMine::AHopperMine()
 void AHopperMine::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// Load sound source file
 	TArray<FLoadSoundResource> ResourcesToLoad = {
 	{"/Game/Sound/Sound_InteractObj/Cue/Mine_active_loop_Cue", nullptr},
 	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deactivate_Cue", nullptr},
 	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deploy_Cue", nullptr},
+	{"/Game/Sound/Sound_InteractObj/Cue/mine_blip_Cue", nullptr},
+	{"/Game/Sound/Sound_InteractObj/Cue/explode5_Cue", nullptr},
 	
 	};
 
@@ -82,10 +85,6 @@ void AHopperMine::BeginPlay()
 		}		
 		
 	}
-
-	// Physics Mine
-	HopperMeshComponent->SetSimulatePhysics(true);
-	HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 
 	//Collision Detected
 	DetectedCollision->OnComponentBeginOverlap.AddDynamic(this, &AHopperMine::OnDetectionRadiusBeginOverlap);
@@ -189,6 +188,8 @@ void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AA
 
 void AHopperMine::Explode()
 {
+	
+
 	Destroy();
 }
 
@@ -197,13 +198,16 @@ void AHopperMine::ActivateMine()
 {
 	if (HopperMeshComponent)
 	{
+		HopperMeshComponent->SetSimulatePhysics(true);
+		HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
 			AudioComponent[0]->Stop();
 			AudioComponent[1]->Stop();
 			AudioComponent[2]->Stop();
-			float ImpulseStrenght = 600.0f;
+			float ImpulseStrenght = 700.0f;
 			HopperMeshComponent->AddImpulse(FVector(0,0, 1) * ImpulseStrenght, NAME_None, true);
-
+			
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHopperMine::Explode, 1.0f, false);
+
 	}
 	
 }
