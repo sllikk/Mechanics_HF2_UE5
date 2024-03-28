@@ -12,6 +12,7 @@ class USoundBase;
 class USphereComponent;
 class UAudioComponent;
 class UPointLightComponent;
+class UParticleSystem;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHopper, Log, All);
@@ -44,16 +45,20 @@ class JOBSGAME_API AHopperMine : public AActor
 
 	UPROPERTY(EditDefaultsOnly, Category = "Mesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> HopperMeshComponent;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "SphereComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> ActivateCollision;
-
+	
 	UPROPERTY(EditDefaultsOnly, Category = "BoxComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> DetectedCollision;
 	
-	UPROPERTY(EditAnywhere, Category = "LightComponent", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "LightComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> LightDetector;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "ParticleComponent", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> ExplosionEffects;
+	
+
 public:	
 	
 	AHopperMine();
@@ -62,26 +67,24 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-	UFUNCTION(CallInEditor)
+	UFUNCTION()
 void OnDetectionRadiusBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
-	UFUNCTION(CallInEditor)
+	UFUNCTION()
 	void OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
-	UFUNCTION(CallInEditor)
+	UFUNCTION()
 	void BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 
-	
-	
 public:	
 	
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(CallInEditor)
+	UFUNCTION()
 	virtual  void ActivateMine();
 	
 	UFUNCTION(CallInEditor)
@@ -91,8 +94,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> MineSound;
+
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<UAudioComponent*> AudioComponent;
+
 	TObjectPtr<AMyCharacter> MyCharacter;
 	EStatMine StatMine;
 	

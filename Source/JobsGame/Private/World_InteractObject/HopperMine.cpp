@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "WorldActors/Door.h"
+#include "Particles/ParticleSystem.h"
 
 DEFINE_LOG_CATEGORY(LogLoadResourceMine);
 DEFINE_LOG_CATEGORY(LogHopper);
@@ -21,19 +22,42 @@ AHopperMine::AHopperMine()
 	ActivateCollision = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedBox"));
 	LightDetector = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightDetector"));
 	
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
-	if (HopperMesh.Succeeded())
+	FSoftObjectPath HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
+	UStaticMesh* StaticMesh = nullptr;
+
+	if (HopperMesh.IsValid())
 	{
-		HopperMeshComponent->SetStaticMesh(HopperMesh.Object);
+		StaticMesh = Cast<UStaticMesh>(HopperMesh.TryLoad());
 	}
+	if (StaticMesh != nullptr)
+	{
+		HopperMeshComponent->SetStaticMesh(StaticMesh);
+	}
+		
 	else
 	{
 		UE_LOG(LogLoadResourceMine, Warning, TEXT("Eror find object mesh"));
 	}
 
-	
+	FSoftObjectPath FinderParticle(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"));
+	UParticleSystem* FoundParticle = nullptr;
+
+	if(FinderParticle.IsValid())
+	{
+		FoundParticle = Cast<UParticleSystem>(FinderParticle.TryLoad());
+	}
+		if (FoundParticle != nullptr)
+		{
+			ExplosionEffects = FoundParticle;
+		}
+	else
+	{
+		UE_LOG(LogLoadResourceMine, Warning, TEXT("Eror find object mesh"));
+	}
+
+	// Root Component mesh
 	SetRootComponent(HopperMeshComponent);
-	HopperMeshComponent->SetWorldScale3D(FVector(32.0f,32.0f,35.0f));
+	HopperMeshComponent->SetWorldScale3D(FVector(35.0f,35.0f,38.0f));
 
 	// Settings component mine
 	// Light component
@@ -45,11 +69,9 @@ AHopperMine::AHopperMine()
 	LightDetector->bAffectsWorld = true;	
 
 	ActivateCollision->SetupAttachment(HopperMeshComponent);
-	ActivateCollision->InitSphereRadius(5.0f);
-
+	ActivateCollision->InitSphereRadius(6.2f);
 	DetectedCollision->SetupAttachment(HopperMeshComponent);
 	
-
 }
 
 
@@ -159,9 +181,6 @@ void AHopperMine::OnDetectionRadiusEndOverlap(UPrimitiveComponent* OverlappedCom
 }
 
 
-
-
-
 // Activate Mine
 void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -186,11 +205,13 @@ void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AA
 	}
 }
 
+
 void AHopperMine::Explode()
 {
-	
+	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
 
 	Destroy();
+
 }
 
 
