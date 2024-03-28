@@ -57,7 +57,7 @@ AHopperMine::AHopperMine()
 
 	// Root Component mesh
 	SetRootComponent(HopperMeshComponent);
-	HopperMeshComponent->SetWorldScale3D(FVector(35.0f,35.0f,38.0f));
+	HopperMeshComponent->SetWorldScale3D(FVector(40.0f,40.0f,42.50f));
 
 	// Settings component mine
 	// Light component
@@ -117,6 +117,7 @@ void AHopperMine::BeginPlay()
 	//Initialisation Array AudioComponent
 	for (int16 i = 0; i < MineSound.Num(); ++i)
 	{
+		FString SoundName = FString::Printf(TEXT("ExplosionSound: %hd"), i);
 		TObjectPtr<UAudioComponent> AttachAudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[i], HopperMeshComponent);
 		AudioComponent.Add(AttachAudioComponent);
 		AttachAudioComponent->Stop();
@@ -196,22 +197,12 @@ void AHopperMine::BeginActivateMine(UPrimitiveComponent* OverlappedComponent, AA
 	{
 		if (MineSound.IsValidIndex(2) && AudioComponent[2] != nullptr)
 		{
+			AudioComponent[0]->Stop();
+			AudioComponent[1]->Stop();
 			UE_LOG(LogHopper, Warning, TEXT("MINE ACTIVATE"));
-			
 			ActivateMine();
-
-			blsActivate = true;
 		}
 	}
-}
-
-
-void AHopperMine::Explode()
-{
-	UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
-
-	Destroy();
-
 }
 
 
@@ -219,21 +210,33 @@ void AHopperMine::ActivateMine()
 {
 	if (HopperMeshComponent)
 	{
+		blsActivate = true;
+
 		HopperMeshComponent->SetSimulatePhysics(true);
-		HopperMeshComponent->SetMassOverrideInKg(NAME_None, 90, true);
-			AudioComponent[0]->Stop();
-			AudioComponent[1]->Stop();
-			AudioComponent[2]->Stop();
-			float ImpulseStrenght = 700.0f;
-			HopperMeshComponent->AddImpulse(FVector(0,0, 1) * ImpulseStrenght, NAME_None, true);
-			
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHopperMine::Explode, 1.0f, false);
+		HopperMeshComponent->SetMassOverrideInKg(NAME_None, 120, true);
+		const float ImpulseStrengh = 800.0f;
+		
+		HopperMeshComponent->AddImpulse(FVector(0,0, 1) * ImpulseStrengh, NAME_None, true);
+		AudioComponent[3]->Play();
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHopperMine::Explode, 1.45f, false);
 
 	}
 	
 }
 
 
-
+void AHopperMine::Explode()
+{
+	
+	if (MineSound.IsValidIndex(3) && MineSound.IsValidIndex(4))
+	{
+		if (AudioComponent[4] != nullptr)
+		{
+			AudioComponent[4]->Play();
+			UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
+			Destroy();
+		}
+	}
+}
 
 
