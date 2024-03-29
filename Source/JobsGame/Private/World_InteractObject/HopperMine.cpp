@@ -57,7 +57,7 @@ AHopperMine::AHopperMine()
 
 	// Root Component mesh
 	SetRootComponent(HopperMeshComponent);
-	HopperMeshComponent->SetWorldScale3D(FVector(40.0f,40.0f,42.50f));
+	HopperMeshComponent->SetWorldScale3D(FVector(42.0f,42.0f,42.50f));
 
 	// Settings component mine
 	// Light component
@@ -71,7 +71,7 @@ AHopperMine::AHopperMine()
 	ActivateCollision->SetupAttachment(HopperMeshComponent);
 	ActivateCollision->InitSphereRadius(6.2f);
 	DetectedCollision->SetupAttachment(HopperMeshComponent);
-	
+	DetectedCollision->InitSphereRadius(13.0f);
 }
 
 
