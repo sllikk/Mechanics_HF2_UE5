@@ -120,7 +120,7 @@ void AHopperMine::BeginPlay()
 		FString SoundName = FString::Printf(TEXT("ExplosionSound: %hd"), i);
 		TObjectPtr<UAudioComponent> AttachAudioComponent = UGameplayStatics::SpawnSoundAttached(MineSound[i], HopperMeshComponent);
 		AudioComponent.Add(AttachAudioComponent);
-		AttachAudioComponent->Stop();
+		AudioComponent[i]->Stop();
 	}
 	
 }
@@ -211,11 +211,11 @@ void AHopperMine::ActivateMine()
 	if (HopperMeshComponent)
 	{
 		blsActivate = true;
-
+ 
 		HopperMeshComponent->SetSimulatePhysics(true);
 		HopperMeshComponent->SetMassOverrideInKg(NAME_None, 120, true);
 		const float ImpulseStrengh = 800.0f;
-		
+
 		HopperMeshComponent->AddImpulse(FVector(0,0, 1) * ImpulseStrengh, NAME_None, true);
 		AudioComponent[3]->Play();
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &AHopperMine::Explode, 1.45f, false);
