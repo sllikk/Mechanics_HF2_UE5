@@ -9,6 +9,8 @@
 #include "WorldActors/Door.h"
 #include "Particles/ParticleSystem.h"
 
+// LOG TEST
+
 DEFINE_LOG_CATEGORY(LogLoadResourceMine);
 DEFINE_LOG_CATEGORY(LogHopper);
 
