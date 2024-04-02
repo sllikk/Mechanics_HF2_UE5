@@ -12,10 +12,10 @@ class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
 struct FInputActionValue;
-
+class UPhysicsHandleComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
-
+DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All) 
 
 UCLASS(Config = Game)
 
@@ -50,6 +50,13 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
 
+	UPROPERTY(EditAnywhere, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ToggleGrabAction; 
+
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> TrowAction;
+	
+	
 	#pragma endregion
 
 
@@ -78,6 +85,7 @@ protected:
 
 public:
 
+	
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 
 	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
@@ -98,18 +106,24 @@ protected:
 
 	void Interact();
 
+	void ToggleGrabObject();
+	void TrowObject();
+
+	virtual void ReleaseComponent();		
+	virtual void GrabComponents();
+
+	void DontInteract();
+
+	
 #pragma endregion
 
 protected:
 
-	//UPROPERTY(VisibleAnywhere, Category = "DoorActor")
-	//TObjectPtr<AWoodDoor> WoodDoor;
-
-
-
+	void AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams);
 
 private:
 
+#pragma region Default_Character_Settings
 	UPROPERTY(Config)
 	float m_MaxSpeedWalk = 500.0f;
 	UPROPERTY(Config)
@@ -130,17 +144,16 @@ private:
 	float m_JumpHeight = 300.0f;
 	UPROPERTY(Config)
 	float m_LineTraceLength = 180;
-
+	UPROPERTY(Config)
+	float m_DistanceTrace = 250;
+	#pragma endregion
+	
 private:
 
 	UPROPERTY(EditAnywhere, Category = "Sound")
 	TObjectPtr<USoundBase> SprintSound;
-
-
-private:
-
-	void AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams);
-
-
+	
+	UPROPERTY(EditAnywhere, Category = PhysicsHandle)
+	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 
 };

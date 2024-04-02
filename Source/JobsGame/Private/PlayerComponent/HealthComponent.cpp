@@ -26,6 +26,7 @@ void UHealthComponent::BeginPlay()
 	{
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
+	UE_LOG(LogHeathComponent, Warning, TEXT("LOAD!!!!!!!!!!"))
 	
 }
 

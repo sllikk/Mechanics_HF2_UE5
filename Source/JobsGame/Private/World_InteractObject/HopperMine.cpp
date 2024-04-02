@@ -96,7 +96,7 @@ void AHopperMine::BeginPlay()
 		Resource.LoadedResource = LoadObject<UObject>(nullptr,*Resource.ResourcePath);
 		if (!Resource.LoadedResource)
 		{
-			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find sound object"));
+			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find sound object %s"), *Resource.ResourcePath);
 		}
 	}
 	for (const FLoadSoundResource& Resource : ResourcesToLoad)

@@ -11,9 +11,11 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
+DEFINE_LOG_CATEGORY(LogCharacterResouce)
 
 
 AMyCharacter::AMyCharacter()
@@ -37,8 +39,18 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCamera);
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
-
-
+	
+	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
+	
+	PhysicsHandle->bSoftAngularConstraint = true;
+	PhysicsHandle->bSoftLinearConstraint = true;
+	PhysicsHandle->bInterpolateTarget = true;
+	PhysicsHandle->LinearDamping = 200.0f;
+	PhysicsHandle->LinearStiffness = 750.0f;
+	PhysicsHandle->AngularDamping = 500.0f;
+	PhysicsHandle->AngularStiffness = 1500.0f;
+	PhysicsHandle->InterpolationSpeed = 50.0f;
+	
 }
 
 
@@ -60,14 +72,20 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
-
-
 }
 
 
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (PhysicsHandle->GrabbedComponent) 
+	{
+		FVector Start = FirstPersonCamera->GetComponentLocation();
+		FVector NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
+		FRotator NewRotator = FirstPersonCamera->GetComponentRotation();
+		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
+	}
 
 }
 
@@ -82,24 +100,21 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 		{						
 			EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AMyCharacter::Move);
 			EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AMyCharacter::Look);
-
 			EnhancedInput->BindAction(RunAction, ETriggerEvent::Started, this, &AMyCharacter::Run);
 			EnhancedInput->BindAction(RunAction, ETriggerEvent::Completed, this, &AMyCharacter::StopRun);
-
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Started, this, &AMyCharacter::Jump);
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyCharacter::StopJumping);
-
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMyCharacter::StartCrouch);
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMyCharacter::StopCrouch);
-
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
-
+			EnhancedInput->BindAction( ToggleGrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrabObject);
+			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
 		}		
 	}	
 	
 	else
 	{
-		UE_LOG(LogCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component!'"));	
+		UE_LOG(LogCharacter, Error, TEXT(" Failed to find an Enhanced Input Component!'"));	
 	}
 
 }
@@ -209,6 +224,46 @@ void AMyCharacter::Interact()
 			}
 		}
 	}
+
+void AMyCharacter::GrabComponents()
+{
+	if (FirstPersonCamera == nullptr) return;
+	{
+
+		
+	}
+
+}
+
+
+void AMyCharacter::ReleaseComponent()
+{
+	PhysicsHandle->ReleaseComponent();
+}
+
+
+void AMyCharacter::ToggleGrabObject()
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		ReleaseComponent();
+	}
+	else
+	{
+		GrabComponents();
+	}
+}
+
+void AMyCharacter::TrowObject()
+{
+
+}
+
+
+void AMyCharacter::DontInteract()
+{
+
+}
 
 
 
