@@ -229,10 +229,22 @@ void AMyCharacter::GrabComponents()
 {
 	if (FirstPersonCamera == nullptr) return;
 	{
-
+		TArray<FHitResult> GrabResults;
+		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
+		const FVector Start = FirstPersonCamera->GetComponentLocation();
+		const FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 		
-	}
+		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_PhysicsBody));
+		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Destructible));
+		ObjectTypes.Reserve(3);
+		TArray<FHitResult> OutHitResults;
 
+		if (GetWorld()->LineTraceMultiByObjectType(GrabResults, Start, End, FCollisionObjectQueryParams(ObjectTypes), QueryParams))
+		{
+			
+		}
+	}
 }
 
 
