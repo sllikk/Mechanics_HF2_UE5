@@ -81,9 +81,9 @@ void AMyCharacter::Tick(float DeltaTime)
 	
 	if (PhysicsHandle->GrabbedComponent) 
 	{
-		FVector Start = FirstPersonCamera->GetComponentLocation();
-		FVector NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
-		FRotator NewRotator = FirstPersonCamera->GetComponentRotation();
+		 FVector Start = FirstPersonCamera->GetComponentLocation();
+		 FVector NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
+		 FRotator NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
 	}
 
@@ -229,23 +229,43 @@ void AMyCharacter::GrabComponents()
 {
 	if (FirstPersonCamera == nullptr) return;
 	{
-		TArray<FHitResult> GrabResults;
+		FHitResult GrabResults;
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
-		const FVector Start = FirstPersonCamera->GetComponentLocation();
-		const FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
+		QueryParams.bTraceComplex = true;
+		QueryParams.bReturnPhysicalMaterial = false;
+		 FVector Start = FirstPersonCamera->GetComponentLocation();
+		 FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 		
-		TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_PhysicsBody));
-		ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Destructible));
-		ObjectTypes.Reserve(3);
-		TArray<FHitResult> OutHitResults;
+	//	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
+		//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_PhysicsBody));
+		//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Destructible));
+		//ObjectTypes.Reserve(3);
+		//TArray<FHitResult> OutHitResults;
 
-		if (GetWorld()->LineTraceMultiByObjectType(GrabResults, Start, End, FCollisionObjectQueryParams(ObjectTypes), QueryParams))
+		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_PhysicsBody, QueryParams))
 		{
+	//		OutHitResults.Append(GrabResults);
 			
+				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
+				DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
+				DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
+			
+				UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
+				FVector GrabLocation = GrabResults.ImpactPoint;
+				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
+
+				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
+				if (PhysicsHandle->GrabbedComponent)
+				{
+					UE_LOG(LogCharacter, Warning, TEXT("Grab!!!!!"));
+				}
+
+			}
+				
 		}
+		
 	}
-}
+
 
 
 void AMyCharacter::ReleaseComponent()
@@ -268,7 +288,18 @@ void AMyCharacter::ToggleGrabObject()
 
 void AMyCharacter::TrowObject()
 {
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
+		FVector TrowDirection = FirstPersonCamera->GetForwardVector();
+		FVector GrabLocation = TrowComponent->GetComponentLocation();
+		FVector Force = TrowDirection * m_TrowImpulce;
+		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 
+		ReleaseComponent();
+	}
+
+	
 }
 
 

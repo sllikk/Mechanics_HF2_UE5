@@ -143,9 +143,12 @@ private:
 	UPROPERTY(Config)
 	float m_JumpHeight = 300.0f;
 	UPROPERTY(Config)
-	float m_LineTraceLength = 180;
+	float m_LineTraceLength = 180.0f;
 	UPROPERTY(Config)
-	float m_DistanceTrace = 250;
+	float m_DistanceTrace = 180.0f;
+	UPROPERTY(Config)
+	float m_TrowImpulce = 180;
+	
 	#pragma endregion
 	
 private:
