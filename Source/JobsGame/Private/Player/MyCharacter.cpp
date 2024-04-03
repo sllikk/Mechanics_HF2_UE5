@@ -236,16 +236,10 @@ void AMyCharacter::GrabComponents()
 		 FVector Start = FirstPersonCamera->GetComponentLocation();
 		 FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 		
-	//	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes;
-		//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_PhysicsBody));
-		//ObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECC_Destructible));
-		//ObjectTypes.Reserve(3);
-		//TArray<FHitResult> OutHitResults;
+
 
 		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_PhysicsBody, QueryParams))
 		{
-	//		OutHitResults.Append(GrabResults);
-			
 				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
