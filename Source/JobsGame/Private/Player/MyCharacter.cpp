@@ -236,8 +236,6 @@ void AMyCharacter::GrabComponents()
 		 FVector Start = FirstPersonCamera->GetComponentLocation();
 		 FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 		
-
-
 		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_PhysicsBody, QueryParams))
 		{
 				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
@@ -247,8 +245,10 @@ void AMyCharacter::GrabComponents()
 				UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
 				FVector GrabLocation = GrabResults.ImpactPoint;
 				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
-
-				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
+				FRotator AddGrabRotation(30,0, 0);
+				FRotator NewGrabRotatator = GrabRotation + AddGrabRotation;
+			
+				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
 				if (PhysicsHandle->GrabbedComponent)
 				{
 					UE_LOG(LogCharacter, Warning, TEXT("Grab!!!!!"));
