@@ -288,8 +288,8 @@ void AMyCharacter::TrowObject()
 		FVector TrowDirection = FirstPersonCamera->GetForwardVector();
 		FVector GrabLocation = TrowComponent->GetComponentLocation();
 		FVector Force = TrowDirection * m_TrowImpulce;
+		//TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
-
 		ReleaseComponent();
 	}
 
