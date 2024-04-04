@@ -247,8 +247,14 @@ void AMyCharacter::GrabComponents()
 				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
 				FRotator AddGrabRotation(5,0, 0);
 				FRotator NewGrabRotatator = GrabRotation + AddGrabRotation;
-			
 				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+
+				// Debug Actor info location, rotator and weight
+				FString MassComponent = FString::Printf(TEXT("Mass: %2.f"), ComponentToGrab->GetMass());
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::White, MassComponent);
+	
+
+			
 				if (PhysicsHandle->GrabbedComponent)
 				{
 					UE_LOG(LogCharacter, Warning, TEXT("Grab!!!!!"));
@@ -305,7 +311,7 @@ void AMyCharacter::DontInteract()
 
 void AMyCharacter::DebugGrabObject()
 {
-	if (PhysicsHandle->GrabbedComponent)
+	/*if (PhysicsHandle->GrabbedComponent)
 	{
 		FVector LocObject = PhysicsHandle->GrabbedComponent->GetComponentLocation();
 		FRotator RotObject = PhysicsHandle->GrabbedComponent->GetComponentRotation();
@@ -326,9 +332,9 @@ void AMyCharacter::DebugGrabObject()
 
 	}
 	
+
+*/
 }
-
-
 
 
 
