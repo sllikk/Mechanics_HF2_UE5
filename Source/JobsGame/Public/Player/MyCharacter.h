@@ -22,8 +22,7 @@ UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-
+	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 
@@ -158,5 +157,14 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = PhysicsHandle)
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
+
+
+
+private:
+	
+	UFUNCTION(BlueprintCallable, Category = "DebugGrabObject")
+	void DebugGrabObject();	
+	
+	bool blsGrabDebug;
 
 };

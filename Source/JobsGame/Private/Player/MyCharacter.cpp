@@ -87,6 +87,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
 	}
 
+	//DebugGrabObject();
 }
 
 
@@ -111,7 +112,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
 		}		
 	}	
-	
 	else
 	{
 		UE_LOG(LogCharacter, Error, TEXT(" Failed to find an Enhanced Input Component!'"));	
@@ -245,7 +245,7 @@ void AMyCharacter::GrabComponents()
 				UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
 				FVector GrabLocation = GrabResults.ImpactPoint;
 				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
-				FRotator AddGrabRotation(30,0, 0);
+				FRotator AddGrabRotation(5,0, 0);
 				FRotator NewGrabRotatator = GrabRotation + AddGrabRotation;
 			
 				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
@@ -303,6 +303,30 @@ void AMyCharacter::DontInteract()
 }
 
 
+void AMyCharacter::DebugGrabObject()
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		FVector LocObject = PhysicsHandle->GrabbedComponent->GetComponentLocation();
+		FRotator RotObject = PhysicsHandle->GrabbedComponent->GetComponentRotation();
+
+		FString WeightObj = FString::Printf(TEXT("Mass: %f"), PhysicsHandle->GrabbedComponent->GetMass());
+		FString ObjectLocation = FString::Printf(TEXT("Loc: X = %f, Y = %f, Z = %f"), LocObject.X, LocObject.Y, LocObject.Z); 
+		FString ObjectRotation = FString::Printf(TEXT("Rot: Pitch = %f, Yaw = %f, Roll = %f"), RotObject.Pitch, RotObject.Yaw, RotObject.Roll);
+		FVector TextLocation = LocObject; //+ FVector(30,-20,10); 
+		FVector TextRotation = RotObject.RotateVector(FVector());
+		FColor ColorDebug = FColor::White;
+
+		DrawDebugString(GetWorld(), TextLocation, WeightObj, nullptr, ColorDebug, 0, false);
+		DrawDebugString(GetWorld(), TextRotation, WeightObj, nullptr, ColorDebug, 0, false);
+
+		DrawDebugString(GetWorld(), TextLocation + FVector(0, 0, 1), ObjectLocation, this, ColorDebug, false);
+		DrawDebugString(GetWorld(), TextRotation + FVector(0, 0, 0), ObjectRotation, this, ColorDebug, false);
+
+
+	}
+	
+}
 
 
 
