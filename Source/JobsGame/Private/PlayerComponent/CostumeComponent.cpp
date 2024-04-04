@@ -9,7 +9,7 @@ UCostumeComponent::UCostumeComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	m_MaxChargerCostume = 100.0f;
+	m_MaxChargerCostume = 100;
 	m_CurrentChargerCostume = m_MaxChargerCostume;
 
 	
@@ -33,7 +33,7 @@ void UCostumeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	if (GEngine)
 	{
-		FString Costume = FString::Printf(TEXT("Costume: %.2f"), m_CurrentChargerCostume);
+		FString Costume = FString::Printf(TEXT("Costume: %2.f"), m_CurrentChargerCostume);
 		GEngine->AddOnScreenDebugMessage(2, 20.0f, FColor::Yellow, Costume);
 	}
 
