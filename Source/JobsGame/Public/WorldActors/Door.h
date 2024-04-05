@@ -79,8 +79,13 @@ private:
 };
 
 // Struct load to resource in object 
+USTRUCT()
 struct FInfoLoadResourse
 {
+	GENERATED_BODY()
+
+	UPROPERTY(Blueprintable)
 	FString ResourceLoadPath; 
+	UPROPERTY(Blueprintable)
 	UObject* LoadingResource;
 };

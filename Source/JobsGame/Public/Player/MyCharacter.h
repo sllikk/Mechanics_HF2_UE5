@@ -5,27 +5,45 @@
 #include "CoreMinimal.h"
 #include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
+#include "PlayerComponent/FleshLightComponent.h"
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
-struct FInputActionValue;
 class UPhysicsHandleComponent;
+class UFleshLightComponent;
+struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
-DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All) 
+DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All)
+
+// Load Sound resource for Character 
+USTRUCT()
+struct FResourceSound
+{
+	GENERATED_BODY()
+	UPROPERTY(NotBlueprintable)
+	FString ResourcePath;
+	UPROPERTY(NotBlueprintable)
+	TObjectPtr<UObject> LoadResource;
+};
 
 UCLASS(Config = Game)
-
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = FleshLight, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UFleshLightComponent> FleshLightComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 
+	UPROPERTY(EditAnywhere, Category = PhysicsHandle, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
+	
 	#pragma region INPUT
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -55,6 +73,9 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> TrowAction;
 	
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> FleshLightAction;	
+
 	
 	#pragma endregion
 
@@ -112,6 +133,8 @@ protected:
 
 	void DontInteract();
 
+	void Fleshlight();
+	
 	
 #pragma endregion
 
@@ -152,20 +175,17 @@ private:
 #pragma endregion
 	
 private:
-
-	UPROPERTY(EditAnywhere, Category = "Sound")
-	TObjectPtr<USoundBase> SprintSound;
+	// Audio my Character
+	UPROPERTY(NotBlueprintable)
+	TArray<USoundBase*> SoundBase;
 	
-	UPROPERTY(EditAnywhere, Category = PhysicsHandle)
-	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	TArray<UAudioComponent*> CharacterAudioComponent;
 
 
-
+	
 private:
-	
-	UFUNCTION(BlueprintCallable, Category = "DebugGrabObject")
-	void DebugGrabObject();	
-	
+
 	
 
 

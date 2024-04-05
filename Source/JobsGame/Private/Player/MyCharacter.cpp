@@ -11,8 +11,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Components/AudioComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-
+#include "Components/SceneComponent.h"
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
@@ -38,11 +39,10 @@ AMyCharacter::AMyCharacter()
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);
 	Mesh1P->SetupAttachment(FirstPersonCamera);
-	Mesh1P->CastShadow = false;
+	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 	
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
-	
 	PhysicsHandle->bSoftAngularConstraint = true;
 	PhysicsHandle->bSoftLinearConstraint = true;
 	PhysicsHandle->bInterpolateTarget = true;
@@ -51,6 +51,9 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
+
+	FleshLightComponent = CreateDefaultSubobject<UFleshLightComponent>(TEXT("FleshLightComponent"));
+	FleshLightComponent->SetupAttachment(FirstPersonCamera);
 	
 }
 
@@ -64,6 +67,7 @@ AMyCharacter::~AMyCharacter()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
 	
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
@@ -73,6 +77,39 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
+	// Load Sound Resource for Character
+	TArray<FResourceSound> ResourceToLoad = {
+		{"/Game/Sound/ActorSound/Cue/Sprint_Cue", nullptr},
+		{"/Game/Sound/ActorSound/Cue/No_Interact_Cue", nullptr},
+		{"/Game/Sound/ActorSound/Cue/Interact_Cue", nullptr},	
+	};		
+
+	for (FResourceSound& Resource : ResourceToLoad)
+	{
+		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
+		if (!Resource.LoadResource)
+		{
+			UE_LOG(LogCharacterResouce, Warning, TEXT("Eror find: %s"), *Resource.ResourcePath)
+		}
+	}	
+	for (const FResourceSound& Resource : ResourceToLoad)
+	{
+		USoundBase* SoundLoad = Cast<USoundBase>(Resource.LoadResource);
+		if (SoundLoad != nullptr)
+		{
+			SoundBase.Add(SoundLoad);
+			
+		}
+	}
+	
+	// Add Array for AudioComponents
+	for (int8 i = 0; i < SoundBase.Num(); ++i)
+	{
+		TObjectPtr<UAudioComponent> AudioComponent = UGameplayStatics::SpawnSoundAttached(SoundBase[i], Mesh1P);
+		CharacterAudioComponent.Add(AudioComponent);
+		CharacterAudioComponent[i]->Stop();
+	}
+	
 }
 
 
@@ -87,8 +124,7 @@ void AMyCharacter::Tick(float DeltaTime)
 		 FRotator NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
 	}
-
-	//DebugGrabObject();
+	
 }
 
 
@@ -111,6 +147,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
 			EnhancedInput->BindAction( ToggleGrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrabObject);
 			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
+			EnhancedInput->BindAction(FleshLightAction, ETriggerEvent::Started, this, &AMyCharacter::Fleshlight);
+
 		}		
 	}	
 	else
@@ -149,13 +187,11 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 
 void AMyCharacter::Run()
 {
-	if (SprintSound != nullptr)
+	if (CharacterAudioComponent.IsValidIndex(0) && CharacterAudioComponent[0] != nullptr)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, SprintSound, GetActorLocation());
+		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
+		CharacterAudioComponent[0]->Play();
 	}
-	
-	GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
-
 }
 
 
@@ -307,7 +343,6 @@ void AMyCharacter::TrowObject()
 		FVector TrowDirection = FirstPersonCamera->GetForwardVector();
 		FVector GrabLocation = TrowComponent->GetComponentLocation();
 		FVector Force = TrowDirection * m_TrowImpulce;
-		//TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		ReleaseComponent();
 
@@ -321,35 +356,18 @@ void AMyCharacter::DontInteract()
 {
 	UE_LOG(LogCharacter, Warning, TEXT("No interact"));
 	
-}
-
-
-void AMyCharacter::DebugGrabObject()
-{
-	/*if (PhysicsHandle->GrabbedComponent)
-	{
-		FVector LocObject = PhysicsHandle->GrabbedComponent->GetComponentLocation();
-		FRotator RotObject = PhysicsHandle->GrabbedComponent->GetComponentRotation();
-
-		FString WeightObj = FString::Printf(TEXT("Mass: %f"), PhysicsHandle->GrabbedComponent->GetMass());
-		FString ObjectLocation = FString::Printf(TEXT("Loc: X = %f, Y = %f, Z = %f"), LocObject.X, LocObject.Y, LocObject.Z); 
-		FString ObjectRotation = FString::Printf(TEXT("Rot: Pitch = %f, Yaw = %f, Roll = %f"), RotObject.Pitch, RotObject.Yaw, RotObject.Roll);
-		FVector TextLocation = LocObject; //+ FVector(30,-20,10); 
-		FVector TextRotation = RotObject.RotateVector(FVector());
-		FColor ColorDebug = FColor::White;
-
-		DrawDebugString(GetWorld(), TextLocation, WeightObj, nullptr, ColorDebug, 0, false);
-		DrawDebugString(GetWorld(), TextRotation, WeightObj, nullptr, ColorDebug, 0, false);
-
-		DrawDebugString(GetWorld(), TextLocation + FVector(0, 0, 1), ObjectLocation, this, ColorDebug, false);
-		DrawDebugString(GetWorld(), TextRotation + FVector(0, 0, 0), ObjectRotation, this, ColorDebug, false);
-
-
-	}
 	
-
-*/
 }
+
+void AMyCharacter::Fleshlight()
+{
+	if (FleshLightComponent != nullptr)
+	{
+		FleshLightComponent->ToggleFleshLight();
+	}
+}
+
+
 
 
 

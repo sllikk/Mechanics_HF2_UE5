@@ -104,7 +104,6 @@ private:
 private:
 	
 	bool blsActivate;
-	
 	FTimerHandle TimerHandle;
 
 
