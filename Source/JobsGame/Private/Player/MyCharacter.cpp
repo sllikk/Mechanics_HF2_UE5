@@ -21,6 +21,7 @@ DEFINE_LOG_CATEGORY(LogCharacterResouce)
 AMyCharacter::AMyCharacter()
 {
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
+	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
 	
 	GetCharacterMovement()->MaxAcceleration = m_MaxAcceleration;
 	GetCharacterMovement()->Mass = m_MassCharacter;
@@ -236,7 +237,7 @@ void AMyCharacter::GrabComponents()
 		 FVector Start = FirstPersonCamera->GetComponentLocation();
 		 FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 		
-		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_PhysicsBody, QueryParams))
+		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
 		{
 				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
@@ -247,7 +248,19 @@ void AMyCharacter::GrabComponents()
 				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
 				FRotator AddGrabRotation(5,0, 0);
 				FRotator NewGrabRotatator = GrabRotation + AddGrabRotation;
-				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+
+				if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics(NAME_None))
+				{
+					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+				}
+				else
+				{
+					DontInteract();
+				}
+				
+					
+					
+
 
 				// Debug Actor info location, rotator and weight
 				FString MassComponent = FString::Printf(TEXT("Mass: %2.f"), ComponentToGrab->GetMass());
@@ -297,6 +310,7 @@ void AMyCharacter::TrowObject()
 		//TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		ReleaseComponent();
+
 	}
 
 	
@@ -305,7 +319,8 @@ void AMyCharacter::TrowObject()
 
 void AMyCharacter::DontInteract()
 {
-
+	UE_LOG(LogCharacter, Warning, TEXT("No interact"));
+	
 }
 
 
@@ -335,6 +350,9 @@ void AMyCharacter::DebugGrabObject()
 
 */
 }
+
+
+
 
 
 

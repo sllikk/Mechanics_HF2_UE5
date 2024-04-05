@@ -84,9 +84,8 @@ protected:
 
 public:
 
-	
+	//Return object
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-
 	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
 
 protected:
@@ -138,7 +137,7 @@ private:
 	UPROPERTY(Config)
 	float m_MaxSpeedFly = 200.0f;
 	UPROPERTY(Config)
-	float m_MassCharacter = 85.0f;
+	float m_MassCharacter = 20.0f;
 	UPROPERTY(Config)
 	float m_JumpHeight = 300.0f;
 	UPROPERTY(Config)
@@ -146,9 +145,11 @@ private:
 	UPROPERTY(Config)
 	float m_DistanceTrace = 180.0f;
 	UPROPERTY(Config)
-	float m_TrowImpulce = 180;
-	
-	#pragma endregion
+	float m_TrowImpulce = 225.0f;
+	UPROPERTY(Config)
+	float m_MaxGrabMassObject = 80;	
+
+#pragma endregion
 	
 private:
 
@@ -165,6 +166,7 @@ private:
 	UFUNCTION(BlueprintCallable, Category = "DebugGrabObject")
 	void DebugGrabObject();	
 	
-	bool blsGrabDebug;
+	
+
 
 };
