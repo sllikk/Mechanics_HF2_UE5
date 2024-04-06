@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
-#include "PlayerComponent/FleshLightComponent.h"
+#include "PlayerComponent/FlashLightComponent.h"
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
@@ -13,7 +13,7 @@ class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
 class UPhysicsHandleComponent;
-class UFleshLightComponent;
+class UFlashLightComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
@@ -35,8 +35,8 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category = FleshLight, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UFleshLightComponent> FleshLightComponent;
+	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UFlashLightComponent> FlashLightComponent;
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
@@ -75,7 +75,6 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> FleshLightAction;	
-
 	
 	#pragma endregion
 
@@ -176,7 +175,7 @@ private:
 	
 private:
 	// Audio my Character
-	UPROPERTY(NotBlueprintable)
+	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> SoundBase;
 	
 	UPROPERTY(VisibleAnywhere, Category = "Components")

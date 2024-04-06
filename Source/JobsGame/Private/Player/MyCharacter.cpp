@@ -11,7 +11,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
-#include "Components/AudioComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Components/SceneComponent.h"
 
@@ -52,8 +51,8 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
 
-	FleshLightComponent = CreateDefaultSubobject<UFleshLightComponent>(TEXT("FleshLightComponent"));
-	FleshLightComponent->SetupAttachment(FirstPersonCamera);
+	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
+	FlashLightComponent->SetupAttachment(FirstPersonCamera);
 	
 }
 
@@ -87,10 +86,15 @@ void AMyCharacter::BeginPlay()
 	for (FResourceSound& Resource : ResourceToLoad)
 	{
 		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
-		if (!Resource.LoadResource)
+		if (Resource.LoadResource)
 		{
-			UE_LOG(LogCharacterResouce, Warning, TEXT("Eror find: %s"), *Resource.ResourcePath)
+			UE_LOG(LogCharacterResouce, Warning, TEXT("Loaded: %s"), *Resource.ResourcePath)
 		}
+		else
+		{
+			UE_LOG(LogCharacterResouce, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
+		}
+
 	}	
 	for (const FResourceSound& Resource : ResourceToLoad)
 	{
@@ -98,18 +102,8 @@ void AMyCharacter::BeginPlay()
 		if (SoundLoad != nullptr)
 		{
 			SoundBase.Add(SoundLoad);
-			
 		}
 	}
-	
-	// Add Array for AudioComponents
-	for (int8 i = 0; i < SoundBase.Num(); ++i)
-	{
-		TObjectPtr<UAudioComponent> AudioComponent = UGameplayStatics::SpawnSoundAttached(SoundBase[i], Mesh1P);
-		CharacterAudioComponent.Add(AudioComponent);
-		CharacterAudioComponent[i]->Stop();
-	}
-	
 }
 
 
@@ -153,7 +147,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}	
 	else
 	{
-		UE_LOG(LogCharacter, Error, TEXT(" Failed to find an Enhanced Input Component!'"));	
+		UE_LOG(LogCharacter, Error, TEXT("Failed to find an Enhanced Input Component!'"));	
 	}
 
 }
@@ -187,11 +181,13 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 
 void AMyCharacter::Run()
 {
-	if (CharacterAudioComponent.IsValidIndex(0) && CharacterAudioComponent[0] != nullptr)
+
+	if (SoundBase[0] != nullptr)
 	{
+		UGameplayStatics::PlaySoundAtLocation(this, SoundBase[0], GetActorLocation());
 		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
-		CharacterAudioComponent[0]->Play();
 	}
+	 
 }
 
 
@@ -287,7 +283,11 @@ void AMyCharacter::GrabComponents()
 
 				if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics(NAME_None))
 				{
-					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+					if (SoundBase[1] != nullptr)
+					{
+						UGameplayStatics::PlaySoundAtLocation(this, SoundBase[1], GetActorLocation());
+						PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+					}
 				}
 				else
 				{
@@ -359,11 +359,13 @@ void AMyCharacter::DontInteract()
 	
 }
 
+
+
 void AMyCharacter::Fleshlight()
 {
-	if (FleshLightComponent != nullptr)
+	if (FlashLightComponent != nullptr)
 	{
-		FleshLightComponent->ToggleFleshLight();
+		FlashLightComponent->ToggleFlashLight();
 	}
 }
 

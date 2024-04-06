@@ -38,7 +38,7 @@ AHopperMine::AHopperMine()
 		
 	else
 	{
-		UE_LOG(LogLoadResourceMine, Warning, TEXT("Eror find object mesh"));
+		UE_LOG(LogLoadResourceMine, Warning, TEXT("Error find: %s"),*HopperMesh.ToString());
 	}
 
 	FSoftObjectPath FinderParticle(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"));
@@ -54,7 +54,7 @@ AHopperMine::AHopperMine()
 		}
 	else
 	{
-		UE_LOG(LogLoadResourceMine, Warning, TEXT("Eror find object mesh"));
+		UE_LOG(LogLoadResourceMine, Warning, TEXT("Error find: %s"), *FinderParticle.ToString());
 	}
 
 	// Root Component mesh
@@ -94,9 +94,13 @@ void AHopperMine::BeginPlay()
 	for (FLoadSoundResource& Resource : ResourcesToLoad)
 	{
 		Resource.LoadedResource = LoadObject<UObject>(nullptr,*Resource.ResourcePath);
-		if (!Resource.LoadedResource)
+		if (Resource.LoadedResource)
 		{
-			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find sound object %s"), *Resource.ResourcePath);
+			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Loaded: %s"), *Resource.ResourcePath);
+		}
+		else
+		{
+			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
 		}
 	}
 	for (const FLoadSoundResource& Resource : ResourcesToLoad)
