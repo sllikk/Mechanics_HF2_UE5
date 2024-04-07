@@ -78,11 +78,10 @@ void AMyCharacter::BeginPlay()
 
 	// Load Sound Resource for Character
 	TArray<FResourceSound> ResourceToLoad = {
-		{"/Game/Sound/ActorSound/Cue/Sprint_Cue", nullptr},
-		{"/Game/Sound/ActorSound/Cue/No_Interact_Cue", nullptr},
-		{"/Game/Sound/ActorSound/Cue/Interact_Cue", nullptr},	
+		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Sprint_Cue"), nullptr},
+		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/No_Interact_Cue"), nullptr},
+		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Interact_Cue"), nullptr},	
 	};		
-
 	for (FResourceSound& Resource : ResourceToLoad)
 	{
 		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);

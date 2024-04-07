@@ -11,7 +11,7 @@ void UFlashLightComponent::BeginPlay()
 	Super::BeginPlay();
 	this->SetVisibility(false);
 	
-	FSoftObjectPath FindSound(TEXT("/Game/Sound/ActorSound/Cue/flashlight_Cue"));
+	const FSoftObjectPath FindSound(TEXT("/Game/Sound/ActorSound/Cue/flashlight_Cue"));
 	TObjectPtr<USoundBase> SoundBase = nullptr;
 
 	if (FindSound.IsValid())

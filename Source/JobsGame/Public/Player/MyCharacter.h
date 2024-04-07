@@ -25,9 +25,15 @@ struct FResourceSound
 {
 	GENERATED_BODY()
 	UPROPERTY(NotBlueprintable)
-	FString ResourcePath;
+	FString  ResourcePath;
 	UPROPERTY(NotBlueprintable)
 	TObjectPtr<UObject> LoadResource;
+
+	FResourceSound() { }	
+	
+	FResourceSound(const FString& InResourcePath, UObject* ObjectLoad)
+		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
+
 };
 
 UCLASS(Config = Game)
