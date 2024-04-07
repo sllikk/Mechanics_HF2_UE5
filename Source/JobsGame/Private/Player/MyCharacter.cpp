@@ -308,27 +308,15 @@ void AMyCharacter::GrabComponents()
 
 void AMyCharacter::DebugObjectGrab()
 {
-	UPrimitiveComponent* GrabDebug = PhysicsHandle->GrabbedComponent;
-	const FVector GrabLocation = GrabDebug->GetComponentLocation();
-
-	const FRotator GrabRotation = GrabDebug->GetComponentRotation();
- 	
 	const FString& MassComponent = FString::Printf(TEXT("Mass: %2.f"), PhysicsHandle->GrabbedComponent->GetMass());
 
-	const FString& LocationDebug = FString::Printf(TEXT("Loc: X = %2.f, Y = %2.f, Z = %2.f"), GrabDebug->GetComponentLocation().X,
-		GrabDebug->GetComponentLocation().Y, GrabDebug->GetComponentLocation().Z);
+	const FString& LocationDebug = FString::Printf(TEXT("Loc: X = %2.f, Y = %2.f, Z = %2.f"), PhysicsHandle->GrabbedComponent->GetComponentLocation().X,
+		PhysicsHandle->GrabbedComponent->GetComponentLocation().Y, PhysicsHandle->GrabbedComponent->GetComponentLocation().Z);
 
-	const FString& RotationDebug = FString::Printf(TEXT("Rot: Pitch = %2.f, Roll = %2.f, Yaw = %2.f"), GrabDebug->GetComponentRotation().Pitch,
-		GrabDebug->GetComponentRotation().Roll, GrabDebug->GetComponentRotation().Yaw);
-
-	FVector const& TextLocation = GrabLocation + FVector(0,0,10);
-
-//	FVector const& TextRotation = GrabRotation.RotateVector(FVector) 
-
+	FVector const& TextLocation = PhysicsHandle->GrabbedComponent->GetComponentLocation() + FVector(0,0,10);
 	const FColor ColorDebug = FColor::White;
 
 	DrawDebugString(GetWorld(), TextLocation,  MassComponent, nullptr, ColorDebug, 0, false);
-	
 	DrawDebugString(GetWorld(), TextLocation + FVector(0, 0, 1), LocationDebug, this, ColorDebug, false);
 
 }
