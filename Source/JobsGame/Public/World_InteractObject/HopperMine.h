@@ -17,7 +17,7 @@ class UParticleSystem;
 DECLARE_LOG_CATEGORY_EXTERN(LogLoadResourceMine, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHopper, Log, All);
 
-USTRUCT(NotBlueprintable)
+USTRUCT()
 struct FLoadSoundResource
 {
 	GENERATED_BODY()
@@ -25,7 +25,13 @@ struct FLoadSoundResource
 	UPROPERTY(VisibleDefaultsOnly)
 	FString ResourcePath;
 	UPROPERTY(VisibleAnywhere)
-	UObject* LoadedResource;
+	TObjectPtr<UObject> LoadedResource;
+	
+	FLoadSoundResource() { }
+
+	FLoadSoundResource(const FString& InResourcePath, UObject* ObjectLoaded)
+	:ResourcePath(InResourcePath), LoadedResource(ObjectLoaded) {}
+	
 };
 
 UENUM(BlueprintType)

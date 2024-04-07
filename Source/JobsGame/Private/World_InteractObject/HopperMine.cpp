@@ -83,11 +83,12 @@ void AHopperMine::BeginPlay()
 
 	// Load sound source file
 	TArray<FLoadSoundResource> ResourcesToLoad = {
-	{"/Game/Sound/Sound_InteractObj/Cue/Mine_active_loop_Cue", nullptr},
-	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deactivate_Cue", nullptr},
-	{"/Game/Sound/Sound_InteractObj/Cue/Mine_deploy_Cue", nullptr},
-	{"/Game/Sound/Sound_InteractObj/Cue/mine_blip_Cue", nullptr},
-	{"/Game/Sound/Sound_InteractObj/Cue/explode5_Cue", nullptr},
+
+	FLoadSoundResource{TEXT("/Game/Sound/Sound_InteractObj/Cue/Mine_active_loop_Cue"), nullptr},
+	FLoadSoundResource{TEXT("/Game/Sound/Sound_InteractObj/Cue/Mine_deactivate_Cue"), nullptr},
+	FLoadSoundResource{TEXT("/Game/Sound/Sound_InteractObj/Cue/Mine_deploy_Cue"), nullptr},
+	FLoadSoundResource{TEXT("/Game/Sound/Sound_InteractObj/Cue/mine_blip_Cue"), nullptr},
+	FLoadSoundResource{TEXT("/Game/Sound/Sound_InteractObj/Cue/explode5_Cue"), nullptr},
 	
 	};
 
