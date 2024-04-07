@@ -276,26 +276,30 @@ void AMyCharacter::GrabComponents()
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
 			
-				UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-				 FVector const& GrabLocation = GrabResults.ImpactPoint;
-				 FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
-				 const FRotator  AddGrabRotation(5,0, 0);
-				 FRotator const& NewGrabRotatator = GrabRotation + AddGrabRotation;
+			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
 
-				
-				if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
-				{
-					if (SoundBase[2] != nullptr)
-					{
-						UGameplayStatics::PlaySoundAtLocation(this, SoundBase[2], GetActorLocation());
-						PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
-					}
+			if (!ComponentToGrab)return;
+			
+			const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
+			FVector const& CenterOfComponent = Bounds.Origin;
+			FVector const& GrabLocation = CenterOfComponent;
+			
+			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
+			FRotator AddGrabRotation(5,0, 0);
+			FRotator const& NewGrabRotatator = GrabRotation + AddGrabRotation;
 
-				}
-				else
+			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
+			{
+				if (SoundBase[2] != nullptr)
 				{
-					DontInteract();
+					UGameplayStatics::PlaySoundAtLocation(this, SoundBase[2], GetActorLocation());
+					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
 				}
+			}
+			else
+			{
+				DontInteract();
+			}
 			}
 			else
 			{
@@ -346,8 +350,14 @@ void AMyCharacter::TrowObject()
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
+		if(!TrowComponent) return;
+
+		const FBoxSphereBounds Bounds = TrowComponent->Bounds;  
+		FVector const& TrowCentreOfComponent = Bounds.Origin; 
+		FVector const& TrowLocation = TrowCentreOfComponent;
+
 		FVector const& TrowDirection = FirstPersonCamera->GetForwardVector();
-		FVector const& GrabLocation = TrowComponent->GetComponentLocation();
+		FVector const& GrabLocation = TrowLocation;
 		FVector const& Force = TrowDirection * m_TrowImpulce;
 		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		ReleaseComponent();
