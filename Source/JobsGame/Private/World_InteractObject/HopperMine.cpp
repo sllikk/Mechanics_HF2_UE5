@@ -24,7 +24,7 @@ AHopperMine::AHopperMine()
 	ActivateCollision = CreateDefaultSubobject<USphereComponent>(TEXT("DetectedBox"));
 	LightDetector = CreateDefaultSubobject<UPointLightComponent>(TEXT("LightDetector"));
 	
-	FSoftObjectPath HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
+	const FSoftObjectPath HopperMesh(TEXT("/Game/World_InteractObject/HopperMine/Hoppers"));
 	UStaticMesh* StaticMesh = nullptr;
 
 	if (HopperMesh.IsValid())
@@ -41,7 +41,7 @@ AHopperMine::AHopperMine()
 		UE_LOG(LogLoadResourceMine, Warning, TEXT("Error find: %s"),*HopperMesh.ToString());
 	}
 
-	FSoftObjectPath FinderParticle(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"));
+	const FSoftObjectPath FinderParticle(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"));
 	UParticleSystem* FoundParticle = nullptr;
 
 	if(FinderParticle.IsValid())

@@ -68,7 +68,7 @@ void AMyCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -113,12 +113,13 @@ void AMyCharacter::Tick(float DeltaTime)
 	
 	if (PhysicsHandle->GrabbedComponent) 
 	{
-		 FVector Start = FirstPersonCamera->GetComponentLocation();
-		 FVector NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
-		 FRotator NewRotator = FirstPersonCamera->GetComponentRotation();
+		 FVector const& Start = FirstPersonCamera->GetComponentLocation();
+		 FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
+		 FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
+		DebugObjectGrab();
+		
 	}
-	
 }
 
 
@@ -155,7 +156,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 void AMyCharacter::Move(const FInputActionValue& Value)
 {
-	TSharedPtr<FVector2D> MovementVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
+	const TSharedPtr<FVector2D> MovementVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
 		
 	if (Controller != nullptr)
 	{
@@ -168,7 +169,7 @@ void AMyCharacter::Move(const FInputActionValue& Value)
 
 void AMyCharacter::Look(const FInputActionValue& Value)
 {
-	TSharedPtr<FVector2D> LookAxisVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
+	const TSharedPtr<FVector2D> LookAxisVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
 		
 	if (Controller != nullptr)
 	{
@@ -220,9 +221,9 @@ void AMyCharacter::AddIgnoredActorToLineTrace(const FName& GroupName, FCollision
 	TArray<AActor*> IgnoredActors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), GroupName, IgnoredActors);
 	
-	for  (AActor* ActorIgnor : IgnoredActors)
+	for  (const AActor* ActorIgnored : IgnoredActors)
 	{
-		QueryParams.AddIgnoredActor(ActorIgnor);
+		QueryParams.AddIgnoredActor(ActorIgnored);
 	}
 }
 
@@ -238,8 +239,8 @@ void AMyCharacter::Interact()
 		AddIgnoredActorToLineTrace("IgnoreGroup", QueryParams);
 		AddIgnoredActorToLineTrace("IgnoreGroup2", QueryParams);
 
-		FVector Start = FirstPersonCamera->GetComponentLocation();
-		FVector End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
+		FVector const& Start = FirstPersonCamera->GetComponentLocation();
+		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
 			{				
@@ -266,9 +267,9 @@ void AMyCharacter::GrabComponents()
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = false;
-		 FVector Start = FirstPersonCamera->GetComponentLocation();
-		 FVector End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
-		
+		 FVector const& Start = FirstPersonCamera->GetComponentLocation();
+		 FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
+	
 		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
 		{
 				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
@@ -276,44 +277,61 @@ void AMyCharacter::GrabComponents()
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
 			
 				UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-				FVector GrabLocation = GrabResults.ImpactPoint;
-				FRotator GrabRotation = ComponentToGrab->GetComponentRotation();
-				FRotator AddGrabRotation(5,0, 0);
-				FRotator NewGrabRotatator = GrabRotation + AddGrabRotation;
+				 FVector const& GrabLocation = GrabResults.ImpactPoint;
+				 FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
+				 const FRotator  AddGrabRotation(5,0, 0);
+				 FRotator const& NewGrabRotatator = GrabRotation + AddGrabRotation;
 
-				if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics(NAME_None))
+				
+				if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
 				{
-					if (SoundBase[1] != nullptr)
+					if (SoundBase[2] != nullptr)
 					{
-						UGameplayStatics::PlaySoundAtLocation(this, SoundBase[1], GetActorLocation());
+						UGameplayStatics::PlaySoundAtLocation(this, SoundBase[2], GetActorLocation());
 						PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
 					}
+
 				}
 				else
 				{
 					DontInteract();
 				}
-				
-					
-					
-
-
-				// Debug Actor info location, rotator and weight
-				FString MassComponent = FString::Printf(TEXT("Mass: %2.f"), ComponentToGrab->GetMass());
-				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::White, MassComponent);
-	
-
-			
-				if (PhysicsHandle->GrabbedComponent)
-				{
-					UE_LOG(LogCharacter, Warning, TEXT("Grab!!!!!"));
-				}
-
 			}
-				
+			else
+			{
+				DontInteract();		
+			}		
 		}
 		
 	}
+
+
+void AMyCharacter::DebugObjectGrab()
+{
+	UPrimitiveComponent* GrabDebug = PhysicsHandle->GrabbedComponent;
+	const FVector GrabLocation = GrabDebug->GetComponentLocation();
+
+	const FRotator GrabRotation = GrabDebug->GetComponentRotation();
+ 	
+	const FString& MassComponent = FString::Printf(TEXT("Mass: %2.f"), PhysicsHandle->GrabbedComponent->GetMass());
+
+	const FString& LocationDebug = FString::Printf(TEXT("Loc: X = %2.f, Y = %2.f, Z = %2.f"), GrabDebug->GetComponentLocation().X,
+		GrabDebug->GetComponentLocation().Y, GrabDebug->GetComponentLocation().Z);
+
+	const FString& RotationDebug = FString::Printf(TEXT("Rot: Pitch = %2.f, Roll = %2.f, Yaw = %2.f"), GrabDebug->GetComponentRotation().Pitch,
+		GrabDebug->GetComponentRotation().Roll, GrabDebug->GetComponentRotation().Yaw);
+
+	FVector const& TextLocation = GrabLocation + FVector(0,0,10);
+
+//	FVector const& TextRotation = GrabRotation.RotateVector(FVector) 
+
+	const FColor ColorDebug = FColor::White;
+
+	DrawDebugString(GetWorld(), TextLocation,  MassComponent, nullptr, ColorDebug, 0, false);
+	
+	DrawDebugString(GetWorld(), TextLocation + FVector(0, 0, 1), LocationDebug, this, ColorDebug, false);
+
+}
 
 
 
@@ -340,9 +358,9 @@ void AMyCharacter::TrowObject()
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
-		FVector TrowDirection = FirstPersonCamera->GetForwardVector();
-		FVector GrabLocation = TrowComponent->GetComponentLocation();
-		FVector Force = TrowDirection * m_TrowImpulce;
+		FVector const& TrowDirection = FirstPersonCamera->GetForwardVector();
+		FVector const& GrabLocation = TrowComponent->GetComponentLocation();
+		FVector const& Force = TrowDirection * m_TrowImpulce;
 		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
 		ReleaseComponent();
 
@@ -354,8 +372,13 @@ void AMyCharacter::TrowObject()
 
 void AMyCharacter::DontInteract()
 {
+
 	UE_LOG(LogCharacter, Warning, TEXT("No interact"));
-	
+
+	if (SoundBase[1] != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, SoundBase[1], GetActorLocation());
+	}
 	
 }
 

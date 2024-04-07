@@ -105,8 +105,8 @@ protected:
 public:
 
 	//Return object
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
+	FORCEINLINE	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	FORCEINLINE	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
 
 protected:
 
@@ -140,10 +140,13 @@ protected:
 protected:
 
 	void AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams);
-
+	
+	void DebugObjectGrab();
+	
 private:
 
 #pragma region Default_Character_Settings
+
 	UPROPERTY(Config)
 	float m_MaxSpeedWalk = 500.0f;
 	UPROPERTY(Config)
