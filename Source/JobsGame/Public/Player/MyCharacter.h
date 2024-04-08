@@ -153,7 +153,7 @@ private:
 	
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TArray<USoundBase*> SoundBase;
+	TObjectPtr<USoundBase> SoundBase;
 
 	
 	

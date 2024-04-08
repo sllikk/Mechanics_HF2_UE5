@@ -135,9 +135,9 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 // Function Run for control character and play sound
 void AMyCharacter::Run()
 {
-	if (SoundBase[0] != nullptr)
+	if (SoundBase)
 	{
-		UGameplayStatics::PlaySoundAtLocation(this, SoundBase[0], GetActorLocation());
+		UGameplayStatics::PlaySoundAtLocation(this, SoundBase, GetActorLocation());
 		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
 	}
 }
