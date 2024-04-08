@@ -106,6 +106,11 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+//          Base Function character movement
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 // Function Move for control character
 void AMyCharacter::Move(const FInputActionValue& Value)
 {
@@ -183,19 +188,20 @@ void AMyCharacter::Interact()
 				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
-				//Door Actor for LineTrace 
 
+			//Door Actor for LineTrace 
 			if (ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor()))
-				{
-					DoorWood->Character = this;
-					DoorWood->Interact();
-				}
+			{
+				DoorWood->Character = this;
+				DoorWood->Interact();
 			}
+			}   
 		}
 	}
 
-
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
+//          Function action character
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::Flashlight()
 {

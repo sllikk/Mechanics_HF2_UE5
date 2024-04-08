@@ -9,10 +9,9 @@ class AMyCharacter;
 class UInputAction;
 class USoundBase;
 
-
 DECLARE_LOG_CATEGORY_EXTERN(LogPhysicsHandle, Log, All);
 
-UCLASS(ClassGroup= (Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Config = Game, ClassGroup= (Custom), meta=(BlueprintSpawnableComponent))
 class JOBSGAME_API UPhysicsHandle : public UPhysicsHandleComponent
 {
 	GENERATED_BODY()
@@ -36,15 +35,31 @@ protected:
 public:
 
 	void ToggleGrabObject();
-	void TrowObject();
-	void DontInteract();
+	static void TrowObject();
+	static void DontInteract();
 	
 	FORCEINLINE	 virtual void ReleaseComponent() override;		
 	FORCEINLINE	virtual void GrabComponents();
 
 	
 private:
-
+	// Config variables
+	UPROPERTY(Config)
+	bool blsSoftAngularConstraint;
+	UPROPERTY(Config)
+	bool blsSoftLinearConstraint;
+	UPROPERTY(Config)
+	bool blsInterpolateTarget;
+	UPROPERTY(Config)
+	float LinearDamping = 200.0f;
+	UPROPERTY(Config)
+	float LinearStiffness = 750.0f;
+	UPROPERTY(Config)
+	float AngularDamping = 500.0f;
+	UPROPERTY(Config)
+	float AngularStiffness = 1500.0f;
+	UPROPERTY(Config)
+	float InterpolationSpeed = 50.0f;
 
 	
 };
