@@ -18,11 +18,12 @@ DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
 
 
+// Constructor character: initialization of all components and default settings of the character and its components for the game world
 AMyCharacter::AMyCharacter()
 {
+	//default settings character movement, mesh and FirstPersonCamera
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
 	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
-	
 	GetCharacterMovement()->MaxAcceleration = m_MaxAcceleration;
 	GetCharacterMovement()->Mass = m_MassCharacter;
 	GetCharacterMovement()->JumpZVelocity = m_JumpHeight;
@@ -40,7 +41,8 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCamera);
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
-	
+
+	// Physics Handle for grab and physics interact 
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
 	PhysicsHandle->bSoftAngularConstraint = true;
 	PhysicsHandle->bSoftLinearConstraint = true;
@@ -51,12 +53,13 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
 
+	// FleshLight Component for Character
 	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
 	FlashLightComponent->SetupAttachment(FirstPersonCamera);
 	
 }
 
-
+// Destructor 
 AMyCharacter::~AMyCharacter()
 {
 
@@ -67,7 +70,7 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	// Enhanced input for Player
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -75,13 +78,13 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
 	// Load Sound Resource for Character
 	TArray<FResourceSound> ResourceToLoad = {
 		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Sprint_Cue"), nullptr},
 		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/No_Interact_Cue"), nullptr},
 		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Interact_Cue"), nullptr},	
 	};		
+	// Load Resource and Debug problems loading
 	for (FResourceSound& Resource : ResourceToLoad)
 	{
 		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
@@ -93,8 +96,8 @@ void AMyCharacter::BeginPlay()
 		{
 			UE_LOG(LogCharacterResouce, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
 		}
-
 	}	
+	// Load TArray<USoundBase*> SoundBase in .h file
 	for (const FResourceSound& Resource : ResourceToLoad)
 	{
 		USoundBase* SoundLoad = Cast<USoundBase>(Resource.LoadResource);
@@ -109,15 +112,17 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	// Update Physics handle and grab object in World every frame
 	if (PhysicsHandle->GrabbedComponent) 
 	{
 		 FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		 FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
 		 FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
+		// Func Debug grab object
 		DebugObjectGrab();
-		
+
 	}
 }
 
@@ -126,6 +131,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	// Assign functions to control the character and all actions associated with him in EIC
 	if (UEnhancedInputComponent* EInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		if (UEnhancedInputComponent* EnhancedInput = dynamic_cast<UEnhancedInputComponent*>(EInputComponent))
@@ -141,7 +147,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
 			EnhancedInput->BindAction( ToggleGrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrabObject);
 			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
-			EnhancedInput->BindAction(FleshLightAction, ETriggerEvent::Started, this, &AMyCharacter::Fleshlight);
+			EnhancedInput->BindAction(FlashLightAction, ETriggerEvent::Started, this, &AMyCharacter::Flashlight);
 
 		}		
 	}	
@@ -152,7 +158,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
-
+// Function Move for control character
 void AMyCharacter::Move(const FInputActionValue& Value)
 {
 	const TSharedPtr<FVector2D> MovementVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
@@ -165,7 +171,7 @@ void AMyCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-
+// Function Look for control character
 void AMyCharacter::Look(const FInputActionValue& Value)
 {
 	const TSharedPtr<FVector2D> LookAxisVector = MakeShared<FVector2D>(Value.Get<FVector2D>());
@@ -178,43 +184,43 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 
 }
 
-
+// Function Run for control character and play sound
 void AMyCharacter::Run()
 {
-
 	if (SoundBase[0] != nullptr)
 	{
 		UGameplayStatics::PlaySoundAtLocation(this, SoundBase[0], GetActorLocation());
 		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
 	}
-	 
 }
 
-
+// Function StopRun for character to reduce running speed
 void AMyCharacter::StopRun()
 {
-
 	GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedWalk;
-
 }
 
-
+// Crouch 
 void AMyCharacter::StartCrouch()
 {
-	GetCapsuleComponent()->SetCapsuleHalfHeight(43.0f);
-	GetCharacterMovement()->MaxWalkSpeedCrouched = m_MaxSpeedCrouch;
+	GetCapsuleComponent()->SetCapsuleHalfHeight(43.0f); // we compress our collision to half its size
+	GetCharacterMovement()->MaxWalkSpeedCrouched = m_MaxSpeedCrouch; // change speed
+	//Default UE function 
 	Crouch();
 
 }
 
-
+// Crouch 
 void AMyCharacter::StopCrouch()
 {
-	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f);
+	
+	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f); //return scale collision how was it
+	//Default UE function 
 	UnCrouch();
 }
 
-
+// Ignored actors collision for Interact Function
+// doesn't work yet
 void AMyCharacter::AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams)
 {
 	TArray<AActor*> IgnoredActors;
@@ -226,10 +232,9 @@ void AMyCharacter::AddIgnoredActorToLineTrace(const FName& GroupName, FCollision
 	}
 }
 
-
+// Interact Actors
 void AMyCharacter::Interact()
 {
-	
 	if (FirstPersonCamera == nullptr) return;
 	{
 		FHitResult HitResult;
@@ -246,14 +251,13 @@ void AMyCharacter::Interact()
 				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
 				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
- 
-				ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor());
-						
-					if (DoorWood)
-					{
-						DoorWood->Character = this;
-						DoorWood->Interact();
-					}
+				//Door Actor for LineTrace 
+
+			if (ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor()))
+				{
+					DoorWood->Character = this;
+					DoorWood->Interact();
+				}
 			}
 		}
 	}
@@ -284,15 +288,15 @@ void AMyCharacter::GrabComponents()
 			FVector const& GrabLocation = CenterOfComponent;
 			
 			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
-			FRotator AddGrabRotation(5,0, 0);
-			FRotator const& NewGrabRotatator = GrabRotation + AddGrabRotation;
+			FRotator AddGrabRotation(0,0, 0);
+			FRotator const& NewGrabRotator = GrabRotation + AddGrabRotation;
 
 			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
 			{
 				if (SoundBase[2] != nullptr)
 				{
 					UGameplayStatics::PlaySoundAtLocation(this, SoundBase[2], GetActorLocation());
-					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotatator);
+					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotator);
 				}
 			}
 			else
@@ -381,7 +385,7 @@ void AMyCharacter::DontInteract()
 
 
 
-void AMyCharacter::Fleshlight()
+void AMyCharacter::Flashlight()
 {
 	if (FlashLightComponent != nullptr)
 	{

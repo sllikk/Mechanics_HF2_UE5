@@ -80,7 +80,7 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	TObjectPtr<UInputAction> TrowAction;
 	
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> FleshLightAction;	
+	TObjectPtr<UInputAction> FlashLightAction;	
 	
 	#pragma endregion
 
@@ -138,7 +138,7 @@ protected:
 
 	void DontInteract();
 
-	void Fleshlight();
+	void Flashlight();
 	
 	
 #pragma endregion
@@ -151,7 +151,7 @@ protected:
 	
 private:
 
-#pragma region Default_Character_Settings
+	#pragma region Default_Character_Settings
 
 	UPROPERTY(Config)
 	float m_MaxSpeedWalk = 500.0f;
@@ -180,20 +180,12 @@ private:
 	UPROPERTY(Config)
 	float m_MaxGrabMassObject = 80;	
 
-#pragma endregion
+	#pragma endregion
 	
-private:
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> SoundBase;
 	
-	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TArray<UAudioComponent*> CharacterAudioComponent;
-
-
-	
-private:
-
 	
 
 
