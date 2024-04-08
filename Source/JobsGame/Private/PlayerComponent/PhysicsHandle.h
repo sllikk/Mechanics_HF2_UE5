@@ -51,15 +51,15 @@ private:
 	UPROPERTY(Config)
 	bool blsInterpolateTarget;
 	UPROPERTY(Config)
-	float LinearDamping = 200.0f;
+	float m_LinearDamping = 200.0f;
 	UPROPERTY(Config)
-	float LinearStiffness = 750.0f;
+	float m_LinearStiffness = 750.0f;
 	UPROPERTY(Config)
-	float AngularDamping = 500.0f;
+	float m_AngularDamping = 500.0f;
 	UPROPERTY(Config)
-	float AngularStiffness = 1500.0f;
+	float m_AngularStiffness = 1500.0f;
 	UPROPERTY(Config)
-	float InterpolationSpeed = 50.0f;
+	float m_InterpolationSpeed = 50.0f;
 
 	
 };
