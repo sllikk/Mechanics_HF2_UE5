@@ -12,7 +12,6 @@ class UInputMappingContext;
 class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
-class UPhysicsHandleComponent;
 class UFlashLightComponent;
 struct FInputActionValue;
 
@@ -30,7 +29,6 @@ struct FResourceSound
 	TObjectPtr<UObject> LoadResource;
 
 	FResourceSound() { }	
-	
 	FResourceSound(const FString& InResourcePath, UObject* ObjectLoad)
 		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
 
@@ -46,9 +44,6 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
-
-	UPROPERTY(EditAnywhere, Category = PhysicsHandle, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 	
 	#pragma region INPUT
 
@@ -73,12 +68,6 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> InteractAction;
 
-	UPROPERTY(EditAnywhere, Category = Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> ToggleGrabAction; 
-
-	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> TrowAction;
-	
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> FlashLightAction;	
 	
@@ -119,36 +108,16 @@ protected:
 #pragma region FUNC_INPUT
 
 	void Move(const FInputActionValue& Value);
-
 	void Look(const FInputActionValue& Value);
-
 	void Run();
 	void StopRun();
-
 	void StartCrouch();
 	void StopCrouch();
-
 	void Interact();
-
-	void ToggleGrabObject();
-	void TrowObject();
-
-	virtual void ReleaseComponent();		
-	virtual void GrabComponents();
-
-	void DontInteract();
-
 	void Flashlight();
-	
-	
+
 #pragma endregion
 
-protected:
-
-	void AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams);
-	
-	void DebugObjectGrab();
-	
 private:
 
 	#pragma region Default_Character_Settings
@@ -174,7 +143,7 @@ private:
 	UPROPERTY(Config)
 	float m_LineTraceLength = 180.0f;
 	UPROPERTY(Config)
-	float m_DistanceTrace = 180.0f;
+	float m_DistanceTrace = 190.0f;
 	UPROPERTY(Config)
 	float m_TrowImpulce = 225.0f;
 	UPROPERTY(Config)
@@ -185,8 +154,10 @@ private:
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> SoundBase;
+
 	
 	
 
 
 };
+

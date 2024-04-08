@@ -11,8 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
-#include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "Components/SceneComponent.h"
+
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
@@ -42,16 +41,7 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
-	// Physics Handle for grab and physics interact 
-	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
-	PhysicsHandle->bSoftAngularConstraint = true;
-	PhysicsHandle->bSoftLinearConstraint = true;
-	PhysicsHandle->bInterpolateTarget = true;
-	PhysicsHandle->LinearDamping = 200.0f;
-	PhysicsHandle->LinearStiffness = 750.0f;
-	PhysicsHandle->AngularDamping = 500.0f;
-	PhysicsHandle->AngularStiffness = 1500.0f;
-	PhysicsHandle->InterpolationSpeed = 50.0f;
+	
 
 	// FleshLight Component for Character
 	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
@@ -70,40 +60,11 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Enhanced input for Player
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
-		}
-	}
-	// Load Sound Resource for Character
-	TArray<FResourceSound> ResourceToLoad = {
-		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Sprint_Cue"), nullptr},
-		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/No_Interact_Cue"), nullptr},
-		FResourceSound{TEXT("/Game/Sound/ActorSound/Cue/Interact_Cue"), nullptr},	
-	};		
-	// Load Resource and Debug problems loading
-	for (FResourceSound& Resource : ResourceToLoad)
-	{
-		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
-		if (Resource.LoadResource)
-		{
-			UE_LOG(LogCharacterResouce, Warning, TEXT("Loaded: %s"), *Resource.ResourcePath)
-		}
-		else
-		{
-			UE_LOG(LogCharacterResouce, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
-		}
-	}	
-	// Load TArray<USoundBase*> SoundBase in .h file
-	for (const FResourceSound& Resource : ResourceToLoad)
-	{
-		USoundBase* SoundLoad = Cast<USoundBase>(Resource.LoadResource);
-		if (SoundLoad != nullptr)
-		{
-			SoundBase.Add(SoundLoad);
 		}
 	}
 }
@@ -112,18 +73,7 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	// Update Physics handle and grab object in World every frame
-	if (PhysicsHandle->GrabbedComponent) 
-	{
-		 FVector const& Start = FirstPersonCamera->GetComponentLocation();
-		 FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
-		 FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
-		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
-		// Func Debug grab object
-		DebugObjectGrab();
-
-	}
+	
 }
 
 
@@ -145,8 +95,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMyCharacter::StartCrouch);
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMyCharacter::StopCrouch);
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
-			EnhancedInput->BindAction( ToggleGrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrabObject);
-			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
 			EnhancedInput->BindAction(FlashLightAction, ETriggerEvent::Started, this, &AMyCharacter::Flashlight);
 
 		}		
@@ -219,18 +167,6 @@ void AMyCharacter::StopCrouch()
 	UnCrouch();
 }
 
-// Ignored actors collision for Interact Function
-// doesn't work yet
-void AMyCharacter::AddIgnoredActorToLineTrace(const FName& GroupName, FCollisionQueryParams& QueryParams)
-{
-	TArray<AActor*> IgnoredActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), GroupName, IgnoredActors);
-	
-	for  (const AActor* ActorIgnored : IgnoredActors)
-	{
-		QueryParams.AddIgnoredActor(ActorIgnored);
-	}
-}
 
 // Interact Actors
 void AMyCharacter::Interact()
@@ -239,10 +175,6 @@ void AMyCharacter::Interact()
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
-		QueryParams.TraceTag = "InteractChannel";
-		AddIgnoredActorToLineTrace("IgnoreGroup", QueryParams);
-		AddIgnoredActorToLineTrace("IgnoreGroup2", QueryParams);
-
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
@@ -262,126 +194,6 @@ void AMyCharacter::Interact()
 		}
 	}
 
-void AMyCharacter::GrabComponents()
-{
-	if (FirstPersonCamera == nullptr) return;
-	{
-		FHitResult GrabResults;
-		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
-		QueryParams.bTraceComplex = true;
-		QueryParams.bReturnPhysicalMaterial = false;
-		 FVector const& Start = FirstPersonCamera->GetComponentLocation();
-		 FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
-	
-		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
-		{
-				DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-				DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
-				DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
-			
-			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-
-			if (!ComponentToGrab)return;
-			
-			const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
-			FVector const& CenterOfComponent = Bounds.Origin;
-			FVector const& GrabLocation = CenterOfComponent;
-			
-			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
-			FRotator AddGrabRotation(0,0, 0);
-			FRotator const& NewGrabRotator = GrabRotation + AddGrabRotation;
-
-			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
-			{
-				if (SoundBase[2] != nullptr)
-				{
-					UGameplayStatics::PlaySoundAtLocation(this, SoundBase[2], GetActorLocation());
-					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, NewGrabRotator);
-				}
-			}
-			else
-			{
-				DontInteract();
-			}
-			}
-			else
-			{
-				DontInteract();		
-			}		
-		}
-		
-	}
-
-
-void AMyCharacter::DebugObjectGrab()
-{
-	const FString& MassComponent = FString::Printf(TEXT("Mass: %2.f"), PhysicsHandle->GrabbedComponent->GetMass());
-
-	const FString& LocationDebug = FString::Printf(TEXT("Loc: X = %2.f, Y = %2.f, Z = %2.f"), PhysicsHandle->GrabbedComponent->GetComponentLocation().X,
-		PhysicsHandle->GrabbedComponent->GetComponentLocation().Y, PhysicsHandle->GrabbedComponent->GetComponentLocation().Z);
-
-	FVector const& TextLocation = PhysicsHandle->GrabbedComponent->GetComponentLocation() + FVector(0,0,10);
-	const FColor ColorDebug = FColor::White;
-
-	DrawDebugString(GetWorld(), TextLocation,  MassComponent, nullptr, ColorDebug, 0, false);
-	DrawDebugString(GetWorld(), TextLocation + FVector(0, 0, 1), LocationDebug, this, ColorDebug, false);
-
-}
-
-
-
-void AMyCharacter::ReleaseComponent()
-{
-	PhysicsHandle->ReleaseComponent();
-}
-
-
-void AMyCharacter::ToggleGrabObject()
-{
-	if (PhysicsHandle->GrabbedComponent)
-	{
-		ReleaseComponent();
-	}
-	else
-	{
-		GrabComponents();
-	}
-}
-
-void AMyCharacter::TrowObject()
-{
-	if (PhysicsHandle->GrabbedComponent)
-	{
-		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
-		if(!TrowComponent) return;
-
-		const FBoxSphereBounds Bounds = TrowComponent->Bounds;  
-		FVector const& TrowCentreOfComponent = Bounds.Origin; 
-		FVector const& TrowLocation = TrowCentreOfComponent;
-
-		FVector const& TrowDirection = FirstPersonCamera->GetForwardVector();
-		FVector const& GrabLocation = TrowLocation;
-		FVector const& Force = TrowDirection * m_TrowImpulce;
-		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
-		ReleaseComponent();
-
-	}
-
-	
-}
-
-
-void AMyCharacter::DontInteract()
-{
-
-	UE_LOG(LogCharacter, Warning, TEXT("No interact"));
-
-	if (SoundBase[1] != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, SoundBase[1], GetActorLocation());
-	}
-	
-}
 
 
 
@@ -392,7 +204,6 @@ void AMyCharacter::Flashlight()
 		FlashLightComponent->ToggleFlashLight();
 	}
 }
-
 
 
 

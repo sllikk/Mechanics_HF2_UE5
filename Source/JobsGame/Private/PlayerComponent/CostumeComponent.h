@@ -40,7 +40,7 @@ public:
 	bool RestoreCharger(float Amounth);
 
 	UFUNCTION(BlueprintCallable)
-	void CostumeDischarged();
+	 void CostumeDischarged();
 
 	UFUNCTION()
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,

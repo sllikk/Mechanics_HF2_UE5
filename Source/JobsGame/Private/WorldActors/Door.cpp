@@ -93,8 +93,6 @@ void ADoor::BeginPlay()
 		Timeline.AddInterpFloat(CurveFloat ,TimelineProgress);
 	}
 	
-	DoorComponent->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Block);
-	
 }	
 
 
