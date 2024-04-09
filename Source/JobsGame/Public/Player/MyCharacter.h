@@ -143,10 +143,6 @@ private:
 	UPROPERTY(Config)
 	float m_LineTraceLength = 180.0f;
 	UPROPERTY(Config)
-	float m_DistanceTrace = 190.0f;
-	UPROPERTY(Config)
-	float m_TrowImpulce = 225.0f;
-	UPROPERTY(Config)
 	float m_MaxGrabMassObject = 80;	
 
 	#pragma endregion

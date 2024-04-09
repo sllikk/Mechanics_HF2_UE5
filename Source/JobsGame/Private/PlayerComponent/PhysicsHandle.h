@@ -45,11 +45,11 @@ public:
 private:
 	// Config variables
 	UPROPERTY(Config)
-	bool blsSoftAngularConstraint;
+	bool blsSoftAngularConstraint = true;
 	UPROPERTY(Config)
-	bool blsSoftLinearConstraint;
+	bool blsSoftLinearConstraint = true;
 	UPROPERTY(Config)
-	bool blsInterpolateTarget;
+	bool blsInterpolateTarget = true;
 	UPROPERTY(Config)
 	float m_LinearDamping = 200.0f;
 	UPROPERTY(Config)
@@ -60,6 +60,13 @@ private:
 	float m_AngularStiffness = 1500.0f;
 	UPROPERTY(Config)
 	float m_InterpolationSpeed = 50.0f;
+	UPROPERTY(Config)
+	float m_DistanceTrace = 190.0f;
+	UPROPERTY(Config)
+	float m_TrowImpulce = 225.0f;
+	
+private:
 
+	TObjectPtr<AMyCharacter> Character;
 	
 };
