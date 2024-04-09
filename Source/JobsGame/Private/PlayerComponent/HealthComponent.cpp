@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
+\
 #include "PlayerComponent/HealthComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -11,6 +10,14 @@ UHealthComponent::UHealthComponent()
 
 	PrimaryComponentTick.bCanEverTick = true;
 
+		
+	
+
+
+
+
+
+	
 	m_MaxHealth = 100;
 	m_CurrentHealth = m_MaxHealth;
 

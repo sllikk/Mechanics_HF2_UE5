@@ -10,8 +10,25 @@ class USoundBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+// Load Resource
+USTRUCT()
+struct FResourceLoad
+{
+	GENERATED_BODY()
 
+	UPROPERTY(NotBlueprintable)
+	FString ResourcePath;
+	UPROPERTY(NotBlueprintable)
+	TObjectPtr<UObject> LoadResource;
+
+	FResourceLoad() { }	
+	FResourceLoad(const FString& InResourcePath, UObject* ObjectLoad)
+		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
+};
+	
+
+
+UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
