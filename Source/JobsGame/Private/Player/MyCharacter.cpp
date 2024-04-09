@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "PhysicsEngine/PhysicsHandleComponent.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -46,6 +47,17 @@ AMyCharacter::AMyCharacter()
 	// FleshLight Component for Character
 	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
 	FlashLightComponent->SetupAttachment(FirstPersonCamera);
+
+	//PhysicsHandle forgrab and physics interact 
+	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
+	PhysicsHandle->bSoftAngularConstraint = true;
+	PhysicsHandle->bSoftLinearConstraint = true;
+	PhysicsHandle->bInterpolateTarget = true;
+	PhysicsHandle->LinearDamping = 200.0f;
+	PhysicsHandle->LinearStiffness = 750.0f;
+	PhysicsHandle->AngularDamping = 500.0f;
+	PhysicsHandle->AngularStiffness = 1500.0f;
+	PhysicsHandle->InterpolationSpeed = 50.0f;
 	
 }
 
@@ -73,7 +85,17 @@ void AMyCharacter::BeginPlay()
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
+	// Update Physics handle and grab object in World every frame
+	if (PhysicsHandle->GrabbedComponent) 
+	{
+		FVector const& Start = FirstPersonCamera->GetComponentLocation();
+		FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
+		FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
+		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
+
+	}
+
 }
 
 
@@ -96,7 +118,8 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMyCharacter::StopCrouch);
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
 			EnhancedInput->BindAction(FlashLightAction, ETriggerEvent::Started, this, &AMyCharacter::Flashlight);
-
+			EnhancedInput->BindAction(GrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrab);
+			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
 		}		
 	}	
 	else
@@ -211,6 +234,93 @@ void AMyCharacter::Flashlight()
 	}
 }
 
+
+void AMyCharacter::ToggleGrab()
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		ReleaseComponent();
+	}
+	else
+	{
+		GrabComponent();
+	}
+}
+
+
+void AMyCharacter::GrabComponent()
+{
+	if (FirstPersonCamera == nullptr)return;
+	{
+		FHitResult GrabResults;
+		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
+		QueryParams.bTraceComplex = true;
+		QueryParams.bReturnPhysicalMaterial = false;
+		QueryParams.bIgnoreTouches = true;
+		FVector const& Start = FirstPersonCamera->GetComponentLocation();
+		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
+	
+		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
+		{
+			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
+			DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
+			DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
+			
+			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
+
+			if (!ComponentToGrab)return;
+			if (!ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
+			{
+				DontInteract();
+				return;
+			}	
+
+			const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
+			FVector const& CenterOfComponent = Bounds.Origin;
+			FVector const& GrabLocation = CenterOfComponent;
+			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
+			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
+			{
+				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
+			}		
+
+		}
+	}
+}
+
+
+void AMyCharacter::ReleaseComponent()
+{
+	PhysicsHandle->ReleaseComponent();
+}
+
+
+void AMyCharacter::DontInteract()
+{
+
+}
+
+
+void AMyCharacter::TrowObject()
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
+		if(!TrowComponent) return;
+
+		const FBoxSphereBounds Bounds = TrowComponent->Bounds;  
+		FVector const& TrowCentreOfComponent = Bounds.Origin; 
+		FVector const& TrowLocation = TrowCentreOfComponent;
+
+		FVector const& TrowDirection = FirstPersonCamera->GetForwardVector();
+		FVector const& GrabLocation = TrowLocation;
+		FVector const& Force = TrowDirection * m_TrowImpulse;
+		TrowComponent->AddVelocityChangeImpulseAtLocation(Force, GrabLocation);
+		ReleaseComponent();
+
+	}
+
+}
 
 
 

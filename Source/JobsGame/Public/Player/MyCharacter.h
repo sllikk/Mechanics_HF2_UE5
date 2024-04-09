@@ -13,6 +13,7 @@ class USkeletalMeshComponent;
 class UCameraComponent;
 class USoundBase;
 class UFlashLightComponent;
+class UPhysicsHandleComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
@@ -38,7 +39,10 @@ UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
+	
+	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
+	
 	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UFlashLightComponent> FlashLightComponent;
 	
@@ -70,7 +74,13 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> FlashLightAction;	
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> GrabAction;	
+
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> TrowAction;	
+
 	#pragma endregion
 
 
@@ -115,8 +125,13 @@ protected:
 	void StopCrouch();
 	void Interact();
 	void Flashlight();
+	void ToggleGrab();
+	void GrabComponent();
+	void ReleaseComponent();
+	void DontInteract();
+	void TrowObject();
 
-#pragma endregion
+	#pragma endregion
 
 private:
 
@@ -143,7 +158,11 @@ private:
 	UPROPERTY(Config)
 	float m_LineTraceLength = 180.0f;
 	UPROPERTY(Config)
+	float m_DistanceTrace = 190;
+	UPROPERTY(Config)
 	float m_MaxGrabMassObject = 80;	
+	UPROPERTY(Config)
+	float m_TrowImpulse = 250;
 
 	#pragma endregion
 	
