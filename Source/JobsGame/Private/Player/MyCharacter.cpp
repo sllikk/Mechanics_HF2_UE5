@@ -163,11 +163,7 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 // Function Run for control character and play sound
 void AMyCharacter::Run()
 {
-	if (SoundBase)
-	{
-		UGameplayStatics::PlaySoundAtLocation(this, SoundBase, GetActorLocation());
 		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
-	}
 }
 
 // Function StopRun for character to reduce running speed
@@ -234,7 +230,7 @@ void AMyCharacter::Flashlight()
 	}
 }
 
-
+// Action Grab Object 
 void AMyCharacter::ToggleGrab()
 {
 	if (PhysicsHandle->GrabbedComponent)
@@ -247,7 +243,7 @@ void AMyCharacter::ToggleGrab()
 	}
 }
 
-
+// Physics grab
 void AMyCharacter::GrabComponent()
 {
 	if (FirstPersonCamera == nullptr)return;
@@ -288,13 +284,13 @@ void AMyCharacter::GrabComponent()
 	}
 }
 
-
+// Release Grab object
 void AMyCharacter::ReleaseComponent()
 {
 	PhysicsHandle->ReleaseComponent();
 }
 
-
+// 
 void AMyCharacter::DontInteract()
 {
 
