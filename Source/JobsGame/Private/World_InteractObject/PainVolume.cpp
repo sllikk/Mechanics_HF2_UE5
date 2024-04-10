@@ -41,6 +41,19 @@ void APainVolume::ActorEnteredVolume(AActor* Other)
 
 }
 
+void APainVolume::BeginPlay()
+{
+	Super::BeginPlay();
+	
+//	TArray<FLoadSound> Resourse = {
+//	FLoadSound{}
+
+//	};
+	
+
+
+}
+
 
 void APainVolume::CausePainTo(AActor* Other)
 {

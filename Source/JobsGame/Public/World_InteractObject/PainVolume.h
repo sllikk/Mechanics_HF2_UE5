@@ -7,12 +7,22 @@
 #include "PainVolume.generated.h"
 class UDamageType;
 class AController;
+class USoundBase;
 
 USTRUCT()
 struct FLoadSound
 {
 	GENERATED_BODY()
-	
+
+	UPROPERTY()
+	FString ResourcePath;
+	UPROPERTY()
+	TObjectPtr<UObject> LoadResource;
+
+	FLoadSound(){};
+
+	FLoadSound(const FString& NameResource, TObjectPtr<UObject> resource)
+	:ResourcePath(NameResource), LoadResource(resource){}
 };
 
 UCLASS()
@@ -48,6 +58,9 @@ class JOBSGAME_API APainVolume : public APainCausingVolume
 	UPROPERTY()
 	TObjectPtr<AController> DamageInstigators;
 
+	UPROPERTY(EditDefaultsOnly, Category=Sound)
+	TArray<USoundBase*> SoundBase;
+	
 public:
 
 	APainVolume(const FObjectInitializer& ObjectInitializer);
@@ -67,4 +80,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	
 	void ActorEnteredVolume(AActor* Other);
+
+	void BeginPlay() override;
+
 };
