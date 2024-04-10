@@ -62,8 +62,8 @@ class JOBSGAME_API APainVolume : public APainCausingVolume
 
 	/** Sound arrays */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
-	TArray<USoundBase*> SoundBase;
-
+	TArray<USoundBase*> FireSound;
+	
 	/**Particle effect */ 
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
 	TObjectPtr<UParticleSystem> FireParticle;	

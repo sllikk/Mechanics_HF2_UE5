@@ -66,19 +66,39 @@ void APainVolume::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	//TArray<FLoadSound> Resourse = {
-	//FLoadSound{TEXT("")}
-
-	//};
-
-
-	if (FireParticle != nullptr)
+	TArray<FLoadSound> ResourceToLoad = {
+	FLoadSound{TEXT("/Game/Sound/Sound_InteractObj/Cue/Pain_Damage_Cue"), nullptr},
+	FLoadSound{TEXT("/Game/Sound/Sound_InteractObj/Cue/fire_loop_Cue"), nullptr}
+	};
+	for (FLoadSound& Resource : ResourceToLoad)
 	{
+		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
+		if (Resource.LoadResource)
+		{
+			UE_LOG(LogPainCausing, Warning, TEXT("Load: %s"), *Resource.ResourcePath);
+		}
+		else
+		{
+			UE_LOG(LogPainCausing, Warning, TEXT("Error load: %s"), *Resource.ResourcePath);
+		}
+	}
+	for (const FLoadSound& Resource : ResourceToLoad)
+	{
+		USoundBase* SoundBase = Cast<USoundBase>(Resource.LoadResource);
+
+		if (SoundBase != nullptr)
+		{
+			FireSound.Add(SoundBase);
+		}
+	}
+	
+		
+	if (FireParticle != nullptr && FireSound[1] != nullptr)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(this, FireSound[1], GetActorLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(this, FireParticle, GetActorLocation());
 	}
-
 	
-
 }
 
 
@@ -107,7 +127,11 @@ void APainVolume::PainTimer()
 		{
 			if (IsValid(A) && A->CanBeDamaged() && A->GetPhysicsVolume() == this)
 			{
-				CausePainTo(A);
+				if (FireSound[0] != nullptr)
+				{
+					UGameplayStatics::SpawnSoundAtLocation(this, FireSound[0], GetActorLocation());
+					CausePainTo(A);
+				}
 			}
 		}
 
