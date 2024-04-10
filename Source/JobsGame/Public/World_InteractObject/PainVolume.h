@@ -9,6 +9,8 @@ class UDamageType;
 class AController;
 class USoundBase;
 
+DECLARE_LOG_CATEGORY_EXTERN(LogPainCausing, Log, All);
+
 USTRUCT()
 struct FLoadSound
 {
@@ -58,9 +60,14 @@ class JOBSGAME_API APainVolume : public APainCausingVolume
 	UPROPERTY()
 	TObjectPtr<AController> DamageInstigators;
 
+	/** Sound arrays */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)
 	TArray<USoundBase*> SoundBase;
-	
+
+	/**Particle effect */ 
+	UPROPERTY(EditDefaultsOnly, Category=Sound)
+	TObjectPtr<UParticleSystem> FireParticle;	
+
 public:
 
 	APainVolume(const FObjectInitializer& ObjectInitializer);

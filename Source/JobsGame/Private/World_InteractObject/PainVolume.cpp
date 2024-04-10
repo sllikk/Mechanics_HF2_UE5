@@ -2,6 +2,10 @@
 
 #include "World_InteractObject/PainVolume.h"
 #include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+
+DEFINE_LOG_CATEGORY(LogPainCausing)
 
 APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
@@ -9,9 +13,26 @@ APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 
 	bPainCausing = true;
 	DamageType = UDamageType::StaticClass();
-	DamagePerSec = 1.0f;
+	DamagePerSec = 2.0f;
 	bEntryPain = true;
 	PainInterval = 1.0f;
+
+	const FSoftObjectPath FindParticle(TEXT("/Game/VFX/Particles/Fire/P_Fire_Big"));	
+	UParticleSystem* ParticleSystem = nullptr;
+
+	if (FindParticle.IsValid())
+	{
+		ParticleSystem = Cast<UParticleSystem>(FindParticle.TryLoad());
+	}
+	if (ParticleSystem != nullptr)
+	{
+		FireParticle = ParticleSystem;
+	}
+	else
+	{
+		UE_LOG(LogPainCausing, Warning, TEXT("Error find: %s"), *FindParticle.ToString())
+	}
+
 	
 }
 
@@ -45,12 +66,18 @@ void APainVolume::BeginPlay()
 {
 	Super::BeginPlay();
 	
-//	TArray<FLoadSound> Resourse = {
-//	FLoadSound{}
+	//TArray<FLoadSound> Resourse = {
+	//FLoadSound{TEXT("")}
 
-//	};
+	//};
+
+
+	if (FireParticle != nullptr)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, FireParticle, GetActorLocation());
+	}
+
 	
-
 
 }
 
