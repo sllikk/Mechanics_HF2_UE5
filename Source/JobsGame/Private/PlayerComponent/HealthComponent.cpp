@@ -1,7 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 \
 #include "PlayerComponent/HealthComponent.h"
+
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Player/MyCharacter.h"
 
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 
@@ -9,13 +12,6 @@ UHealthComponent::UHealthComponent()
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
-
-		
-	
-
-
-
-
 
 	
 	m_MaxHealth = 100;
@@ -70,13 +66,9 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 void UHealthComponent::IsDead()
 {
 	m_blsDead = true;
-
-	if (DeadSound != nullptr)
-	{
-		UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeadSound, GetOwner()->GetActorLocation());
-		UE_LOG(LogHeathComponent, Warning, TEXT("DEAD!!!!!!!"))
-	}
-
+	
+	UE_LOG(LogHeathComponent, Warning, TEXT("DEAD!!!!!!!"))
+	
 }
 
 
@@ -86,5 +78,5 @@ bool UHealthComponent::RestoreHealth(float HealthAmount)
 	m_CurrentHealth = FMath::Min(m_CurrentHealth, m_MaxHealth);
 
 	return m_CurrentHealth < m_MaxHealth;
-
+	
 }

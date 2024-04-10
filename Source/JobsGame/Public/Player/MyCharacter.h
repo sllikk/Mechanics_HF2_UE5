@@ -14,6 +14,8 @@ class UCameraComponent;
 class USoundBase;
 class UFlashLightComponent;
 class UPhysicsHandleComponent;
+class UHealthComponent;
+class UCostumeComponent;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
@@ -39,8 +41,14 @@ UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, Category = HealthComponent, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UHealthComponent> HealthComponent;
+
+	UPROPERTY(EditAnywhere, Category = CostumeComponent, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCostumeComponent> CostumeComponent;
 	
-	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = PhysicsHandleComponent, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 	
 	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
@@ -101,12 +109,18 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void Landed(const FHitResult& Hit) override;
+
+	// ActorsComponents
+
+
+
 
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-
+	
 public:
 
 	//Return object
@@ -169,7 +183,7 @@ private:
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TObjectPtr<USoundBase> SoundBase;
-
+	
 	
 	
 

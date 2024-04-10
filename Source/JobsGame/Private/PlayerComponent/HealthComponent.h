@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "HealthComponent.generated.h"
 class USoundBase;
+class AMyCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 
@@ -28,7 +29,7 @@ struct FResourceLoad
 	
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS()
 class UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -52,8 +53,7 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
-	TObjectPtr<USoundBase> DeadSound;
-
+	TArray<USoundBase*> SoundBase;       
 
 public:
 
@@ -62,14 +62,16 @@ public:
 
 	UFUNCTION(Blueprintable)
 	void IsDead();
-		
+	
 	UFUNCTION()
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
 		class AController* InstigatedBy, AActor* DamageCauser);
 
+
 private:
 
 	bool m_blsDead;
-
+	
+	
 
 };

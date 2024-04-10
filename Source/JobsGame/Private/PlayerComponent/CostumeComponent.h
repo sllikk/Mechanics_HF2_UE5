@@ -10,7 +10,7 @@ class USoundBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCostumeComponent, Log, All);
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS()
 class UCostumeComponent : public UActorComponent
 {
 	GENERATED_BODY()

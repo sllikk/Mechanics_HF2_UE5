@@ -9,9 +9,10 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "PlayerComponent/CostumeComponent.h"
+#include "PlayerComponent/HealthComponent.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -41,9 +42,7 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->SetupAttachment(FirstPersonCamera);
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
-
 	
-
 	// FleshLight Component for Character
 	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
 	FlashLightComponent->SetupAttachment(FirstPersonCamera);
@@ -58,6 +57,10 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
+
+	// ActorComponents
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
+	CostumeComponent = CreateDefaultSubobject<UCostumeComponent>(TEXT("CostumeComponent"));
 	
 }
 
@@ -129,6 +132,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 
 }
 
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Base Function character movement
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -192,6 +196,8 @@ void AMyCharacter::StopCrouch()
 }
 
 
+
+
 // Interact Actors
 void AMyCharacter::Interact()
 {
@@ -217,6 +223,14 @@ void AMyCharacter::Interact()
 			}   
 		}
 	}
+
+
+void AMyCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+	
+
+}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Function action character
@@ -317,6 +331,9 @@ void AMyCharacter::TrowObject()
 	}
 
 }
+
+	
+
 
 
 
