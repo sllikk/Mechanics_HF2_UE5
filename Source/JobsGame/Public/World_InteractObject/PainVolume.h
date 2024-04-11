@@ -32,33 +32,6 @@ class JOBSGAME_API APainVolume : public APainCausingVolume
 {
 	GENERATED_BODY()
 
-	/** Whether volume currently causes damage. */
-	UPROPERTY(EditAnywhere, Category=PainCausingVolume)
-	uint16 PainCausing:1;
-
-	/** Damage done per second to actors in this volume when bPainCausing=true */
-	UPROPERTY(EditAnywhere, Category=PainCausingVolume)
-	float DamagePerSecond;
-
-	/** Type of damage done */
-	UPROPERTY(EditAnywhere, Category=PainCausingVolume)
-	TSubclassOf<UDamageType> DamageTypes;
-
-	/** If pain causing, time between damage applications. */
-	UPROPERTY(EditAnywhere, Category=PainCausingVolume)
-	float PainIntervals;
-
-	/** if bPainCausing, cause pain when something enters the volume in addition to damage each second */
-	UPROPERTY(EditAnywhere, Category=PainCausingVolume)
-	uint16 blsEntryPain:1;
-
-	/** Checkpointed bPainCausing value */
-	UPROPERTY()
-	uint16 BACKUP_bPainCausings:1;
-
-	/** Controller that gets credit for any damage caused by this volume */
-	UPROPERTY()
-	TObjectPtr<AController> DamageInstigators;
 
 	/** Sound arrays */
 	UPROPERTY(EditDefaultsOnly, Category=Sound)

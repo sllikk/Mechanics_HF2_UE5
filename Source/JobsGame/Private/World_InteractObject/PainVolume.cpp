@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY(LogPainCausing)
 APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 	:Super(ObjectInitializer)
 {
-
+	
 	bPainCausing = true;
 	DamageType = UDamageType::StaticClass();
 	DamagePerSec = 2.0f;
@@ -19,7 +19,7 @@ APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 
 	const FSoftObjectPath FindParticle(TEXT("/Game/VFX/Particles/Fire/P_Fire_Big"));	
 	UParticleSystem* ParticleSystem = nullptr;
-
+	
 	if (FindParticle.IsValid())
 	{
 		ParticleSystem = Cast<UParticleSystem>(FindParticle.TryLoad());
@@ -32,10 +32,8 @@ APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 	{
 		UE_LOG(LogPainCausing, Warning, TEXT("Error find: %s"), *FindParticle.ToString())
 	}
-
 	
 }
-
 
 void APainVolume::PostInitializeComponents()
 {
@@ -67,7 +65,7 @@ void APainVolume::BeginPlay()
 	Super::BeginPlay();
 	
 	TArray<FLoadSound> ResourceToLoad = {
-	FLoadSound{TEXT("/Game/Sound/Sound_InteractObj/Cue/Pain_Damage_Cue"), nullptr},
+	FLoadSound{TEXT("/Game/Sound/Sound_InteractObj/Cue/Pain_Causing_Cue"), nullptr},
 	FLoadSound{TEXT("/Game/Sound/Sound_InteractObj/Cue/fire_loop_Cue"), nullptr}
 	};
 	for (FLoadSound& Resource : ResourceToLoad)
