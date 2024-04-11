@@ -41,12 +41,6 @@ UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Category = HealthComponent, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UHealthComponent> HealthComponent;
-
-	UPROPERTY(EditAnywhere, Category = CostumeComponent, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCostumeComponent> CostumeComponent;
 	
 	UPROPERTY(EditAnywhere, Category = PhysicsHandleComponent, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;

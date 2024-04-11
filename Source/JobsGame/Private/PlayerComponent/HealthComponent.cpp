@@ -12,11 +12,11 @@ UHealthComponent::UHealthComponent()
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
-
 	
 	m_MaxHealth = 100;
 	m_CurrentHealth = m_MaxHealth;
-
+	
+	
 }
 
 
@@ -37,13 +37,7 @@ void UHealthComponent::BeginPlay()
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	if (GEngine)
-	{
-		FString CurrentHealth = FString::Printf(TEXT("Health: %2.f"), m_CurrentHealth);
-		GEngine->AddOnScreenDebugMessage(1, 20.0f, FColor::Yellow, CurrentHealth);
-	}
-
+	
 }
 
 

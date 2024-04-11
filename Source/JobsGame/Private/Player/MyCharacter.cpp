@@ -57,10 +57,7 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
-
-	// ActorComponents
-	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
-	CostumeComponent = CreateDefaultSubobject<UCostumeComponent>(TEXT("CostumeComponent"));
+	
 	
 }
 

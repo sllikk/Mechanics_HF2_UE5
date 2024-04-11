@@ -29,7 +29,7 @@ struct FResourceLoad
 	
 
 
-UCLASS()
+UCLASS(Config=Game, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -44,6 +44,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaxHealth)
 	float m_MaxHealth;
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=INTCurrentHealth)
+	//int32 CurrentHealth;
+	
+	
 protected:
 	
 	virtual void BeginPlay() override;
