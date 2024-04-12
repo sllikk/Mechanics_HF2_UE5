@@ -3,7 +3,7 @@
 #include "WorldActors/BatteryKit.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
-#include "PlayerComponent/CostumeComponent.h"
+#include "PlayerComponent/Suit.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -28,7 +28,7 @@ ABatteryKit::ABatteryKit()
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BatteryKit"));
 		MeshComponent->SetStaticMesh(StaticMesh);
 		
-		MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
+		MeshComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
 		SetRootComponent(MeshComponent);	
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 		CollisionSphere->InitSphereRadius(110.0f);
@@ -71,13 +71,13 @@ void ABatteryKit::BeginPlay()
 
 void ABatteryKit::NotifyActorBeginOverlap(AActor* OtherActor)
 {
-	CostumeComponent = Cast<UCostumeComponent>(OtherActor->GetComponentByClass(UCostumeComponent::StaticClass()));
+	SuitComponent = Cast<USuitComponent>(OtherActor->GetComponentByClass(USuitComponent::StaticClass()));
 	
-		if (CostumeComponent != nullptr)
+		if (SuitComponent != nullptr)
 		{
-			if (CostumeComponent->m_CurrentChargerCostume < CostumeComponent->m_MaxChargerCostume)
+			if (SuitComponent->m_CurrentChargerCostume < SuitComponent->m_MaxChargerCostume)
 			{
-				CostumeComponent->RestoreCharger(m_Amounth);
+				SuitComponent->RestoreCharger(m_Amounth);
 				
 				if (SoundPickup != nullptr)
 				{

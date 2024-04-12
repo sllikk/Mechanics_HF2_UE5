@@ -5,19 +5,19 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
-#include "CostumeComponent.generated.h"
+#include "Suit.generated.h"
 class USoundBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCostumeComponent, Log, All);
 
 UCLASS(Config=Game, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class UCostumeComponent : public UActorComponent
+class USuitComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:	
 	
-	UCostumeComponent();
+	USuitComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Charger")
 	float m_CurrentChargerCostume;

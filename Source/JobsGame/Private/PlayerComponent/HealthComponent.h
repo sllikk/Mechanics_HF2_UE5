@@ -44,9 +44,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaxHealth)
 	float m_MaxHealth;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=INTCurrentHealth)
-	//int32 CurrentHealth;
-	
+
 	
 protected:
 	

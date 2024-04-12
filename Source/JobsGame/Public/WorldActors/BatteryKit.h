@@ -7,7 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "BatteryKit.generated.h"
 class UStaticMeshComponent;
-class UCostumeComponent;
+class USuitComponent;
 class USphereComponent;
 class USoundBase;
 
@@ -42,7 +42,7 @@ public:
 
 private:
 
-	TObjectPtr<UCostumeComponent> CostumeComponent;
+	TObjectPtr<USuitComponent> SuitComponent;
 	float m_Amounth;
 
 };

@@ -11,7 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "PlayerComponent/CostumeComponent.h"
+#include "PlayerComponent/Suit.h"
 #include "PlayerComponent/HealthComponent.h"
 
 

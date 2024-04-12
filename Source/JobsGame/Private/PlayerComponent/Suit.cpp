@@ -1,11 +1,11 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PlayerComponent/CostumeComponent.h"
+#include "PlayerComponent/Suit.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogCostumeComponent);
 
-UCostumeComponent::UCostumeComponent()
+USuitComponent::USuitComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
@@ -13,34 +13,29 @@ UCostumeComponent::UCostumeComponent()
 	m_CurrentChargerCostume = m_MaxChargerCostume;
 
 	
+	
 }
 
 
-void UCostumeComponent::BeginPlay()
+void USuitComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (AActor* Owner = GetOwner())
 	{
-		Owner->OnTakeAnyDamage.AddDynamic(this, &UCostumeComponent::TakeDamage);
+		Owner->OnTakeAnyDamage.AddDynamic(this, &USuitComponent::TakeDamage);
 	}
 }
 
 
-void UCostumeComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void USuitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (GEngine)
-	{
-		FString Costume = FString::Printf(TEXT("Costume: %2.f"), m_CurrentChargerCostume);
-		GEngine->AddOnScreenDebugMessage(2, 20.0f, FColor::Yellow, Costume);
-	}
-
 }
 
 
-void UCostumeComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+void USuitComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	if (m_MaxChargerCostume < 0 || m_blsDischargerCostume)
 	{
@@ -57,7 +52,7 @@ void UCostumeComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDa
 }
 
 
-bool UCostumeComponent::RestoreCharger(float Amounth)
+bool USuitComponent::RestoreCharger(float Amounth)
 {
 	m_CurrentChargerCostume += Amounth;
 	m_CurrentChargerCostume = FMath::Min(m_CurrentChargerCostume, m_MaxChargerCostume);
@@ -66,7 +61,7 @@ bool UCostumeComponent::RestoreCharger(float Amounth)
 
 }
 
-void UCostumeComponent::CostumeDischarged()
+void USuitComponent::CostumeDischarged()
 {
 	m_blsDischargerCostume = true;
 	
