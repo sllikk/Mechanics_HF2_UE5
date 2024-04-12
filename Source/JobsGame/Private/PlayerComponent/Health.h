@@ -10,6 +10,7 @@ class USoundBase;
 class AMyCharacter;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
 
 // Load Resource
 USTRUCT()
@@ -53,10 +54,11 @@ protected:
 public:	
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
+	
 	UPROPERTY(EditAnywhere, Category = "Audio")
-	TArray<USoundBase*> SoundBase;       
+	TArray<USoundBase*> HealthSound;       
 
+	
 public:
 
 	UFUNCTION(Blueprintable)
@@ -69,7 +71,11 @@ public:
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
 		class AController* InstigatedBy, AActor* DamageCauser);
 
+	// unique responses to different damage
+	UFUNCTION(Blueprintable)
+	FORCEINLINE void SoundActiviti(float Damage);
 
+	
 private:
 
 	bool m_blsDead;

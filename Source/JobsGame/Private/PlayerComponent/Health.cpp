@@ -7,6 +7,7 @@
 #include "Player/MyCharacter.h"
 
 DEFINE_LOG_CATEGORY(LogHeathComponent);
+DEFINE_LOG_CATEGORY(LogHeathResource);
 
 UHealthComponent::UHealthComponent()
 {
@@ -16,7 +17,40 @@ UHealthComponent::UHealthComponent()
 	m_MaxHealth = 100;
 	m_CurrentHealth = m_MaxHealth;
 
-	
+
+	// Load Resource sound for health
+	TArray<FResourceLoad> ResourceToLoad = {
+
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/deactivated_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/heat_damage_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/major_fracture_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/minor_fracture_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/morphine_shot_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/near_death_Cue"),nullptr},	
+	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/no_pulce_Cue"),nullptr},	
+	};
+	for (FResourceLoad& Resource : ResourceToLoad)
+	{
+		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
+		if (Resource.LoadResource)
+		{
+			UE_LOG(LogHeathResource, Warning, TEXT("Load: %s"), *Resource.ResourcePath)
+		}
+		else
+		{
+			UE_LOG(LogHeathResource, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
+		}
+	}
+	for (const FResourceLoad& Resource : ResourceToLoad)
+	{
+		USoundBase* LoadSound = Cast<USoundBase>(Resource.LoadResource);
+
+		if (LoadSound != nullptr)
+		{
+			HealthSound.Add(LoadSound);
+		}	
+	}
 }
 
 
@@ -43,6 +77,8 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+
+	// Base Take damage
 	if (m_MaxHealth < 0 || m_blsDead)
 	{
 		return;
@@ -54,6 +90,13 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 	{
 		IsDead();
 	}
+
+	
+
+
+
+
+
 }
 
 
