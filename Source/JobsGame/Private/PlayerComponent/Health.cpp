@@ -15,7 +15,7 @@ UHealthComponent::UHealthComponent()
 	
 	m_MaxHealth = 100;
 	m_CurrentHealth = m_MaxHealth;
-	
+
 	
 }
 
