@@ -3,7 +3,7 @@
 #include "WorldActors/HealthKit.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
-#include "PlayerComponent/HealthComponent.h"
+#include "PlayerComponent/Health.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Kismet/GameplayStatics.h"
 

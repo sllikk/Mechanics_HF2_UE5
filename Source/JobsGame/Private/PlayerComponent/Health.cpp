@@ -1,6 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 \
-#include "PlayerComponent/HealthComponent.h"
+#include "PlayerComponent/Health.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"

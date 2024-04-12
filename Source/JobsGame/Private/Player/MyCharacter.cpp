@@ -12,7 +12,7 @@
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "PlayerComponent/Suit.h"
-#include "PlayerComponent/HealthComponent.h"
+#include "PlayerComponent/Health.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)

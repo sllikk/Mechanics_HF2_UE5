@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
-#include "HealthComponent.generated.h"
+#include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
 
