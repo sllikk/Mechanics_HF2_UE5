@@ -75,11 +75,11 @@ public:
 
 protected:
 
-	void FireDamage(float Damage, FDamageTypeData& DamageTypeData);
-	void ElectricalDamage(float Damage, FDamageTypeData& DamageTypeData);
-	void FallDamage(float Damage, FDamageTypeData& DamageTypeData);
-	void PhysicsDamage(float Damage, FDamageTypeData& DamageTypeData);
-	void ExplosionDamage(float Damage, FDamageTypeData& DamageTypeData);
+	void FireDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	void ElectricalDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	void ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	
 private:
 

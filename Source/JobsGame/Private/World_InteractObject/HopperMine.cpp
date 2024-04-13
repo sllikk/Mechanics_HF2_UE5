@@ -5,9 +5,11 @@
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
+#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "WorldActors/Door.h"
 #include "Particles/ParticleSystem.h"
+#include "Property/CustomDamageType.h"
 
 // LOG TEST
 
@@ -221,7 +223,7 @@ void AHopperMine::ActivateMine()
  
 		HopperMeshComponent->SetSimulatePhysics(true);
 		HopperMeshComponent->SetMassOverrideInKg(NAME_None, 120, true);
-		const float ImpulseStrengh = 800.0f;
+		const float ImpulseStrengh = 900.0f;
 
 		HopperMeshComponent->AddImpulse(FVector(0,0, 1) * ImpulseStrengh, NAME_None, true);
 		AudioComponent[3]->Play();
@@ -234,14 +236,31 @@ void AHopperMine::ActivateMine()
 
 void AHopperMine::Explode()
 {
+	 
+
+
 	
 	if (MineSound.IsValidIndex(3) && MineSound.IsValidIndex(4))
 	{
 		if (AudioComponent[4] != nullptr)
 		{
 			AudioComponent[4]->Play();
-			UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
+
+			UCustomDamageType* CustomDamage = NewObject<UCustomDamageType>();
+			if (CustomDamage)
+			{
+				CustomDamage->DamageType = EDamageType::DMG_EXPLOSION;
+				FDamageTypeData DataDamage = CustomDamage->GetDamageTypeData();
+				m_RadiusDamage *= DataDamage.DamageMultiplayer; 
+				TArray<AActor*> IgnoreActors;
+				UGameplayStatics::ApplyRadialDamage(this, m_RadiusDamage, GetActorLocation(), m_RadiusExplosion, CustomDamage->GetClass(), IgnoreActors, this, GetInstigatorController());
+				UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
+
+			}
+
+
 			Destroy();
+			
 		}
 	}
 }

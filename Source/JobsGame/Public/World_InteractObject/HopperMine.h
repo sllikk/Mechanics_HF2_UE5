@@ -111,7 +111,7 @@ private:
 	
 	bool blsActivate;
 	FTimerHandle TimerHandle;
-
-
+	float m_RadiusDamage = 2; 
+	float m_RadiusExplosion = 400;
 };
 

@@ -77,6 +77,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+
 	const UCustomDamageType* CustomDamage = Cast<const UCustomDamageType>(DamageType);
 
 	if (CustomDamage)
@@ -104,26 +105,19 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 			break;
 	
 		}
-
-
+		
 	}
 
-		
-	// Base Take damage
 	if (m_MaxHealth < 0 || m_blsDead)
 	{
 		return;
 	}
-
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
-
+	
 	if (m_CurrentHealth <= 0)
 	{
 		IsDead();
 	}
-
-
-
+	
 }
 
 
@@ -136,24 +130,46 @@ void UHealthComponent::IsDead()
 }
 
 
-void UHealthComponent::FireDamage(float Damage, FDamageTypeData& DamageTypeData)
+void UHealthComponent::FireDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
+	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Fire" ))		
 }
 
-void UHealthComponent::ElectricalDamage(float Damage, FDamageTypeData& DamageTypeData)
+void UHealthComponent::ElectricalDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
+	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Electrical" ))		
+
 }
 
-void UHealthComponent::FallDamage(float Damage, FDamageTypeData& DamageTypeData)
+void UHealthComponent::FallDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
+	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Fall" ))		
+
 }
 
-void UHealthComponent::PhysicsDamage(float Damage, FDamageTypeData& DamageTypeData)
+
+void UHealthComponent::PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
+	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Physics" ))		
+	
 }
 
-void UHealthComponent::ExplosionDamage(float Damage, FDamageTypeData& DamageTypeData)
+
+void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
+	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Explosion"))		
+	
+
 }
 
 

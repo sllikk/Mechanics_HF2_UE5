@@ -4,7 +4,9 @@
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Property/CustomDamageType.h"
 
+class UCustomDamageType;
 DEFINE_LOG_CATEGORY(LogPainCausing)
 
 APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
@@ -13,7 +15,7 @@ APainVolume::APainVolume(const FObjectInitializer& ObjectInitializer)
 	
 	bPainCausing = true;
 	DamageType = UDamageType::StaticClass();
-	DamagePerSec = 2.0f;
+	DamagePerSec = 1.0f;
 	bEntryPain = true;
 	PainInterval = 1.0f;
 
@@ -106,11 +108,25 @@ void APainVolume::CausePainTo(AActor* Other)
 
 	if (DamagePerSec > 0.f)
 	{
-		TSubclassOf<UDamageType> DmgTypeClass = DamageType ? *DamageType : UDamageType::StaticClass();
-		Other->TakeDamage(DamagePerSec*PainInterval, FDamageEvent(DmgTypeClass), DamageInstigator, this);
+		UCustomDamageType* CustomDamage = NewObject<UCustomDamageType>();
+		if (CustomDamage)
+		{
+			CustomDamage->DamageType = EDamageType::DMG_FIRE;
+			FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();
+			UGameplayStatics::ApplyDamage(Other, DamagePerSec * PainInterval, DamageInstigator, this, CustomDamage->GetClass());
+			UE_LOG(LogCustomDamage, Warning, TEXT("Type %d with multiplier %f"), static_cast<int32>(CustomDamage->DamageType), DamageTypeData.DamageMultiplayer);
+
+			
+		}
+		else
+		{
+			UE_LOG(LogCustomDamage, Error, TEXT("Failed to create CustomDamage object"));
+		}
+
+
 	}
-	
 }
+
 
 void APainVolume::PainTimer()
 {

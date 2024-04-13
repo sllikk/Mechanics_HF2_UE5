@@ -19,7 +19,8 @@ struct FDamageTypeData
 	UPROPERTY(Blueprintable)
 	float EffectDuration;
 
-	FDamageTypeData(){};
+	FDamageTypeData(){}
+
 	FDamageTypeData(float DamageMultiplayer, float EffectDuration)
 	: DamageMultiplayer(DamageMultiplayer), EffectDuration(EffectDuration){}
 
