@@ -5,10 +5,11 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
+#include "Property/CustomDamageType.h"
 #include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
-
+class UCustomDamageType;
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
 
@@ -54,7 +55,7 @@ protected:
 public:	
 	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	
+
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	TArray<USoundBase*> HealthSound;       
 
@@ -67,14 +68,18 @@ public:
 	UFUNCTION(Blueprintable)
 	void IsDead();
 	
-	UFUNCTION()
-	virtual void TakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
-		class AController* InstigatedBy, AActor* DamageCauser);
-
-	// unique responses to different damage
 	UFUNCTION(Blueprintable)
-	void SoundActiviti(float Damage);
+	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	                        class AController* InstigatedBy, AActor* DamageCauser);
 
+
+protected:
+
+	void FireDamage(float Damage, FDamageTypeData& DamageTypeData);
+	void ElectricalDamage(float Damage, FDamageTypeData& DamageTypeData);
+	void FallDamage(float Damage, FDamageTypeData& DamageTypeData);
+	void PhysicsDamage(float Damage, FDamageTypeData& DamageTypeData);
+	void ExplosionDamage(float Damage, FDamageTypeData& DamageTypeData);
 	
 private:
 
