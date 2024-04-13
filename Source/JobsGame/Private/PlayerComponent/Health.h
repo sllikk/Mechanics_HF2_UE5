@@ -73,7 +73,7 @@ public:
 
 	// unique responses to different damage
 	UFUNCTION(Blueprintable)
-	FORCEINLINE void SoundActiviti(float Damage);
+	void SoundActiviti(float Damage);
 
 	
 private:

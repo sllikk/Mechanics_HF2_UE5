@@ -99,6 +99,10 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 
 }
 
+void UHealthComponent::SoundActiviti(float Damage)
+{
+}
+
 
 void UHealthComponent::IsDead()
 {
