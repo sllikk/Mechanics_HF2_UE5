@@ -8,6 +8,7 @@
 class UDamageType;
 class AController;
 class USoundBase;
+class UCustomDamage;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogPainCausing, Log, All);
 
@@ -47,7 +48,11 @@ public:
 protected:
 
 	void CausePainTo(class AActor* Other);
+
 	FTimerHandle TimerHandle_PainTimer;
+
+	UPROPERTY()
+	UCustomDamage* CustomDamage;	
 	
 public:
 

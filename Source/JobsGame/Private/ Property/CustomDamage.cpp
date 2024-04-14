@@ -15,6 +15,7 @@ UCustomDamage::UCustomDamage()
 	DamageData.Add(EDamageType::DMG_PHYSICS, FDamageTypeData{5.0f, 0.0f});
 	DamageData.Add(EDamageType::DMG_EXPLOSION, FDamageTypeData{30.0f, 0.0f});
 	
+
 }
 
 // Get data for the current damage type

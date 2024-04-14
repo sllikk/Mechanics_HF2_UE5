@@ -48,10 +48,11 @@ class JOBSGAME_API UCustomDamage : public UDamageType
 
 
 public:
+
 	UCustomDamage();
 
 public:
-
+	
 	// Get data for the current damage type
 	FDamageTypeData GetDamageTypeData() const;
 	

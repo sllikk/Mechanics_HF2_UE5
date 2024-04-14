@@ -1,7 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 \
 #include "PlayerComponent/Health.h"
+#include " Property/CustomDamage.h"
 
+class UCustomDamage;
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
@@ -30,13 +32,9 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 	for (FResourceLoad& Resource : ResourceToLoad)
 	{
 		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
-		if (Resource.LoadResource)
+		if (!Resource.LoadResource)
 		{
-			UE_LOG(LogHeathResource, Warning, TEXT("Load: %s"), *Resource.ResourcePath)
-		}
-		else
-		{
-			UE_LOG(LogHeathResource, Warning, TEXT("Error Loaded: %s"), *Resource.ResourcePath)
+			UE_LOG(LogHeathResource, Warning, TEXT("Error Load: %s"), *Resource.ResourcePath)	
 		}
 	}
 	for (const FResourceLoad& Resource : ResourceToLoad)
@@ -70,11 +68,11 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
-/*
+
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 
-	const UCustomDamageType* CustomDamage = Cast<const UCustomDamageType>(DamageType);
+	const UCustomDamage* CustomDamage = Cast<const UCustomDamage>(DamageType);
 
 	if (CustomDamage)
 	{
@@ -166,7 +164,7 @@ void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& Dama
 	
 
 }
-*/
+
 
 bool UHealthComponent::RestoreHealth(float HealthAmount)
 {

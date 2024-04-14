@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "World_InteractObject/PainVolume.h"
+#include " Property/CustomDamage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 
@@ -106,7 +107,17 @@ void APainVolume::CausePainTo(AActor* Other)
 
 	if (DamagePerSec > 0.f)
 	{
-		
+		CustomDamage = NewObject<UCustomDamage>();
+		if (CustomDamage)
+		{
+			CustomDamage->DamageType = EDamageType::DMG_FIRE;
+			FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();
+			CustomDamage->Da
+			
+			UE_LOG(LogCustomDamage, Warning, TEXT("Of type damage %d with multiplier %f"), static_cast<int32>(CustomDamage->DamageType), DamageTypeData.DamageMultiplayer);	
+
+		}
+	
 	}
 
 	else
