@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/DamageType.h"
-#include "CustomDamageType.generated.h"
+#include "CustomDamage.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCustomDamage, Log, All);
 
 // Struct Damage Setting 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FDamageTypeData
 {
 	GENERATED_BODY()
@@ -27,7 +27,7 @@ struct FDamageTypeData
 };
 
 // damage type
-UENUM(Blueprintable)
+UENUM(BlueprintType)
 enum class EDamageType : uint8
 {
 	DMG_FIRE			UMETA(DisplayName = "FireDamage"),	
@@ -42,28 +42,26 @@ enum class EDamageType : uint8
 
 
 UCLASS()
-class UCustomDamageType : public UDamageType
+class JOBSGAME_API UCustomDamage : public UDamageType
 {
 	GENERATED_BODY()
 
-	
-public:
-	
-	UCustomDamageType();
 
 public:
+	UCustomDamage();
+
+public:
+
 	// Get data for the current damage type
 	FDamageTypeData GetDamageTypeData() const;
 	
-		// Type Damage
-    	UPROPERTY(EditAnywhere, Blueprintable, Category = "Damage")
-    	EDamageType DamageType;
+	// Type Damage
+	UPROPERTY(EditAnywhere, Blueprintable, Category = "Damage")
+	EDamageType DamageType;
     
-    	//Dictionary for storing data for each damage type
-    	UPROPERTY(EditAnywhere, Blueprintable, Category = "Damage")
-    	TMap<EDamageType, FDamageTypeData> DamageData;
-
+	//Dictionary for storing data for each damage type
+	UPROPERTY(EditAnywhere, Blueprintable, Category = "Damage")
+	TMap<EDamageType, FDamageTypeData> DamageData;
 	
-
+	
 };
-

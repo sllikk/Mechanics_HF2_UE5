@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "Property/CustomDamageType.h"
+#include " Property/CustomDamage.h"
 
-DEFINE_LOG_CATEGORY(LogCustomDamage)
+DEFINE_LOG_CATEGORY(LogCustomDamage);
 
-UCustomDamageType::UCustomDamageType()
+UCustomDamage::UCustomDamage()
 {
 	// Initialize the dictionary with default values for each damage type
 	DamageData.Add(EDamageType::DMG_FIRE, FDamageTypeData{1.0f, 0.0f});
@@ -18,7 +18,7 @@ UCustomDamageType::UCustomDamageType()
 }
 
 // Get data for the current damage type
-FDamageTypeData UCustomDamageType::GetDamageTypeData() const
+FDamageTypeData UCustomDamage::GetDamageTypeData() const
 {
 	const FDamageTypeData* Data = DamageData.Find(DamageType);
 	return Data ? *Data: FDamageTypeData();

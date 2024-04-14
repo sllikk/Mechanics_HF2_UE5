@@ -5,11 +5,9 @@
 #include "Components/PointLightComponent.h"
 #include "Player/MyCharacter.h"
 #include "Components/SphereComponent.h"
-#include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
-#include "WorldActors/Door.h"
 #include "Particles/ParticleSystem.h"
-#include "Property/CustomDamageType.h"
+#include "WorldActors/Door.h"
 
 // LOG TEST
 
@@ -236,32 +234,28 @@ void AHopperMine::ActivateMine()
 
 void AHopperMine::Explode()
 {
-	 
-
-
-	
 	if (MineSound.IsValidIndex(3) && MineSound.IsValidIndex(4))
 	{
 		if (AudioComponent[4] != nullptr)
 		{
 			AudioComponent[4]->Play();
-
-			UCustomDamageType* CustomDamage = NewObject<UCustomDamageType>();
-			if (CustomDamage)
-			{
-				CustomDamage->DamageType = EDamageType::DMG_EXPLOSION;
-				FDamageTypeData DataDamage = CustomDamage->GetDamageTypeData();
-				m_RadiusDamage *= DataDamage.DamageMultiplayer; 
-				TArray<AActor*> IgnoreActors;
-				UGameplayStatics::ApplyRadialDamage(this, m_RadiusDamage, GetActorLocation(), m_RadiusExplosion, CustomDamage->GetClass(), IgnoreActors, this, GetInstigatorController());
-				UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
-
-			}
-
-
-			Destroy();
+			/*
+						UCustomDamageType* CustomDamage = NewObject<UCustomDamageType>();
+						if (CustomDamage)
+						{
+							CustomDamage->DamageType = ECustomDamageType::DMG_EXPLOSION;
+							FDamageTypeData DataDamage = CustomDamage->GetDamageTypeData();
+							m_RadiusDamage *= DataDamage.DamageMultiplayer; 
+							TArray<AActor*> IgnoreActors;
+							UGameplayStatics::ApplyRadialDamage(this, m_RadiusDamage, GetActorLocation(), m_RadiusExplosion, CustomDamage->GetClass(), IgnoreActors, this, GetInstigatorController());
+							UGameplayStatics::SpawnEmitterAtLocation(this, ExplosionEffects, GetActorLocation());
 			
-		}
+						}
+			
+			
+						Destroy();
+						
+			*/		}
 	}
 }
 

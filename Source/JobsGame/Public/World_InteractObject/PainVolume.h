@@ -22,7 +22,6 @@ struct FLoadSound
 	TObjectPtr<UObject> LoadResource;
 
 	FLoadSound(){};
-
 	FLoadSound(const FString& NameResource, TObjectPtr<UObject> resource)
 	:ResourcePath(NameResource), LoadResource(resource){}
 };
@@ -48,7 +47,6 @@ public:
 protected:
 
 	void CausePainTo(class AActor* Other);
-
 	FTimerHandle TimerHandle_PainTimer;
 	
 public:

@@ -5,11 +5,12 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
-#include "Property/CustomDamageType.h"
 #include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
 class UCustomDamageType;
+
+
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
 
@@ -38,7 +39,7 @@ class UHealthComponent : public UActorComponent
 
 public:	
 	
-	UHealthComponent();
+	UHealthComponent(const FObjectInitializer& ObjectInitializer);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CurrrentHealth)
 	float m_CurrentHealth;
@@ -65,21 +66,21 @@ public:
 	UFUNCTION(Blueprintable)
 	bool RestoreHealth(float HealthAmount);
 
-	UFUNCTION(Blueprintable)
-	void IsDead();
+	//UFUNCTION(Blueprintable)
+//	void IsDead();
 	
-	UFUNCTION(Blueprintable)
-	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	                        class AController* InstigatedBy, AActor* DamageCauser);
+//	UFUNCTION(Blueprintable)
+//	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+//	                        class AController* InstigatedBy, AActor* DamageCauser);
 
 
 protected:
 
-	void FireDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	void ElectricalDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	void ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData);
+//	void FireDamage(float Damage, const FDamageTypeData& DamageTypeData);
+//	void ElectricalDamage(float Damage, const FDamageTypeData& DamageTypeData);
+//	void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
+//	void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
+//	void ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	
 private:
 

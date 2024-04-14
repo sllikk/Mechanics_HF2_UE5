@@ -1,15 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 \
 #include "PlayerComponent/Health.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Player/MyCharacter.h"
-#include "Property/CustomDamageType.h"
 
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
-UHealthComponent::UHealthComponent()
+UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
+: Super(ObjectInitializer)
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
@@ -54,14 +51,13 @@ UHealthComponent::UHealthComponent()
 }
 
 
-
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
 	if (AActor* Owner = GetOwner())
 	{
-		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
+		//Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
 	UE_LOG(LogHeathComponent, Warning, TEXT("LOAD!!!!!!!!!!"))
 	
@@ -74,7 +70,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
-
+/*
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 
@@ -88,7 +84,7 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 		{
 		case EDamageType::DMG_FIRE:
 			FireDamage(Damage, DamageTypeData);
-		break;
+			break;
 		case EDamageType::DMG_ELECTRIC:
 			ElectricalDamage(Damage, DamageTypeData);
 			break;
@@ -105,7 +101,6 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 			break;
 	
 		}
-		
 	}
 
 	if (m_MaxHealth < 0 || m_blsDead)
@@ -171,7 +166,7 @@ void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& Dama
 	
 
 }
-
+*/
 
 bool UHealthComponent::RestoreHealth(float HealthAmount)
 {
