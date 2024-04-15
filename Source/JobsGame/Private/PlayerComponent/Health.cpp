@@ -1,9 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 \
 #include "PlayerComponent/Health.h"
-#include " Property/CustomDamage.h"
 
-class UCustomDamage;
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
@@ -19,7 +17,6 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
-
 	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"),nullptr},	
 	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/deactivated_Cue"),nullptr},	
 	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/heat_damage_Cue"),nullptr},	
@@ -55,7 +52,7 @@ void UHealthComponent::BeginPlay()
 
 	if (AActor* Owner = GetOwner())
 	{
-		//Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
+		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
 	UE_LOG(LogHeathComponent, Warning, TEXT("LOAD!!!!!!!!!!"))
 	
@@ -71,35 +68,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-
-	const UCustomDamage* CustomDamage = Cast<const UCustomDamage>(DamageType);
-
-	if (CustomDamage)
-	{
-		FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();
-
-		switch (CustomDamage->DamageType)
-		{
-		case EDamageType::DMG_FIRE:
-			FireDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_ELECTRIC:
-			ElectricalDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_FALL:
-			FallDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_PHYSICS:
-			PhysicsDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_EXPLOSION:
-			ExplosionDamage(Damage, DamageTypeData);
-			break;
-		default:
-			break;
 	
-		}
-	}
 
 	if (m_MaxHealth < 0 || m_blsDead)
 	{
@@ -120,48 +89,6 @@ void UHealthComponent::IsDead()
 	
 	UE_LOG(LogHeathComponent, Warning, TEXT("DEAD!!!!!!!"))
 	
-}
-
-
-void UHealthComponent::FireDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Fire" ))		
-}
-
-void UHealthComponent::ElectricalDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Electrical" ))		
-
-}
-
-void UHealthComponent::FallDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Fall" ))		
-
-}
-
-
-void UHealthComponent::PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Physics" ))		
-	
-}
-
-
-void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Explosion"))		
-	
-
 }
 
 
