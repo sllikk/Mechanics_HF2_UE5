@@ -11,8 +11,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "PlayerComponent/Suit.h"
-#include "PlayerComponent/Health.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -24,9 +22,8 @@ AMyCharacter::AMyCharacter()
 {
 	//default settings character movement, mesh and FirstPersonCamera
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
-	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
+	
 	GetCharacterMovement()->MaxAcceleration = m_MaxAcceleration;
-	GetCharacterMovement()->Mass = m_MassCharacter;
 	GetCharacterMovement()->JumpZVelocity = m_JumpHeight;
 	GetCharacterMovement()->GravityScale = m_GravityScale;
 	GetCharacterMovement()->AirControl = m_AirControl;
@@ -37,18 +34,28 @@ AMyCharacter::AMyCharacter()
 	FirstPersonCamera->SetRelativeLocation(FVector(-20.f, 0.f, 80.f)); // Position the camera
 	FirstPersonCamera->bUsePawnControlRotation = true;
 
+	// FleshLight Component for Character
+	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
+	FlashLightComponent->SetupAttachment(FirstPersonCamera);
+	
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
 	Mesh1P->SetOnlyOwnerSee(true);
 	Mesh1P->SetupAttachment(FirstPersonCamera);
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 	
-	// FleshLight Component for Character
-	FlashLightComponent = CreateDefaultSubobject<UFlashLightComponent>(TEXT("FlashLightComponent"));
-	FlashLightComponent->SetupAttachment(FirstPersonCamera);
-
-	//PhysicsHandle forgrab and physics interact 
+	//PhysicsHandle for grab and physics interact 
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
+	
+}
+
+void AMyCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	GetCharacterMovement()->Mass = m_MassCharacter;
+	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
+
 	PhysicsHandle->bSoftAngularConstraint = true;
 	PhysicsHandle->bSoftLinearConstraint = true;
 	PhysicsHandle->bInterpolateTarget = true;
@@ -57,8 +64,6 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
-	
-	
 }
 
 // Destructor 
@@ -79,6 +84,7 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
 }
 
 

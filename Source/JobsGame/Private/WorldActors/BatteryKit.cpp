@@ -65,7 +65,7 @@ void ABatteryKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	MeshComponent->SetMassScale("BatteryKit", 35.0f);
+	MeshComponent->SetMassScale(NAME_None, 35.0f);
 }
 
 

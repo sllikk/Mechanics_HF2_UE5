@@ -69,7 +69,7 @@ void AHealthKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	MeshComponent->SetMassScale("HealthKit", 35.0f);
+	MeshComponent->SetMassScale(NAME_None, 35.0f);
 	
 }
 

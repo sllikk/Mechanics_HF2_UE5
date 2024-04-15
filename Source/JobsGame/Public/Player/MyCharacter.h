@@ -90,9 +90,8 @@ public:
 	
 	AMyCharacter();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	TObjectPtr<UCameraComponent> FirstPersonCamera;
-
+	virtual void PostInitializeComponents() override;
+	
 private:
 
 	virtual ~AMyCharacter() override;
@@ -107,6 +106,8 @@ public:
 
 	// ActorsComponents
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
+	TObjectPtr<UCameraComponent> FirstPersonCamera;
 
 
 
