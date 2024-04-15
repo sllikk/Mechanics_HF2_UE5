@@ -20,6 +20,6 @@ UCustomDamage::UCustomDamage()
 FDamageTypeData UCustomDamage::GetDamageTypeData() const
 {
 	const FDamageTypeData* Data = DataType.Find(DamageType);
-	return Data ? *Data : GetDamageTypeData();
+	return Data ? *Data : FDamageTypeData();
 
 }
