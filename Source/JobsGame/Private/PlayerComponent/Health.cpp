@@ -125,8 +125,7 @@ void UHealthComponent::IsDead()
 
 void UHealthComponent::FireDamage(float Damage, const FDamageTypeData& DamageTypeData)
 {
-	 float FinalDamage = Damage * DamageTypeData.DamageMultiplayer;
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - FinalDamage, 0.0f, m_MaxHealth);
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
 	UE_LOG(LogHeathComponent, Warning, TEXT("Fire" ))		
 }
 
