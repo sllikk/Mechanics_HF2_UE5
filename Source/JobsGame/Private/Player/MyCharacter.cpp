@@ -64,6 +64,8 @@ void AMyCharacter::PostInitializeComponents()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
+	
+	
 }
 
 // Destructor 
@@ -194,7 +196,6 @@ void AMyCharacter::StopCrouch()
 {
 	
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f); //return scale collision how was it
-	//Default UE function 
 	UnCrouch();
 }
 

@@ -2,6 +2,8 @@
 \
 #include "PlayerComponent/Health.h"
 
+#include "CustomType/CustomDamage.h"
+
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
@@ -54,6 +56,7 @@ void UHealthComponent::BeginPlay()
 	{
 		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
+
 	UE_LOG(LogHeathComponent, Warning, TEXT("LOAD!!!!!!!!!!"))
 	
 }
@@ -68,8 +71,36 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
+	const UCustomDamage* CustomDamage = Cast<UCustomDamage>(DamageType);
+
+	if (CustomDamage != nullptr)
+	{
+		 FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();	
+		
+		switch (CustomDamage->DamageType)
+		{
+			case EDamageType::DMG_FIRE:
+			FireDamage(Damage, DamageTypeData);
+			break;	
+		case EDamageType::DMG_ELECTRIC:
+			
+			ElectricDamage(Damage, DamageTypeData);
+			break;
+		case EDamageType::DMG_FALL:
+			FallDamage(Damage, DamageTypeData);
+			break;
+		case EDamageType::DMG_DROWN:
+			DrownDamage(Damage, DamageTypeData);
+			break;
+			default:
+			break;
+		}
+
+		
+	}
 	
 
+	
 	if (m_MaxHealth < 0 || m_blsDead)
 	{
 		return;
@@ -80,6 +111,36 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 		IsDead();
 	}
 	
+}
+
+void UHealthComponent::FireDamage(float Damage, FDamageTypeData& DamageTypeData)
+{
+	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
+	UE_LOG(LogHeathComponent, Warning, TEXT("Fire"))		
+}
+
+void UHealthComponent::ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
+}
+
+void UHealthComponent::FallDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
+}
+
+void UHealthComponent::DrownDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
+}
+
+void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
+}
+
+void UHealthComponent::PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
+}
+
+void UHealthComponent::WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData)
+{
 }
 
 

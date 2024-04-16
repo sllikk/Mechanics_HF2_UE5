@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "CustomType/CustomDamage.h"
 #include "Logging/LogMacros.h"
 #include "Health.generated.h"
 class USoundBase;
@@ -74,7 +75,14 @@ public:
 
 protected:
 
-
+	 void FireDamage(float Damage, FDamageTypeData& DamageTypeData);
+	FORCEINLINE void ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	FORCEINLINE void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	FORCEINLINE void DrownDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	FORCEINLINE void ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	FORCEINLINE void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	FORCEINLINE void WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData);
+	
 	
 private:
 

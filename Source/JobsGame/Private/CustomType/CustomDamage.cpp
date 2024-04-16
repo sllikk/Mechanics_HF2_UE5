@@ -6,7 +6,7 @@ DEFINE_LOG_CATEGORY(LogCustomDamage);
 
 UCustomDamage::UCustomDamage()
 {
-	DataType.Add(EDamageType::DMG_FIRE, FDamageTypeData{1.0f, 0.0f});
+	DataType.Add(EDamageType::DMG_FIRE, FDamageTypeData{2.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_ELECTRIC, FDamageTypeData{1.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_FALL, FDamageTypeData{1.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_DROWN, FDamageTypeData{1.0f, 0.0f});

@@ -31,25 +31,45 @@ AFirePainCausing::AFirePainCausing()
 	{
 		FireParticles = ParticleSystem;
 	}
-	
+
+
 }
 
 
 void AFirePainCausing::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AFirePainCausing::OnDetectionBoxOverlap);
 
-	if (FireParticles != nullptr)
+	// Load sound
+	FSoftObjectPath SoundFind(TEXT("/Game/Sound/Sound_InteractObj/Cue/fire_loop_Cue"));
+	USoundBase* SoundBase = nullptr;
+	if (SoundFind.IsValid())
+	{
+		SoundBase = Cast<USoundBase>(SoundFind.TryLoad());
+	}
+	else
+	{
+		UE_LOG(FirePainCausing, Warning, TEXT("Error find: %s"), *SoundFind.ToString())
+	}
+	if (SoundBase != nullptr)
+	{
+		FireSound = SoundBase;
+	}
+
+	// Sound and particles
+	if (FireParticles != nullptr && FireSound != nullptr)
 	{
 		FireParticles->FloorScale3D = FVector(0.6, 0.6, 0.6);
+		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
 		UGameplayStatics::SpawnEmitterAtLocation(this, FireParticles, GetActorLocation());
 	}
 	
 }
 
 
+// A pain collision
 void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -62,8 +82,8 @@ void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComp
 
 	if (CustomDamage != nullptr)
 	{
-		static float Damage = 1;
-		Damage += DamageTypeData.DamageMultiplayer;
+		
+		float Damage = DamageTypeData.DamageMultiplayer;
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, CustomDamage->StaticClass());
 	}
 	

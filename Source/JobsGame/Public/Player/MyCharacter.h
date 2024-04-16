@@ -105,10 +105,8 @@ public:
 	virtual void Landed(const FHitResult& Hit) override;
 
 	// ActorsComponents
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
-
 
 
 protected:
@@ -180,7 +178,7 @@ private:
 	TObjectPtr<USoundBase> SoundBase;
 	
 	
-	
+	bool blsDoorInteract;
 
 
 };

@@ -8,6 +8,7 @@
 class UBoxComponent;
 class UParticleSystem;
 class UCustomDamage;
+class USoundBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(FirePainCausing, Log, All);
 
@@ -22,6 +23,9 @@ class JOBSGAME_API AFirePainCausing : public AActor
 	UPROPERTY(EditAnywhere, Category = "Particles", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UParticleSystem> FireParticles;
 	
+	UPROPERTY(EditAnywhere, Category = "Sound", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> FireSound;
+
 public:	
 	
 	AFirePainCausing();
