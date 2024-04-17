@@ -11,7 +11,7 @@ UCustomDamage::UCustomDamage(const FObjectInitializer& ObjectInitializer)
 	DataType.Add(EDamageType::DMG_ELECTRIC, FDamageTypeData{1.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_FALL, FDamageTypeData{1.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_DROWN, FDamageTypeData{1.0f, 0.0f});
-	DataType.Add(EDamageType::DMG_EXPLOSION, FDamageTypeData{1.0f, 0.0f});
+	DataType.Add(EDamageType::DMG_EXPLOSION, FDamageTypeData{30.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_PHYSICS, FDamageTypeData{1.0f, 0.0f});
 	DataType.Add(EDamageType::DMG_WEAPON, FDamageTypeData{1.0f, 0.0f});
 }

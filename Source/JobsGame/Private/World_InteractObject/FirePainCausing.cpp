@@ -4,6 +4,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
+#include "Property/CustomDamage.h"
 
 DEFINE_LOG_CATEGORY(FirePainCausing)
 
@@ -72,12 +73,12 @@ void AFirePainCausing::BeginPlay()
 void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-/*
+
 	FString Name = OtherActor->GetName(); 
 	UE_LOG(FirePainCausing, Warning, TEXT("Detected %s"), *Name);
 	
 	CustomDamage = NewObject<UCustomDamage>();
-	CustomDamage->DamageType = EDamageType::DMG_FIRE;
+	CustomDamage->DamageType = EDamageType::DMG_EXPLOSION;
 	const FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();
 
 	if (CustomDamage != nullptr)
@@ -86,7 +87,7 @@ void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComp
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, CustomDamage->StaticClass());
 		UE_LOG(FirePainCausing, Warning, TEXT("Type: %d, damage: %2.f"), static_cast<int32>(CustomDamage->DamageType), DamageTypeData.DamageMultiplayer);
 	}
-*/	
+
 }
 
 void AFirePainCausing::EndPlay(const EEndPlayReason::Type EndPlayReason)

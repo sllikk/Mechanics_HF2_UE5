@@ -7,7 +7,9 @@
 #include "FirePainCausing.generated.h"
 class UBoxComponent;
 class UParticleSystem;
+class UCustomDamage;
 class USoundBase;
+
 
 DECLARE_LOG_CATEGORY_EXTERN(FirePainCausing, Log, All);
 
@@ -43,6 +45,8 @@ public:
 
 private:
 
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UCustomDamage> CustomDamage;
 
 };
 
