@@ -6,7 +6,6 @@
 #include "damage.generated.h"
 
 
-
 /** All available damage types. */
 UENUM(BlueprintType, meta=(ScriptName = "EDamageType"))
 enum class EDamageType
