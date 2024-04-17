@@ -7,9 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "Health.generated.h"
 class USoundBase;
-class UCustomDamage;
 class AMyCharacter;
-struct FDamageTypeData;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
@@ -73,22 +71,7 @@ public:
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	                        class AController* InstigatedBy, AActor* DamageCauser);
 
-
-protected:
-
-	FORCEINLINE void FireDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE void ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE	void DrownDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE void ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE	void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	FORCEINLINE void WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData);
-	
-
 private:
-
-//	UPROPERTY(VisibleAnywhere, Blueprintable)
-//	TObjectPtr<UCustomDamage> CustomDamage;
 
 	bool m_blsDead;
 	

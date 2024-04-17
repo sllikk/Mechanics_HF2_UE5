@@ -77,17 +77,6 @@ void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComp
 	FString Name = OtherActor->GetName(); 
 	UE_LOG(FirePainCausing, Warning, TEXT("Detected %s"), *Name);
 	
-	CustomDamage = NewObject<UCustomDamage>();
-	CustomDamage->DamageType = EDamageType::DMG_EXPLOSION;
-	const FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();
-
-	if (CustomDamage != nullptr)
-	{
-		float Damage = DamageTypeData.DamageMultiplayer;
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, CustomDamage->StaticClass());
-		UE_LOG(FirePainCausing, Warning, TEXT("Type: %d, damage: %2.f"), static_cast<int32>(CustomDamage->DamageType), DamageTypeData.DamageMultiplayer);
-	}
-
 }
 
 void AFirePainCausing::EndPlay(const EEndPlayReason::Type EndPlayReason)
