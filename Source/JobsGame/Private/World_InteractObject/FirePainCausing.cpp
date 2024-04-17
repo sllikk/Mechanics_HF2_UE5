@@ -2,7 +2,6 @@
 
 #include "World_InteractObject/FirePainCausing.h"
 #include "Components/BoxComponent.h"
-#include "CustomType/CustomDamage.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 
@@ -73,6 +72,7 @@ void AFirePainCausing::BeginPlay()
 void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+/*
 	FString Name = OtherActor->GetName(); 
 	UE_LOG(FirePainCausing, Warning, TEXT("Detected %s"), *Name);
 	
@@ -82,11 +82,11 @@ void AFirePainCausing::OnDetectionBoxOverlap(UPrimitiveComponent* OverlappedComp
 
 	if (CustomDamage != nullptr)
 	{
-		
 		float Damage = DamageTypeData.DamageMultiplayer;
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, GetInstigatorController(), this, CustomDamage->StaticClass());
+		UE_LOG(FirePainCausing, Warning, TEXT("Type: %d, damage: %2.f"), static_cast<int32>(CustomDamage->DamageType), DamageTypeData.DamageMultiplayer);
 	}
-	
+*/	
 }
 
 void AFirePainCausing::EndPlay(const EEndPlayReason::Type EndPlayReason)

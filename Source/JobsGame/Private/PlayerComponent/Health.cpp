@@ -2,8 +2,6 @@
 \
 #include "PlayerComponent/Health.h"
 
-#include "CustomType/CustomDamage.h"
-
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
@@ -54,10 +52,8 @@ void UHealthComponent::BeginPlay()
 
 	if (AActor* Owner = GetOwner())
 	{
-		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
+		//Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
-
-	UE_LOG(LogHeathComponent, Warning, TEXT("LOAD!!!!!!!!!!"))
 	
 }
 
@@ -69,84 +65,81 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 
 
-void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
-{
-	const UCustomDamage* CustomDamage = Cast<UCustomDamage>(DamageType);
-
-	if (CustomDamage != nullptr)
-	{
-		 FDamageTypeData DamageTypeData = CustomDamage->GetDamageTypeData();	
-		
-		switch (CustomDamage->DamageType)
-		{
+//void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+//{
+	/*
+			switch (CustomDamage->DamageType)
+			{
 			case EDamageType::DMG_FIRE:
-			FireDamage(Damage, DamageTypeData);
-			break;	
-		case EDamageType::DMG_ELECTRIC:
-			
-			ElectricDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_FALL:
-			FallDamage(Damage, DamageTypeData);
-			break;
-		case EDamageType::DMG_DROWN:
-			DrownDamage(Damage, DamageTypeData);
-			break;
+				FireDamage(Damage, DamageTypeData);
+				break;	
+			case EDamageType::DMG_ELECTRIC:
+				ElectricDamage(Damage, DamageTypeData);
+				break;
+			case EDamageType::DMG_FALL:
+				FallDamage(Damage, DamageTypeData);
+				break;
+			case EDamageType::DMG_DROWN:
+				DrownDamage(Damage, DamageTypeData);
+				break;
 			default:
-			break;
-		}
-
+				break;
+			}
+	
+	
+	}
 		
+	
+		
+		if (m_MaxHealth < 0 || m_blsDead)
+		{
+			return;
+		}
+		
+		if (m_CurrentHealth <= 0)
+		{
+			IsDead();
+		}
 	}
 	
-
 	
-	if (m_MaxHealth < 0 || m_blsDead)
+	void UHealthComponent::FireDamage(float Damage, const FDamageTypeData& DamageTypeData)
 	{
-		return;
+		float FinalDamage = Damage* DamageTypeData.DamageMultiplayer;
+		m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
+		UE_LOG(LogHeathComponent, Warning, TEXT("Fire"))		
 	}
 	
-	if (m_CurrentHealth <= 0)
+	void UHealthComponent::ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData)
 	{
-		IsDead();
 	}
 	
-}
-
-void UHealthComponent::FireDamage(float Damage, FDamageTypeData& DamageTypeData)
-{
-	m_CurrentHealth = FMath::Clamp(m_CurrentHealth - Damage, 0.0f, m_MaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Fire"))		
-}
-
-void UHealthComponent::ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
-void UHealthComponent::FallDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
-void UHealthComponent::DrownDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
-void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
-void UHealthComponent::PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
-void UHealthComponent::WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData)
-{
-}
-
+	void UHealthComponent::FallDamage(float Damage, const FDamageTypeData& DamageTypeData)
+	{
+	}
+	
+	void UHealthComponent::DrownDamage(float Damage, const FDamageTypeData& DamageTypeData)
+	{
+	}
+	
+	void UHealthComponent::ExplosionDamage(float Damage, const FDamageTypeData& DamageTypeData)
+	{
+	}
+	
+	void UHealthComponent::PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData)
+	{
+	}
+	
+	void UHealthComponent::WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData)
+	{
+	}
+	
+	*/
+//}
 
 void UHealthComponent::IsDead()
 {
-	m_blsDead = true;
+	//m_blsDead = true;
 	
 	UE_LOG(LogHeathComponent, Warning, TEXT("DEAD!!!!!!!"))
 	

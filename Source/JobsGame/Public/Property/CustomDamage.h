@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "GameFramework/DamageType.h"
 #include "CustomDamage.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCustomDamage, Log, All);
 
+// DamageType
 UENUM(BlueprintType, meta=(ScriptName = "ECustomDamage"))
 enum class EDamageType
 {
@@ -21,6 +22,7 @@ enum class EDamageType
 	
 };
 
+// DamageProperty
 USTRUCT(BlueprintType)
 struct FDamageTypeData
 {
@@ -41,17 +43,19 @@ struct FDamageTypeData
 	{}
 };
 
-UCLASS(BlueprintType, meta=(ScriptName = "CustomDamage"))
-class JOBSGAME_API UCustomDamage : public UObject
+
+UCLASS(Config=Game, meta=(ScriptName = "CustomDamage"))
+class JOBSGAME_API UCustomDamage : public UDamageType
 {
 	GENERATED_BODY()
 	
-public:
-
-	UCustomDamage();
-
-public:
 	
+public:	
+
+	UCustomDamage(const FObjectInitializer& ObjectInitializer);
+
+public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "DamageType",  meta = (ScriptName = "CustomDamageType"))
 	EDamageType DamageType;
 

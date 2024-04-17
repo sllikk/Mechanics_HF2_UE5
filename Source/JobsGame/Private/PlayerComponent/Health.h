@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "CustomType/CustomDamage.h"
 #include "Logging/LogMacros.h"
 #include "Health.generated.h"
 class USoundBase;
@@ -67,7 +66,7 @@ public:
 
 	UFUNCTION(Blueprintable)
 	void IsDead();
-	
+/*	
 	UFUNCTION()
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	                        class AController* InstigatedBy, AActor* DamageCauser);
@@ -75,7 +74,7 @@ public:
 
 protected:
 
-	 void FireDamage(float Damage, FDamageTypeData& DamageTypeData);
+	FORCEINLINE void FireDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	FORCEINLINE void ElectricDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	FORCEINLINE void FallDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	FORCEINLINE void DrownDamage(float Damage, const FDamageTypeData& DamageTypeData);
@@ -83,11 +82,11 @@ protected:
 	FORCEINLINE void PhysicsDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	FORCEINLINE void WeaponDamage(float Damage, const FDamageTypeData& DamageTypeData);
 	
-	
+
 private:
 
 	bool m_blsDead;
 	
 	
-
+*/
 };
