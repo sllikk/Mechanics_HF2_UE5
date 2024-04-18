@@ -40,18 +40,29 @@ class JOBSGAME_API UCustomDamage : public UDamageType
 public:	
 
 	UCustomDamage(const FObjectInitializer& ObjectInitializer);
-	
-	
 
 public:
-
-
+	
 	FDamageTypeData GetDamageTypeData() const;
 	EDamageType GetCurrentDamageType() const;
 
-	void SetCurrentDamageType(EDamageType TypeDamage);
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE void SetCurrentDamageType(EDamageType TypeDamage);
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE float GetDamage() const;
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE void SetDamage( float Damage );
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE float GetMaxDamage() const;
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE void SetMaxDamage( float MaxDamage );
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE void ScaleDamage( float ScaleAmount );
+	UFUNCTION(BlueprintType, Category="DamageType")
+	FORCEINLINE void AddDamage( float AddAmount );
+	
 
-
+	
 protected:
 
 	UPROPERTY(EditAnywhere)
@@ -59,9 +70,16 @@ protected:
 	UPROPERTY(EditAnywhere,  BlueprintReadOnly, Category = "Damage")
 	TMap<EDamageType, FDamageTypeData> DataType;
 	
+protected:
+
+	float	m_Damage;
+	float	m_DamagePerSec;
+	float	m_MaxDamage;
+	float	m_flBaseDamage;		
 
 
 
+	
 private:
 
 	UFUNCTION()

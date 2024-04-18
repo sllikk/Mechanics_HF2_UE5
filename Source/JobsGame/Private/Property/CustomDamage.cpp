@@ -11,6 +11,9 @@ UCustomDamage::UCustomDamage(const FObjectInitializer& ObjectInitializer)
 
 }
 
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+
 void UCustomDamage::InitialDamageType()
 {
 	DataType.Add(EDamageType::DMG_BURN, FDamageTypeData{0, 0});
@@ -43,15 +46,57 @@ FDamageTypeData UCustomDamage::GetDamageTypeData() const
 	
 }
 
-void UCustomDamage::SetCurrentDamageType(EDamageType TypeDamage)
-{
-	DamageType = TypeDamage;
-}
+//------------------------------------------------------------------------------------
+	//              Func Damage
+//------------------------------------------------------------------------------------
 
 EDamageType UCustomDamage::GetCurrentDamageType() const
 {
 	return DamageType;
 }
 
+void UCustomDamage::SetCurrentDamageType(EDamageType TypeDamage)
+{
+	DamageType = TypeDamage;
+}
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+
+
+float UCustomDamage::GetDamage() const
+{
+	return m_Damage;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetDamage(float Damage)
+{
+	m_Damage = Damage; 
+}
+//------------------------------------------------------------------------------------
+
+float UCustomDamage::GetMaxDamage() const
+{
+	return m_MaxDamage;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetMaxDamage(float MaxDamage)
+{
+	m_MaxDamage = MaxDamage;  
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::ScaleDamage(float ScaleAmount)
+{
+	m_Damage *= ScaleAmount;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::AddDamage(float AddAmount)
+{
+	m_Damage += AddAmount;
+}
 
 
