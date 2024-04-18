@@ -41,14 +41,29 @@ public:
 
 	UCustomDamage(const FObjectInitializer& ObjectInitializer);
 	
-	FDamageTypeData GetDamageTypeData() const;
 	
+
 public:
+
+
+	FDamageTypeData GetDamageTypeData() const;
+	EDamageType GetCurrentDamageType() const;
+
+	void SetCurrentDamageType(EDamageType TypeDamage);
+
+
+protected:
 
 	UPROPERTY(EditAnywhere)
 	EDamageType DamageType;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere,  BlueprintReadOnly, Category = "Damage")
 	TMap<EDamageType, FDamageTypeData> DataType;
 	
-	
+
+
+
+private:
+
+	UFUNCTION()
+	void InitialDamageType();
 };

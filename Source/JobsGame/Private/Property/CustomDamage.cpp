@@ -7,6 +7,12 @@ DEFINE_LOG_CATEGORY(LogCustomDamage)
 UCustomDamage::UCustomDamage(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer), DamageType()
 {
+	InitialDamageType();
+
+}
+
+void UCustomDamage::InitialDamageType()
+{
 	DataType.Add(EDamageType::DMG_BURN, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_FALL, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_CRUSH, FDamageTypeData{0, 0});
@@ -29,11 +35,23 @@ UCustomDamage::UCustomDamage(const FObjectInitializer& ObjectInitializer)
 	DataType.Add(EDamageType::DMG_DROWNRECOVER, FDamageTypeData{0, 0});
 }
 
+
 FDamageTypeData UCustomDamage::GetDamageTypeData() const
 {
 	const FDamageTypeData* Data = DataType.Find(DamageType);
 	return Data ? *Data : FDamageTypeData();
 	
 }
+
+void UCustomDamage::SetCurrentDamageType(EDamageType TypeDamage)
+{
+	DamageType = TypeDamage;
+}
+
+EDamageType UCustomDamage::GetCurrentDamageType() const
+{
+	return DamageType;
+}
+
 
 
