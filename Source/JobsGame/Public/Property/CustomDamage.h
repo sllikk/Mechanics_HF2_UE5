@@ -76,9 +76,6 @@ protected:
 	float	m_DamagePerSec;
 	float	m_MaxDamage;
 	float	m_flBaseDamage;		
-
-
-
 	
 private:
 
