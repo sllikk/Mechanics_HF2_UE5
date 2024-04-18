@@ -28,12 +28,12 @@ enum class EDamageType
     DMG_DROWNRECOVER					UMETA(DisplayName = "DrownRecovery"),											/**< Health increase from drown recovery. */
     DMG_CHEMICAL						UMETA(DisplayName = "ChemicalDamage"),											/**< Chemical damage. */
     DMG_SLOWBURN						UMETA(DisplayName = "SlowBurn"),												/**< Slow burning, just like burning but different rate. */
-    DMG_SKIP_ARMOR						UMETA(DisplayName = "Damage will skip armor checks entirely"),					/**< This damage will skip armor checks entirely. */
+    DMG_SKIP_ARMOR						UMETA(DisplayName = "Damage will skip armor "),									/**< This damage will skip armor checks entirely. */
     DMG_SKIP_RAGDOLL					UMETA(DisplayName = "Damage will not affect ragdolls")					    	/**< This damage will not affect ragdolls. */
 };
 
 
-UCLASS(Config=Game, meta=(ScriptName = "EDamageType"))
+UCLASS(Config=Game, meta=(ScriptName = "CustomDamageType"))
 class JOBSGAME_API Udamage : public UObject
 {
 	GENERATED_BODY()

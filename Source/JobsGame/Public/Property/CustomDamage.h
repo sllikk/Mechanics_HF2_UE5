@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/DamageType.h"
+#include "Shared/damage.h"
 #include "CustomDamage.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCustomDamage, Log, All);
@@ -14,9 +15,9 @@ struct FDamageTypeData
 {
 	GENERATED_BODY()
 	
-	UPROPERTY(Blueprintable)
+	UPROPERTY(BlueprintReadWrite)
 	float DamageMultiplayer; 
-	UPROPERTY(Blueprintable)
+	UPROPERTY(BlueprintReadWrite)
 	float DamageEffects;
 
 	FDamageTypeData()
@@ -39,6 +40,15 @@ class JOBSGAME_API UCustomDamage : public UDamageType
 public:	
 
 	UCustomDamage(const FObjectInitializer& ObjectInitializer);
+	
+	FDamageTypeData GetDamageTypeData() const;
+	
+public:
+
+	UPROPERTY(EditAnywhere)
+	EDamageType DamageType;
+	UPROPERTY(EditAnywhere)
+	TMap<EDamageType, FDamageTypeData> DataType;
 	
 	
 };
