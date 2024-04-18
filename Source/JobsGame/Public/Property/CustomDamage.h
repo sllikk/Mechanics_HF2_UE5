@@ -70,7 +70,7 @@ public:
 	FORCEINLINE void				SetDamageForForceCalc( float flDamage );
 	FORCEINLINE FVector				GetDamagePosition() const;
 	FORCEINLINE void				SetDamagePosition( const FVector &damagePosition );
-	FORCEINLINE	FVector				GetReportedPosition() const;
+	FORCEINLINE FVector				GetReportedPosition() const;
 	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition );
 
 	
