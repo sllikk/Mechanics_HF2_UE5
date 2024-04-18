@@ -73,7 +73,7 @@ public:
 	FORCEINLINE	FVector				GetReportedPosition() const;
 	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition );
 
-	
+	static void                     DebugDamageString(uint8 DamageType, FString& outbuf, int8 outbuflength);
 	
 protected:
 
@@ -98,14 +98,10 @@ protected:
 	AActor*							m_Attacker;
 	UPROPERTY()
 	AActor*							m_Weapon;
-	
 
-
-
-
-	
 private:
 
 	UFUNCTION()
 	void InitialDamageType();
+
 };

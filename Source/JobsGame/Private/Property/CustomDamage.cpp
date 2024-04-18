@@ -173,5 +173,42 @@ void UCustomDamage::SetReportedPosition(const FVector& reportedPosition)
 {
 	m_vecReportedPosition = reportedPosition;
 }
+//------------------------------------------------------------------------------------
+
+static const char * const GS_DebugDamageType[] =
+{
+	"GENERIC",
+	"CRUSH",
+	"BULLET",
+	"SLASH",
+	"BURN",
+	"VEHICLE",
+	"FALL",
+	"ENERGYBEAM",
+	"PREVENT_PHYSICS_FORCE",
+	"DROWN",
+	"PARALYZE",
+	"NERVEGAS",
+	"POISON",
+	"RADIATION",
+	"DROWNRECOVER",
+	"SLOWBURN",
+	"REMOVENORAGDOLL",
+	"PHYSGUN",
+	"PLASMA",
+	"DISSOLVE",
+	"BLAST_SURFACE",
+	"DIRECT",
+	"BUCKSHOT"
+	
+};   
+#define  DAMAGE_TYPE_STR_TABLE_ENTRIES 22 // number of entries in table above
+//------------------------------------------------------------------------------------
+
+
+void UCustomDamage::DebugDamageString(uint8 DamageType, FString& outbuf, int8 outbuflength)
+{
+
+}
 
 
