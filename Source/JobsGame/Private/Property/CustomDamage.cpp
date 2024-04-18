@@ -55,6 +55,8 @@ EDamageType UCustomDamage::GetCurrentDamageType() const
 	return DamageType;
 }
 
+
+
 void UCustomDamage::SetCurrentDamageType(EDamageType TypeDamage)
 {
 	DamageType = TypeDamage;
@@ -63,40 +65,113 @@ void UCustomDamage::SetCurrentDamageType(EDamageType TypeDamage)
 //------------------------------------------------------------------------------------
 //------------------------------------------------------------------------------------
 
+void UCustomDamage::AddDamage(float flAddAmount)
+{
+	m_flDamage += flAddAmount;
+}
+
+
+AActor* UCustomDamage::GetAttack() const
+{	
+	return m_Attacker;
+}
+
+void UCustomDamage::SetAttacker(AActor* pAttacker)
+{
+	m_Attacker = pAttacker;	
+}
+
+//------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------
+
 
 float UCustomDamage::GetDamage() const
 {
-	return m_Damage;
+	return m_flDamage;
 }
 //------------------------------------------------------------------------------------
 
-void UCustomDamage::SetDamage(float Damage)
+void UCustomDamage::SetDamage(float flDamage)
 {
-	m_Damage = Damage; 
+	m_flDamage = flDamage; 
 }
 //------------------------------------------------------------------------------------
 
 float UCustomDamage::GetMaxDamage() const
 {
-	return m_MaxDamage;
+	return m_flMaxDamage;
 }
 //------------------------------------------------------------------------------------
 
-void UCustomDamage::SetMaxDamage(float MaxDamage)
+void UCustomDamage::SetMaxDamage(float flMaxDamage)
 {
-	m_MaxDamage = MaxDamage;  
+	m_flMaxDamage = flMaxDamage;  
 }
 //------------------------------------------------------------------------------------
 
-void UCustomDamage::ScaleDamage(float ScaleAmount)
+void UCustomDamage::ScaleDamage(float flScaleAmount)
 {
-	m_Damage *= ScaleAmount;
+	m_flDamage *= flScaleAmount;
 }
 //------------------------------------------------------------------------------------
 
-void UCustomDamage::AddDamage(float AddAmount)
+void UCustomDamage::SubtractDamage(float flSubtractAmount)
 {
-	m_Damage += AddAmount;
+	m_flDamage -= flSubtractAmount;
+}
+//------------------------------------------------------------------------------------
+
+FVector UCustomDamage::GetDamageForce() const
+{
+	return m_vecDamageForce;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetDamageForce(const FVector& damageForce)
+{
+	m_vecDamageForce = damageForce;	
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::ScaleDamageForce(float flScaleAmount)
+{
+	m_vecDamageForce *= flScaleAmount;	
+}
+//------------------------------------------------------------------------------------
+
+float UCustomDamage::GetDamageForForceCalc() const
+{
+	return m_flDamageForForce;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetDamageForForceCalc(float flDamage)
+{
+	m_flDamageForForce = flDamage;
+}
+//------------------------------------------------------------------------------------
+
+FVector UCustomDamage::GetDamagePosition() const
+{
+	return m_vecDamagePosition; 
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetDamagePosition(const FVector& damagePosition)
+{
+	m_vecDamagePosition = damagePosition;
+}
+//------------------------------------------------------------------------------------
+
+FVector UCustomDamage::GetReportedPosition() const
+{
+	return m_vecReportedPosition;
+}
+//------------------------------------------------------------------------------------
+
+void UCustomDamage::SetReportedPosition(const FVector& reportedPosition)
+{
+	m_vecReportedPosition = reportedPosition;
 }
 
 
