@@ -12,11 +12,13 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 {
 
 	PrimaryComponentTick.bCanEverTick = true;
+
+	// Default Property
+	m_flMaxHealth = 100;
+	m_flHealth = m_flMaxHealth;
 	
-	m_MaxHealth = 100;
-	m_CurrentHealth = m_MaxHealth;
 
-
+	
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
 	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"),nullptr},	
@@ -54,9 +56,14 @@ void UHealthComponent::BeginPlay()
 
 	if (AActor* Owner = GetOwner())
 	{
-		Owner->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	}
 	
+	if (GEngine != nullptr)
+	{
+		FString strHealth = FString::Printf(TEXT("Health: %2.f"), GetHealth());
+		GEngine->AddOnScreenDebugMessage(-1, -10, FColor::White, strHealth);
+	}
+
 }
 
 
@@ -67,35 +74,7 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 }
 
 
+
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	
-	if (m_MaxHealth < 0 || m_blsDead)
-	{
-		return;
-	}
-
-	
-	if (m_CurrentHealth <= 0)
-	{
-		IsDead();
-	}
-}
-	
-
-
-void UHealthComponent::IsDead()
-{
-	m_blsDead = true;
-	UE_LOG(LogHeathComponent, Warning, TEXT("DEAD!!!!!!!"))
-}
-
-
-bool UHealthComponent::RestoreHealth(float HealthAmount)
-{
-	m_CurrentHealth += HealthAmount;
-	m_CurrentHealth = FMath::Min(m_CurrentHealth, m_MaxHealth);
-
-	return m_CurrentHealth < m_MaxHealth;
-	
 }

@@ -39,14 +39,6 @@ public:
 	
 	UHealthComponent(const FObjectInitializer& ObjectInitializer);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = CurrrentHealth)
-	float m_CurrentHealth;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = MaxHealth)
-	float m_MaxHealth;
-
-
-	
 protected:
 	
 	virtual void BeginPlay() override;
@@ -60,20 +52,24 @@ public:
 
 	
 public:
-
-	UFUNCTION(Blueprintable)
-	bool RestoreHealth(float HealthAmount);
-
-	UFUNCTION(Blueprintable)
-	void IsDead();
-
-	UFUNCTION()
+	
+	FORCEINLINE float				GetHealth() const						{ return m_flHealth; }
+	FORCEINLINE float				GetMaxHealth()const						{ return m_flMaxHealth; }
+	FORCEINLINE void				SetHealth(float flHealth)				{ m_flHealth = flHealth; }
+	FORCEINLINE void				SetMaxHealth(float flMaxDamage)			{ m_flMaxHealth = flMaxDamage; }						
+	FORCEINLINE	bool				IsDead() const							{ return m_blsDead; }
+	FORCEINLINE	bool				IsAlive() const							{ return m_blsliveState; }
+			//	bool				RestoreHealth(float HealthAmount);
+	// Take damage Character
 	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	                        class AController* InstigatedBy, AActor* DamageCauser);
 
-private:
+protected:
 
-	bool m_blsDead;
-	
+	bool							 m_blsDead;
+	bool							 m_blsliveState;
+	float							 m_flMaxHealth;
+	UPROPERTY(BlueprintReadOnly, Category= HEALTH)
+	float							 m_flHealth;
 	
 };

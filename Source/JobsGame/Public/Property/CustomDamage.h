@@ -56,22 +56,22 @@ public:
 	// -------------------------------------------------------------------------------------------------- //
 	// Inlines.
 	// -------------------------------------------------------------------------------------------------- //
-	FORCEINLINE float				GetDamage() const										{ return m_flDamage;} 
-	FORCEINLINE void				SetDamage( float flDamage )								{ m_flDamage = flDamage;}
-	FORCEINLINE float				GetMaxDamage() const									{ return m_flMaxDamage;}
-	FORCEINLINE void				SetMaxDamage( float flMaxDamage )						{ m_flMaxDamage = flMaxDamage;}
-	FORCEINLINE void				ScaleDamage( float flScaleAmount )						{ m_flDamage *= flScaleAmount;}
-	FORCEINLINE void				AddDamage( float flScaleAmount )						{ m_flDamage += flScaleAmount;}
-	FORCEINLINE void				SubtractDamage( float flSubtractAmount )				{ m_flDamage -= flSubtractAmount;}
-	FORCEINLINE FVector				GetDamageForce() const									{ return m_vecDamageForce;}
-	FORCEINLINE void				SetDamageForce( const FVector &damageForce )			{ m_vecDamageForce = damageForce;}
-	FORCEINLINE void				ScaleDamageForce( float flScaleAmount )					{ m_vecDamageForce *= flScaleAmount;}
-	FORCEINLINE float				GetDamageForForceCalc() const							{ return m_flDamageForForce;}
-	FORCEINLINE void				SetDamageForForceCalc( float flDamage )					{ m_flDamageForForce = flDamage;}
+	FORCEINLINE float				GetDamage() const										{ return m_flDamage; } 
+	FORCEINLINE void				SetDamage( float flDamage )								{ m_flDamage = flDamage; } 
+	FORCEINLINE float				GetMaxDamage() const									{ return m_flMaxDamage; }
+	FORCEINLINE void				SetMaxDamage( float flMaxDamage )						{ m_flMaxDamage = flMaxDamage; }
+	FORCEINLINE void				ScaleDamage( float flScaleAmount )						{ m_flDamage *= flScaleAmount; }
+	FORCEINLINE void				AddDamage( float flScaleAmount )						{ m_flDamage += flScaleAmount; }
+	FORCEINLINE void				SubtractDamage( float flSubtractAmount )				{ m_flDamage -= flSubtractAmount; }
+	FORCEINLINE FVector				GetDamageForce() const									{ return m_vecDamageForce; }
+	FORCEINLINE void				SetDamageForce( const FVector &damageForce )			{ m_vecDamageForce = damageForce; }
+	FORCEINLINE void				ScaleDamageForce( float flScaleAmount )					{ m_vecDamageForce *= flScaleAmount; }
+	FORCEINLINE float				GetDamageForForceCalc() const							{ return m_flDamageForForce; }
+	FORCEINLINE void				SetDamageForForceCalc( float flDamage )					{ m_flDamageForForce = flDamage; }
 	FORCEINLINE FVector				GetDamagePosition() const								{ return m_vecDamagePosition; }
-	FORCEINLINE void				SetDamagePosition( const FVector &damagePosition )		{ m_vecDamagePosition = damagePosition;}
-	FORCEINLINE FVector				GetReportedPosition() const								{ return m_vecReportedPosition;}
-	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition )	{ m_vecReportedPosition = reportedPosition;}
+	FORCEINLINE void				SetDamagePosition( const FVector &damagePosition )		{ m_vecDamagePosition = damagePosition; }
+	FORCEINLINE FVector				GetReportedPosition() const								{ return m_vecReportedPosition; }
+	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition )	{ m_vecReportedPosition = reportedPosition; }
 
 protected:
 

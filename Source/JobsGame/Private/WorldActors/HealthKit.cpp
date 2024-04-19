@@ -79,9 +79,9 @@ void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (HealthComponent != nullptr)
 	{
-		if (HealthComponent->m_CurrentHealth < HealthComponent->m_MaxHealth)
+		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
 		{
-			HealthComponent->RestoreHealth(m_Amounth);
+		//	HealthComponent->RestoreHealth(m_Amounth);
 			
 			if (SoundPickup != nullptr)
 			{
