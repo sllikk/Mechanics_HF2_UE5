@@ -46,35 +46,33 @@ public:
 	
 	FDamageTypeData GetDamageTypeData() const;
 	EDamageType GetCurrentDamageType() const;
-	void	SetCurrentDamageType(EDamageType TypeDamage);
+	void SetCurrentDamageType(EDamageType TypeDamage);
 
 	// Weapon is the weapon that did the attack
 	// Attacker is the character who originated the attack (like a player or an AI).
-	AActor* GetAttack() const;
-	void SetAttacker(AActor* pAttacker);
+	AActor* GetAttack() const{return m_Attacker;}
+	void SetAttacker(AActor* pAttacker){m_Attacker = pAttacker;}
 
 	// -------------------------------------------------------------------------------------------------- //
 	// Inlines.
 	// -------------------------------------------------------------------------------------------------- //
-	FORCEINLINE float				GetDamage() const;
-	FORCEINLINE void				SetDamage( float flDamage );
-	FORCEINLINE float				GetMaxDamage() const;
-	FORCEINLINE void				SetMaxDamage( float flMaxDamage );
-	FORCEINLINE void				ScaleDamage( float flScaleAmount );
-	FORCEINLINE void				AddDamage( float flScaleAmount );
-	FORCEINLINE void				SubtractDamage( float flSubtractAmount );
-	FORCEINLINE FVector				GetDamageForce() const;
-	FORCEINLINE void				SetDamageForce( const FVector &damageForce );
-	FORCEINLINE void				ScaleDamageForce( float flScaleAmount );
-	FORCEINLINE float				GetDamageForForceCalc() const;
-	FORCEINLINE void				SetDamageForForceCalc( float flDamage );
-	FORCEINLINE FVector				GetDamagePosition() const;
-	FORCEINLINE void				SetDamagePosition( const FVector &damagePosition );
-	FORCEINLINE FVector				GetReportedPosition() const;
-	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition );
+	FORCEINLINE float				GetDamage() const										{ return m_flDamage;} 
+	FORCEINLINE void				SetDamage( float flDamage )								{ m_flDamage = flDamage;}
+	FORCEINLINE float				GetMaxDamage() const									{ return m_flMaxDamage;}
+	FORCEINLINE void				SetMaxDamage( float flMaxDamage )						{ m_flMaxDamage = flMaxDamage;}
+	FORCEINLINE void				ScaleDamage( float flScaleAmount )						{ m_flDamage *= flScaleAmount;}
+	FORCEINLINE void				AddDamage( float flScaleAmount )						{ m_flDamage += flScaleAmount;}
+	FORCEINLINE void				SubtractDamage( float flSubtractAmount )				{ m_flDamage -= flSubtractAmount;}
+	FORCEINLINE FVector				GetDamageForce() const									{ return m_vecDamageForce;}
+	FORCEINLINE void				SetDamageForce( const FVector &damageForce )			{ m_vecDamageForce = damageForce;}
+	FORCEINLINE void				ScaleDamageForce( float flScaleAmount )					{ m_vecDamageForce *= flScaleAmount;}
+	FORCEINLINE float				GetDamageForForceCalc() const							{ return m_flDamageForForce;}
+	FORCEINLINE void				SetDamageForForceCalc( float flDamage )					{ m_flDamageForForce = flDamage;}
+	FORCEINLINE FVector				GetDamagePosition() const								{ return m_vecDamagePosition; }
+	FORCEINLINE void				SetDamagePosition( const FVector &damagePosition )		{ m_vecDamagePosition = damagePosition;}
+	FORCEINLINE FVector				GetReportedPosition() const								{ return m_vecReportedPosition;}
+	FORCEINLINE void				SetReportedPosition( const FVector &reportedPosition )	{ m_vecReportedPosition = reportedPosition;}
 
-	static void                     DebugDamageString(uint8 DamageType, FString& outbuf, int8 outbuflength);
-	
 protected:
 
 	UPROPERTY(EditAnywhere)
