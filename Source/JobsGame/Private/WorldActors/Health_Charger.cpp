@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY(LogHealthCharger);
 // Sets default values
 AHealth_Charger::AHealth_Charger()
 {
- 	 PrimaryActorTick.bCanEverTick = true;
+ 	 PrimaryActorTick.bCanEverTick = false;
 
 	HealthChargerMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
@@ -43,12 +43,20 @@ void AHealth_Charger::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AHealth_Charger::OnBoxBeginOverlap);
 }
 
 
-void AHealth_Charger::Tick(float DeltaTime)
+void AHealth_Charger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::Tick(DeltaTime);
+	Super::EndPlay(EndPlayReason);
 
+}
+
+void AHealth_Charger::OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	FName Name = *OtherActor->GetName();
+	UE_LOG(LogHealthCharger, Warning, TEXT("Overlap: %s"), *Name.ToString())
 }
 

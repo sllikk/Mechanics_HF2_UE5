@@ -34,9 +34,23 @@ protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 public:	
 
-	virtual void Tick(float DeltaTime) override;
-	
+	FORCEINLINE	float			GetMaxCharger() const				{ return m_flMaxCharger; }
+	FORCEINLINE	float			GetCharge() const				    { return m_flCharger; }
+	FORCEINLINE	void			SetMaxCharger(float flChargeMax)	{ m_flMaxCharger = flChargeMax; }
+	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
 
+	UFUNCTION()
+	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);	
+
+	
+protected:
+
+		float		m_flMaxCharger;
+		float		m_flCharger;
+		bool        m_blsDischarged;
+	
 };
