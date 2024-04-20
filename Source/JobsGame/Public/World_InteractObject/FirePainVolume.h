@@ -5,10 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PhysicsVolume.h"
 #include "FirePainVolume.generated.h"
+class UCustomDamage;
 
-/**
- * 
- */
 UCLASS()
 class JOBSGAME_API AFirePainVolume : public APhysicsVolume
 {

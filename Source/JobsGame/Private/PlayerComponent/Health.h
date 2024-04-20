@@ -8,6 +8,7 @@
 #include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
+class UDamageType;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
@@ -27,7 +28,6 @@ struct FResourceLoad
 	FResourceLoad(const FString& InResourcePath, UObject* ObjectLoad)
 		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
 };
-	
 
 
 UCLASS(Config=Game, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
@@ -43,8 +43,8 @@ protected:
 	
 	virtual void BeginPlay() override;
 
-public:	
-	
+public:
+
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
@@ -60,9 +60,6 @@ public:
 	FORCEINLINE	bool				IsDead() const							{ return m_blsDead; }
 	FORCEINLINE	bool				IsAlive() const							{ return m_blsliveState; }
 			//	bool				RestoreHealth(float HealthAmount);
-	// Take damage Character
-	virtual void TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	                        class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
 

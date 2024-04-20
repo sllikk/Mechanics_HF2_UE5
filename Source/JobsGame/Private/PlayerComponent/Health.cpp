@@ -1,7 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "PlayerComponent/Health.h"
-
 #include "Property/CustomDamage.h"
 
 DEFINE_LOG_CATEGORY(LogHeathComponent);
@@ -17,7 +16,6 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 	m_flMaxHealth = 100;
 	m_flHealth = m_flMaxHealth;
 	
-
 	
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
@@ -53,16 +51,7 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AActor* Owner = GetOwner())
-	{
-	}
 	
-	if (GEngine != nullptr)
-	{
-		FString strHealth = FString::Printf(TEXT("Health: %2.f"), GetHealth());
-		GEngine->AddOnScreenDebugMessage(-1, -10, FColor::White, strHealth);
-	}
 
 }
 
@@ -71,10 +60,13 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
+	if (GEngine != nullptr)
+	{
+		FString strHealth = FString::Printf(TEXT("Health: %2.f"), GetHealth());
+		GEngine->AddOnScreenDebugMessage(1, 120, FColor::White, strHealth);
+	}
+	
 }
 
 
 
-void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
-{
-}
