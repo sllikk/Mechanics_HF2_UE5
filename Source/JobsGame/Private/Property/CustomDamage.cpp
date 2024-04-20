@@ -24,7 +24,7 @@ void UCustomDamage::InitialDamageType()
 	DataType.Add(EDamageType::DMG_SLASH, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_POISON, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_ELECTRO, FDamageTypeData{0, 0});
-	DataType.Add(EDamageType::DMG_EXPLODE, FDamageTypeData{0, 0});
+	DataType.Add(EDamageType::DMG_EXPLODE, FDamageTypeData{3, 0});
 	DataType.Add(EDamageType::DMG_GENERIC, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_CHEMICAL, FDamageTypeData{0, 0});
 	DataType.Add(EDamageType::DMG_VEHICLE, FDamageTypeData{0, 0});

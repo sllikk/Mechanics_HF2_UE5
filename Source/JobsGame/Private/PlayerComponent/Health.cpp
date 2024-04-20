@@ -70,3 +70,9 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 
 
+
+
+
+
+
+

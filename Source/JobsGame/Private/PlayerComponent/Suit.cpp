@@ -32,6 +32,12 @@ void USuitComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (GEngine)
+	{
+		FString strSuit = FString::Printf(TEXT("Suit: %2.f"), m_CurrentChargerCostume);	
+		GEngine->AddOnScreenDebugMessage(2, 120, FColor::White, strSuit);
+	}
+	
 }
 
 
