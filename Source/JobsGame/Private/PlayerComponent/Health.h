@@ -58,15 +58,15 @@ public:
 	FORCEINLINE void				SetHealth(float flHealth)				{ m_flHealth = flHealth; }
 	FORCEINLINE void				SetMaxHealth(float flMaxDamage)			{ m_flMaxHealth = flMaxDamage; }						
 	FORCEINLINE	bool				IsDead() const							{ return m_blsDead; }
-	FORCEINLINE	bool				IsAlive() const							{ return m_blsliveState; }
-			//	bool				RestoreHealth(float HealthAmount);
-
+	FORCEINLINE	bool				IsAlive() const							{ return m_blsDead; }
+				bool				RestoreHealth(float HealthAmount);
+	UFUNCTION()
+	void                TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+					  AController* InstigatedBy, AActor* DamageCauser);
 protected:
 
 	bool							 m_blsDead;
-	bool							 m_blsliveState;
 	float							 m_flMaxHealth;
-	UPROPERTY(BlueprintReadOnly, Category= HEALTH)
 	float							 m_flHealth;
 	
 };

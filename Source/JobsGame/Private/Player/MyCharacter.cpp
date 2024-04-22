@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "WorldActors/Health_Charger.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -68,17 +69,13 @@ void AMyCharacter::PostInitializeComponents()
 	
 }
 
-// Destructor 
-AMyCharacter::~AMyCharacter()
-{
-
-}
-
 
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HealthStationTrigger.Broadcast(this);	
+	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -86,7 +83,8 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-
+		
+	
 }
 
 
@@ -167,12 +165,14 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(LookAxisVector->Y);
 	}
 
+
 }
 
 // Function Run for control character and play sound
 void AMyCharacter::Run()
 {
-		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
+	GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
+		
 }
 
 // Function StopRun for character to reduce running speed
@@ -194,7 +194,6 @@ void AMyCharacter::StartCrouch()
 // Crouch 
 void AMyCharacter::StopCrouch()
 {
-	
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f); //return scale collision how was it
 	UnCrouch();
 }
@@ -205,6 +204,7 @@ void AMyCharacter::StopCrouch()
 // Interact Actors
 void AMyCharacter::Interact()
 {
+	
 	if (FirstPersonCamera == nullptr) return;
 	{
 		FHitResult HitResult;
@@ -213,20 +213,27 @@ void AMyCharacter::Interact()
 		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
 		
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
-			{				
-				DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
-				DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
-				DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);				
+		{				
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
+			DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
+			DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);
 
+			
 			//Door Actor for LineTrace 
 			if (ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor()))
 			{
 				DoorWood->Character = this;
 				DoorWood->Interact();
 			}
-			}   
+			if (AHealth_Charger* Charger = Cast<AHealth_Charger>(HitResult.GetActor()))
+			{
+				Charger->Interact();
+			}
+
+
 		}
 	}
+}
 
 
 void AMyCharacter::Landed(const FHitResult& Hit)
@@ -311,7 +318,7 @@ void AMyCharacter::ReleaseComponent()
 // 
 void AMyCharacter::DontInteract()
 {
-
+ 
 }
 
 

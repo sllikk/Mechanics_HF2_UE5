@@ -19,10 +19,7 @@ class JOBSGAME_API AHealth_Charger : public AActor
 	
 	UPROPERTY(VisibleAnywhere, Category="MeshComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> HealthChargerMeshComponent;
-
-	UPROPERTY(VisibleAnywhere, Category="MeshComponent", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> BoxComponent;
-
+	
 	UPROPERTY(VisibleAnywhere, Category="MeshComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> LightCharger;
 	
@@ -36,21 +33,35 @@ protected:
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	virtual void Tick(float DeltaSeconds) override;
+	
 public:	
 
 	FORCEINLINE	float			GetMaxCharger() const				{ return m_flMaxCharger; }
 	FORCEINLINE	float			GetCharge() const				    { return m_flCharger; }
 	FORCEINLINE	void			SetMaxCharger(float flChargeMax)	{ m_flMaxCharger = flChargeMax; }
 	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
-
+				bool            blsCharger;
 	UFUNCTION()
-	void OnBoxBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);	
+	void HealthCharged(float DeltaSecond);
+	void HealthDischarged() const;
+	void Interact();
+	void DebugStation();
 
-	
+
 protected:
 
+	FTimerHandle HealthRestoreTimer;
 		float		m_flMaxCharger;
 		float		m_flCharger;
 		bool        m_blsDischarged;
+
+public:
+
+	UPROPERTY()
+	AMyCharacter* Character;
+
+	UPROPERTY()
+class	UHealthComponent* HealthComponent;
 	
 };

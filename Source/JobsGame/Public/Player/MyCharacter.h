@@ -37,11 +37,12 @@ struct FResourceSound
 
 };
 
+
 UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-	
+
 	UPROPERTY(EditAnywhere, Category = PhysicsHandleComponent, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
 	
@@ -50,6 +51,10 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
+
+	// ActorsComponents
+	UPROPERTY(EditAnywhere, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCameraComponent> FirstPersonCamera;
 	
 	#pragma region INPUT
 
@@ -92,35 +97,26 @@ public:
 
 	virtual void PostInitializeComponents() override;
 	
-private:
-
-	virtual ~AMyCharacter() override;
-	
-public:	
-	
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void Landed(const FHitResult& Hit) override;
-
-	// ActorsComponents
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera)
-	TObjectPtr<UCameraComponent> FirstPersonCamera;
 
 
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
-public:
+	virtual void Landed(const FHitResult& Hit) override;
 
+public:
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTest, AActor*, Actor);
+	FTest HealthStationTrigger;
+
+	
 	//Return object
 	FORCEINLINE	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	FORCEINLINE	UCameraComponent* GetFirstPersonCamera() const { return FirstPersonCamera; }
-
-protected:
 
 #pragma region FUNC_INPUT
 
@@ -137,7 +133,8 @@ protected:
 	void ReleaseComponent();
 	void DontInteract();
 	void TrowObject();
-
+	bool interact;
+	
 	#pragma endregion
 
 private:

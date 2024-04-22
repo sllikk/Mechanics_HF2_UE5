@@ -70,7 +70,7 @@ void AHealthKit::BeginPlay()
 	
 	MeshComponent->SetSimulatePhysics(true);
 	MeshComponent->SetMassScale(NAME_None, 35.0f);
-	
+	 
 }
 
 void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
@@ -81,7 +81,7 @@ void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
 	{
 		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
 		{
-		//	HealthComponent->RestoreHealth(m_Amounth);
+		HealthComponent->RestoreHealth(m_Amounth);
 			
 			if (SoundPickup != nullptr)
 			{
