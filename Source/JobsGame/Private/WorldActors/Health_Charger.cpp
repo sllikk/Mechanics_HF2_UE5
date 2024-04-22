@@ -10,8 +10,8 @@ DEFINE_LOG_CATEGORY(LogHealthCharger);
 // Sets default values
 AHealth_Charger::AHealth_Charger()
 {
- 	 PrimaryActorTick.bCanEverTick = true;
-	
+	PrimaryActorTick.bCanEverTick = true;
+
 	HealthChargerMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	LightCharger = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLightComponent"));
 	const FSoftObjectPath FindMesh(TEXT("/Game/World_InteractObject/HealthStation/health_charger"));
@@ -19,20 +19,19 @@ AHealth_Charger::AHealth_Charger()
 
 	if (FindMesh.IsValid())
 	{
-	     StaticMesh = Cast<UStaticMesh>(FindMesh.TryLoad());
-    }
-    if (StaticMesh != nullptr)
-    {
-		HealthChargerMeshComponent->SetStaticMesh(StaticMesh);			   
-    }
-    else
-    {
+		StaticMesh = Cast<UStaticMesh>(FindMesh.TryLoad());
+	}
+	if (StaticMesh != nullptr)
+	{
+		HealthChargerMeshComponent->SetStaticMesh(StaticMesh);
+	}
+	else
+	{
 		UE_LOG(LogHealthCharger, Warning, TEXT("Error Load: %s"), *FindMesh.ToString());
-    }
+	}
 	RootComponent = HealthChargerMeshComponent;
-	HealthChargerMeshComponent->SetWorldScale3D(FVector(40.0f,40.0f,40.0f));
+	HealthChargerMeshComponent->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
 	LightCharger->SetupAttachment(HealthChargerMeshComponent);
-
 }
 
 
@@ -41,7 +40,7 @@ void AHealth_Charger::BeginPlay()
 	Super::BeginPlay();
 
 	m_flMaxCharger = 50;
-	m_flCharger = m_flMaxCharger;
+	m_flCharger = 10;
 
 }
 
@@ -57,47 +56,29 @@ void AHealth_Charger::Tick(float DeltaSeconds)
 	Super::Tick(DeltaSeconds);
 	
 	DebugStation();
-	HealthCharged(DeltaSeconds);
-
-}
-
-
-void AHealth_Charger::HealthCharged()
-{
-	 HealthComponent = FindComponentByClass<UHealthComponent>();
-	
-	if (HealthComponent != nullptr)
-	{
-		float RestoreHealth = 1.0f;
-
-		if (GetCharge() > 0)
-		{
-			m_flCharger = FMath::Clamp(m_flCharger - RestoreHealth * DeltaSecond, 0.0f ,GetMaxCharger());
-			SetCharger(m_flCharger);
-		}
-		else
-		{
-			HealthDischarged();
-		}
-	}
-}
-
-void AHealth_Charger::HealthDischarged() const
-{
 	
 }
+
+
 
 void AHealth_Charger::Interact()
 {
-	UE_LOG(LogHealthCharger, Warning, TEXT("Interact"));
-	
-
+	 HealthComponent = FindComponentByClass<UHealthComponent>();
+	HealthComponent->RegisterComponent();
 	if (HealthComponent != nullptr)
 	{
-		HealthComponent->RestoreHealth(m_flCharger);
+		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
+		{
+			UE_LOG(LogHealthCharger, Warning, TEXT("Int"));
+			HealthComponent->RestoreHealth(m_flCharger);
+		}
 	}
-}
+	else
+	{
 
+	}
+	
+}
 
 void AHealth_Charger::DebugStation()
 {

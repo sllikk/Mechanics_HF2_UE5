@@ -73,8 +73,7 @@ void AMyCharacter::PostInitializeComponents()
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	HealthStationTrigger.Broadcast(this);	
+	
 	
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{

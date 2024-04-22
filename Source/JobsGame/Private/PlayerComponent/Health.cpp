@@ -73,8 +73,9 @@ bool UHealthComponent::RestoreHealth(float HealthAmount)
 {
 	m_flHealth += HealthAmount;
 	m_flHealth = FMath::Min(m_flHealth, m_flMaxHealth);
-
+	UE_LOG(LogHeathComponent, Warning, TEXT("Restore"))
 	return GetHealth() <= GetMaxHealth();
+	
 }
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,

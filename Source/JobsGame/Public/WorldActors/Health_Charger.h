@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "PlayerComponent/Health.h"
 #include "Health_Charger.generated.h"
 class AMyCharacter;
 class UStaticMeshComponent;
@@ -43,25 +44,21 @@ public:
 	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
 				bool            blsCharger;
 	UFUNCTION()
-	void HealthCharged(float DeltaSecond);
-	void HealthDischarged() const;
-	void Interact();
+	virtual void Interact();
 	void DebugStation();
 
 
 protected:
-
-	FTimerHandle HealthRestoreTimer;
+		FTimerHandle HealthRestoreTimer;
 		float		m_flMaxCharger;
 		float		m_flCharger;
 		bool        m_blsDischarged;
-
+		float  MaxInteractionTime = 1;
+		float	DecreaseRate;
 public:
 
 	UPROPERTY()
 	AMyCharacter* Character;
-
 	UPROPERTY()
-class	UHealthComponent* HealthComponent;
-	
+	TObjectPtr<UHealthComponent> HealthComponent;
 };

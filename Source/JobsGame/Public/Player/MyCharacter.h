@@ -110,9 +110,6 @@ protected:
 	virtual void Landed(const FHitResult& Hit) override;
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FTest, AActor*, Actor);
-	FTest HealthStationTrigger;
-
 	
 	//Return object
 	FORCEINLINE	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
