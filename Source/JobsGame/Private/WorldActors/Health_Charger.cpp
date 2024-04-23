@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WorldActors/Health_Charger.h"
-#include "Components/PointLightComponent.h"
+#include "Components/BoxComponent.h"
 #include "Player/MyCharacter.h"
 #include "PlayerComponent/Health.h"
 
@@ -13,7 +13,7 @@ AHealth_Charger::AHealth_Charger()
 	PrimaryActorTick.bCanEverTick = true;
 
 	HealthChargerMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	LightCharger = CreateDefaultSubobject<UPointLightComponent>(TEXT("PointLightComponent"));
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	const FSoftObjectPath FindMesh(TEXT("/Game/World_InteractObject/HealthStation/health_charger"));
 	UStaticMesh* StaticMesh = nullptr;
 
@@ -30,8 +30,9 @@ AHealth_Charger::AHealth_Charger()
 		UE_LOG(LogHealthCharger, Warning, TEXT("Error Load: %s"), *FindMesh.ToString());
 	}
 	RootComponent = HealthChargerMeshComponent;
-	HealthChargerMeshComponent->SetWorldScale3D(FVector(40.0f, 40.0f, 40.0f));
-	LightCharger->SetupAttachment(HealthChargerMeshComponent);
+	HealthChargerMeshComponent->SetWorldScale3D(FVector(25,25,25));
+	BoxComponent->SetupAttachment(HealthChargerMeshComponent);
+	
 }
 
 
@@ -40,7 +41,10 @@ void AHealth_Charger::BeginPlay()
 	Super::BeginPlay();
 
 	m_flMaxCharger = 50;
-	m_flCharger = 10;
+	m_flCharger = m_flMaxCharger;
+
+	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AHealth_Charger::OnComponentBeginOverlap);
+	// BoxComponent->OnComponentEndOverlap.AddDynamic(this, &AHealth_Charger::OnComponentEndOverlap);
 
 }
 
@@ -61,21 +65,13 @@ void AHealth_Charger::Tick(float DeltaSeconds)
 
 
 
-void AHealth_Charger::Interact()
+void AHealth_Charger::Interact(class AMyCharacter* Character)
 {
-	 HealthComponent = FindComponentByClass<UHealthComponent>();
-	HealthComponent->RegisterComponent();
+	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Character->GetComponentByClass(UHealthComponent::StaticClass()));
 	if (HealthComponent != nullptr)
 	{
-		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
-		{
-			UE_LOG(LogHealthCharger, Warning, TEXT("Int"));
-			HealthComponent->RestoreHealth(m_flCharger);
-		}
-	}
-	else
-	{
-
+		
+		HealthComponent->RestoreHealth(GetCharge());		
 	}
 	
 }
@@ -90,6 +86,14 @@ void AHealth_Charger::DebugStation()
 	
 	
 }
+
+void AHealth_Charger::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	FName Name = *OtherActor->GetName();  
+	UE_LOG(LogHealthCharger, Warning, TEXT("%s"), *OtherActor->GetName())
+	
+}
+
 
 
 

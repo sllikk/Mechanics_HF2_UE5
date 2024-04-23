@@ -217,18 +217,18 @@ void AMyCharacter::Interact()
 			DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
 			DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);
 
-			
 			//Door Actor for LineTrace 
 			if (ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor()))
 			{
 				DoorWood->Character = this;
 				DoorWood->Interact();
 			}
+
+			//THIS DONT WORK
 			if (AHealth_Charger* Charger = Cast<AHealth_Charger>(HitResult.GetActor()))
 			{
-				Charger->Interact();
+				Charger->Interact(this);
 			}
-
 
 		}
 	}
