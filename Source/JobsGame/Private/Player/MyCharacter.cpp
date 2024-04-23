@@ -4,14 +4,13 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "WorldActors/Door.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-#include "WorldActors/Health_Charger.h"
+#include "Shared/interact.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -47,7 +46,8 @@ AMyCharacter::AMyCharacter()
 	
 	//PhysicsHandle for grab and physics interact 
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
-	
+	//RayCastCapsule 
+	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 }
 
 void AMyCharacter::PostInitializeComponents()
@@ -56,7 +56,7 @@ void AMyCharacter::PostInitializeComponents()
 
 	GetCharacterMovement()->Mass = m_MassCharacter;
 	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
-
+	
 	PhysicsHandle->bSoftAngularConstraint = true;
 	PhysicsHandle->bSoftLinearConstraint = true;
 	PhysicsHandle->bInterpolateTarget = true;
@@ -66,7 +66,7 @@ void AMyCharacter::PostInitializeComponents()
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
 	
-	
+
 }
 
 
@@ -198,38 +198,42 @@ void AMyCharacter::StopCrouch()
 }
 
 
-
-
 // Interact Actors
 void AMyCharacter::Interact()
 {
-	
 	if (FirstPersonCamera == nullptr) return;
 	{
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
-		FVector const& Start = FirstPersonCamera->GetComponentLocation();
-		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_LineTraceLength;
-		
-		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, QueryParams))
-		{				
-			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2.0f);
-			DrawDebugPoint(GetWorld(), Start, 20, FColor::Green, false);
-			DrawDebugPoint(GetWorld(), End, 20, FColor::Green, false);
+		QueryParams.AddIgnoredActor(this);
 
-			//Door Actor for LineTrace 
-			if (ADoor* DoorWood = Cast<ADoor>(HitResult.GetActor()))
+		FVector const&  StartLocation = FirstPersonCamera->GetComponentLocation();
+		FVector const&  EndLocation = StartLocation + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;
+
+		FCollisionShape CollisionShape;
+		CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
+
+		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, ECC_Visibility,
+			CollisionShape, QueryParams))
+		{
+			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 2.0f, 0, 2.0f);
+			DrawDebugPoint(GetWorld(), StartLocation, 20, FColor::Red, false, 2.0f);
+			DrawDebugPoint(GetWorld(), EndLocation, 20, FColor::Blue, false, 2.0f);
+			
+			AActor* HitActor = HitResult.GetActor();
+			if (HitActor)
 			{
-				DoorWood->Character = this;
-				DoorWood->Interact();
+				if (HitActor->GetClass()->ImplementsInterface(Uinteract::StaticClass()))
+				{
+					// Создаем указатель на интерфейс IInteract для вызова метода Interact
+					Iinteract* InteractableActor = Cast<Iinteract>(HitActor);
+					if (InteractableActor)
+					{
+						// Вызываем метод Interact объекта, реализующего интерфейс UInteract
+						InteractableActor->Interact(this);
+					}
+				}	
 			}
-
-			//THIS DONT WORK
-			if (AHealth_Charger* Charger = Cast<AHealth_Charger>(HitResult.GetActor()))
-			{
-				Charger->Interact(this);
-			}
-
 		}
 	}
 }

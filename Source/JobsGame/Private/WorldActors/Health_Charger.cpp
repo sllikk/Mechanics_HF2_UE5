@@ -43,8 +43,6 @@ void AHealth_Charger::BeginPlay()
 	m_flMaxCharger = 50;
 	m_flCharger = m_flMaxCharger;
 
-	BoxComponent->OnComponentBeginOverlap.AddDynamic(this, &AHealth_Charger::OnComponentBeginOverlap);
-	// BoxComponent->OnComponentEndOverlap.AddDynamic(this, &AHealth_Charger::OnComponentEndOverlap);
 
 }
 
@@ -64,18 +62,6 @@ void AHealth_Charger::Tick(float DeltaSeconds)
 }
 
 
-
-void AHealth_Charger::Interact(class AMyCharacter* Character)
-{
-	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Character->GetComponentByClass(UHealthComponent::StaticClass()));
-	if (HealthComponent != nullptr)
-	{
-		
-		HealthComponent->RestoreHealth(GetCharge());		
-	}
-	
-}
-
 void AHealth_Charger::DebugStation()
 {
 	const FString strDebug = FString::Printf(TEXT("charger: %2.f"), GetCharge());	
@@ -87,12 +73,17 @@ void AHealth_Charger::DebugStation()
 	
 }
 
-void AHealth_Charger::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AHealth_Charger::Interact(AActor* Actor)
 {
-	FName Name = *OtherActor->GetName();  
-	UE_LOG(LogHealthCharger, Warning, TEXT("%s"), *OtherActor->GetName())
-	
+	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Actor->GetComponentByClass(UHealthComponent::StaticClass()));
+	if (HealthComponent != nullptr)
+	{
+		HealthComponent->RestoreHealth(GetCharge());		
+	}
+
 }
+
+	
 
 
 

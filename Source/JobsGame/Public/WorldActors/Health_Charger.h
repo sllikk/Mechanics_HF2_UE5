@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "PlayerComponent/Health.h"
+#include "Shared/interact.h"
 #include "Health_Charger.generated.h"
 class AMyCharacter;
 class UStaticMeshComponent;
@@ -14,7 +14,7 @@ class UPointLightComponent;
 DECLARE_LOG_CATEGORY_EXTERN(LogHealthCharger, Log, All);
 
 UCLASS(Config=Game)
-class JOBSGAME_API AHealth_Charger : public AActor
+class JOBSGAME_API AHealth_Charger : public AActor, public Iinteract
 {
 	GENERATED_BODY()
 	
@@ -42,17 +42,8 @@ public:
 	FORCEINLINE	float			GetCharge() const				    { return m_flCharger; }
 	FORCEINLINE	void			SetMaxCharger(float flChargeMax)	{ m_flMaxCharger = flChargeMax; }
 	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
-				bool            blsCharger;
-	UFUNCTION()
-	virtual void Interact(class AMyCharacter* Character);
-	void DebugStation();
-
-	UFUNCTION()
-	void OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-
-	//UFUNCTION()
-	//void OnComponentEndOverlap(UPrimitiveComponent* OnComponentEndOverlap, UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	virtual void				Interact(AActor* Actor) override;
+			void				DebugStation();
 
 
 	
@@ -60,12 +51,12 @@ protected:
 
 		FTimerHandle HealthRestoreTimer;
 
-		float		m_flMaxCharger;
-		float		m_flCharger;
-		bool        m_blsDischarged;
-		float       MaxInteractionTime = 1;
-	    float	    DecreaseRate;
-public:
-
+		float			 m_flMaxCharger;
+		float			 m_flCharger;
+		bool			 m_blsDischarged;
+		float			 MaxInteractionTime = 1;
+	    float			 DecreaseRate;
+		bool             blsCharger;
+	
 
 };

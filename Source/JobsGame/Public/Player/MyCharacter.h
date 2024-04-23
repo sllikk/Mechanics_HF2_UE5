@@ -6,6 +6,7 @@
 #include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
 #include "PlayerComponent/FlashLightComponent.h"
+#include "Shared/interact.h"
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
@@ -52,6 +53,9 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RayCast, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UCapsuleComponent> RayCastCapsule;	
+	
 	// ActorsComponents
 	UPROPERTY(EditAnywhere, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
