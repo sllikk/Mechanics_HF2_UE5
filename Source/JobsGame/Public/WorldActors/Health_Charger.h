@@ -40,19 +40,18 @@ public:
 	FORCEINLINE	void			SetMaxCharger(float flChargeMax)	{ m_flMaxCharger = flChargeMax; }
 	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
 	virtual void				Interact(AActor* Actor) override;
-			void				DebugStation();
+			void				DebugStation();	
+			void				StartRestore(AActor* Actor);
+			void				StopRestore();
+			void				RestoreCharge(AActor* Actor);
 
-
-	
-protected:
+private:
 
 		FTimerHandle HealthRestoreTimer;
 
 		float			 m_flMaxCharger;
 		float			 m_flCharger;
 		bool			 m_blsDischarged;
-		float			 MaxInteractionTime = 1;
-	    float			 DecreaseRate;
 		bool             blsCharger;
 	
 

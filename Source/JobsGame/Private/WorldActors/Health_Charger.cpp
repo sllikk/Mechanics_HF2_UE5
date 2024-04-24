@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WorldActors/Health_Charger.h"
-#include "Components/BoxComponent.h"
-#include "Player/MyCharacter.h"
 #include "PlayerComponent/Health.h"
 
 DEFINE_LOG_CATEGORY(LogHealthCharger);
@@ -40,8 +38,6 @@ void AHealth_Charger::BeginPlay()
 
 	m_flMaxCharger = 50;
 	m_flCharger = m_flMaxCharger;
-
-	
 	
 }
 
@@ -50,6 +46,7 @@ void AHealth_Charger::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 
+	GetWorld()->GetTimerManager().ClearTimer( HealthRestoreTimer);
 }
 
 void AHealth_Charger::Tick(float DeltaSeconds)
@@ -65,22 +62,46 @@ void AHealth_Charger::DebugStation()
 {
 	const FString strDebug = FString::Printf(TEXT("charger: %2.f"), GetCharge());	
 	FVector LocationDebug = GetActorLocation();
-	LocationDebug.Z += 225.0f; 
+	LocationDebug.Z += 100.0f; 
 	FColor Color = FColor::White;
 	DrawDebugString(GetWorld(), LocationDebug, strDebug, nullptr, Color, 00, true);
 	
 	
 }
 
+void AHealth_Charger::StartRestore(AActor* Actor)
+{
+	float RestoreInterval = 0.1f;  // Время в секундах между вызовами RestoreCharge
+	GetWorld()->GetTimerManager().SetTimer( HealthRestoreTimer, [this, Actor]() { RestoreCharge(Actor); }, RestoreInterval, true);
+}
+
+void AHealth_Charger::StopRestore()
+{
+	
+}
+
 void AHealth_Charger::Interact(AActor* Actor)
 {
-	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Actor->GetComponentByClass(UHealthComponent::StaticClass()));
-	if (HealthComponent != nullptr)
-	{
-		HealthComponent->RestoreHealth(GetCharge());		
-	}
-
+	StartRestore(Actor);
+	
 }
+
+
+void AHealth_Charger::RestoreCharge(AActor* Actor)
+{
+	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Actor->GetComponentByClass(UHealthComponent::StaticClass()));
+	if (HealthComponent != nullptr && GetCharge() > 0)
+	{
+		float Charger = 1;
+		m_flCharger = FMath::Clamp(m_flCharger - Charger, 0.0f, GetMaxCharger());
+		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
+		{
+			HealthComponent->RestoreHealth(Charger);
+		}
+	}
+	
+}
+
 
 	
 
