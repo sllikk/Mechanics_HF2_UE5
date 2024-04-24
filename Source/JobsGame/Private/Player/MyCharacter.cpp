@@ -11,6 +11,7 @@
 #include "DrawDebugHelpers.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
+#include "Shared/Resourse.h"
 
 
 DEFINE_LOG_CATEGORY(LogCharacter)
@@ -82,7 +83,7 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-		
+	
 	
 }
 

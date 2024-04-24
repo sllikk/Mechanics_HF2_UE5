@@ -2,6 +2,7 @@
 
 #include "PlayerComponent/Health.h"
 #include "Property/CustomDamage.h"
+#include "Shared/Resourse.h"
 
 DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
@@ -9,13 +10,11 @@ DEFINE_LOG_CATEGORY(LogHeathResource);
 UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 : Super(ObjectInitializer)
 {
-
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// Default Property
 	m_flMaxHealth = 100;
 	m_flHealth = m_flMaxHealth;
-	
 	
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
@@ -30,15 +29,15 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 	};
 	for (FResourceLoad& Resource : ResourceToLoad)
 	{
-		Resource.LoadResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
-		if (!Resource.LoadResource)
+		Resource.LoadedResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
+		if (!Resource.LoadedResource)
 		{
 			UE_LOG(LogHeathResource, Warning, TEXT("Error Load: %s"), *Resource.ResourcePath)	
 		}
 	}
 	for (const FResourceLoad& Resource : ResourceToLoad)
 	{
-		USoundBase* LoadSound = Cast<USoundBase>(Resource.LoadResource);
+		USoundBase* LoadSound = Cast<USoundBase>(Resource.LoadedResource);
 
 		if (LoadSound != nullptr)
 		{

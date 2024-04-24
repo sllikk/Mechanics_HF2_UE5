@@ -22,22 +22,6 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All)
 
-// Load Sound resource for Character 
-USTRUCT()
-struct FResourceSound
-{
-	GENERATED_BODY()
-	UPROPERTY(NotBlueprintable)
-	FString  ResourcePath;
-	UPROPERTY(NotBlueprintable)
-	TObjectPtr<UObject> LoadResource;
-
-	FResourceSound() { }	
-	FResourceSound(const FString& InResourcePath, UObject* ObjectLoad)
-		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
-
-};
-
 
 UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter

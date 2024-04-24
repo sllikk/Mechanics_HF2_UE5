@@ -13,23 +13,6 @@ class UDamageType;
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
 
-// Load Resource
-USTRUCT()
-struct FResourceLoad
-{
-	GENERATED_BODY()
-
-	UPROPERTY(NotBlueprintable)
-	FString ResourcePath;
-	UPROPERTY(NotBlueprintable)
-	TObjectPtr<UObject> LoadResource;
-
-	FResourceLoad() { }	
-	FResourceLoad(const FString& InResourcePath, UObject* ObjectLoad)
-		:ResourcePath(InResourcePath), LoadResource(ObjectLoad){}
-};
-
-
 UCLASS(Config=Game, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class UHealthComponent : public UActorComponent
 {
@@ -42,15 +25,13 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
-
-public:
-
+	
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	TArray<USoundBase*> HealthSound;       
 
-	
+
 public:
 	
 	FORCEINLINE float				GetHealth() const						{ return m_flHealth; }
