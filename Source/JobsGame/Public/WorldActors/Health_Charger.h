@@ -20,9 +20,6 @@ class JOBSGAME_API AHealth_Charger : public AActor, public Iinteract
 	
 	UPROPERTY(VisibleAnywhere, Category="MeshComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> HealthChargerMeshComponent;
-
-	UPROPERTY(VisibleAnywhere, Category="MeshComponent", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> BoxComponent;
 	
 public:	
 

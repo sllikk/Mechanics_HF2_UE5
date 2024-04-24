@@ -1,11 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "WorldActors/Door.h"
-#include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
 #include "Player/MyCharacter.h"
 
-DEFINE_LOG_CATEGORY(LOG_LOADING_RESOURCE);
 DEFINE_LOG_CATEGORY(LogDoor);
 
 ADoor::ADoor()
@@ -29,7 +26,7 @@ ADoor::ADoor()
 
 		if (!Resourse.LoadingResource)
 		{
-			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find object !!!!!!!!!"))
+			UE_LOG(LogDoor, Warning, TEXT("Eror find object !!!!!!!!!"))
 		}
 	}	
 	for (const FInfoLoadResourse Resourse : ResourseToLoad)
@@ -67,7 +64,7 @@ void ADoor::BeginPlay()
 		Resourse.LoadingResource = LoadObject<UObject>(nullptr, *Resourse.ResourceLoadPath);
 		if (!Resourse.LoadingResource)
 		{
-			UE_LOG(LOG_LOADING_RESOURCE, Warning, TEXT("Eror find sound object !!!!!!!!!"));
+			UE_LOG(LogDoor, Warning, TEXT("Eror find sound object !!!!!!!!!"));
 		}
 	}
 	for (const FInfoLoadResourse& Resourse : SoundResourceToLoad)
@@ -104,7 +101,7 @@ void ADoor::Tick(float DeltaTime)
 	
 }
 
-void ADoor::Interact()
+void ADoor::Interact(AActor* Actor)
 {
 	UE_LOG(LogDoor, Warning, TEXT("INTERACT!!"));
 	
@@ -120,6 +117,7 @@ void ADoor::Interact()
 	}
 	blsDoorClossed = !blsDoorClossed;
 }
+
 
 void ADoor::OpenDoor(float Value)
 {

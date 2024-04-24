@@ -13,7 +13,6 @@ AHealth_Charger::AHealth_Charger()
 	PrimaryActorTick.bCanEverTick = true;
 
 	HealthChargerMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	const FSoftObjectPath FindMesh(TEXT("/Game/World_InteractObject/HealthStation/health_charger"));
 	UStaticMesh* StaticMesh = nullptr;
 
@@ -31,7 +30,6 @@ AHealth_Charger::AHealth_Charger()
 	}
 	RootComponent = HealthChargerMeshComponent;
 	HealthChargerMeshComponent->SetWorldScale3D(FVector(25,25,25));
-	BoxComponent->SetupAttachment(HealthChargerMeshComponent);
 	
 }
 
@@ -43,7 +41,8 @@ void AHealth_Charger::BeginPlay()
 	m_flMaxCharger = 50;
 	m_flCharger = m_flMaxCharger;
 
-
+	
+	
 }
 
 

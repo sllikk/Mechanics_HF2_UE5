@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Logging/LogMacros.h"
 #include "Components/TimelineComponent.h"
+#include "Shared/interact.h"
 #include "Door.generated.h"
 class UStaticMeshComponent;
 class UBoxComponent;
@@ -14,11 +15,10 @@ class UCurveFloat;
 class AMyCharacter;
 struct FTimeline;
 
-DECLARE_LOG_CATEGORY_EXTERN(LOG_LOADING_RESOURCE, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogDoor, Log, All);
 
 UCLASS()
-class JOBSGAME_API ADoor : public AActor
+class JOBSGAME_API ADoor : public AActor, public Iinteract
 {
 	GENERATED_BODY()
 
@@ -28,8 +28,6 @@ class JOBSGAME_API ADoor : public AActor
 	UPROPERTY(EditInstanceOnly, Category = "StaticMesh", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> DoorFrameComponent;
 
-	//UPROPERTY(EditInstanceOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
-	//TObjectPtr<UBoxComponent> BoxCollision;
 
 	
 public:	
@@ -44,9 +42,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	
-	void Interact();
+	virtual void Interact(AActor* Actor) override;
 
-	TObjectPtr<AMyCharacter> Character;
+	UPROPERTY()
+	AMyCharacter* Character;
 	
 public:	
 	

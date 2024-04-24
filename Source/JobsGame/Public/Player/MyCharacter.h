@@ -134,7 +134,6 @@ public:
 	void ReleaseComponent();
 	void DontInteract();
 	void TrowObject();
-	bool interact;
 	
 	#pragma endregion
 
