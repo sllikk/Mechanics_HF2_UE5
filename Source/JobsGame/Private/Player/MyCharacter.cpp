@@ -23,7 +23,6 @@ AMyCharacter::AMyCharacter()
 {
 	//default settings character movement, mesh and FirstPersonCamera
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
-	
 	GetCharacterMovement()->MaxAcceleration = m_MaxAcceleration;
 	GetCharacterMovement()->JumpZVelocity = m_JumpHeight;
 	GetCharacterMovement()->GravityScale = m_GravityScale;
@@ -217,10 +216,6 @@ void AMyCharacter::Interact()
 		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, ECC_Visibility,
 			CollisionShape, QueryParams))
 		{
-			DrawDebugLine(GetWorld(), StartLocation, EndLocation, FColor::Green, false, 2.0f, 0, 2.0f);
-			DrawDebugPoint(GetWorld(), StartLocation, 20, FColor::Red, false, 2.0f);
-			DrawDebugPoint(GetWorld(), EndLocation, 20, FColor::Blue, false, 2.0f);
-			
 			AActor* HitActor = HitResult.GetActor();
 			if (HitActor)
 			{
@@ -290,20 +285,20 @@ void AMyCharacter::GrabComponent()
 			DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
 			
 			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-
-			if (!ComponentToGrab)return;
-			if (!ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
+			
+			if (!ComponentToGrab && !ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
 			{
 				DontInteract();
 				return;
 			}	
-
-			const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
-			FVector const& CenterOfComponent = Bounds.Origin;
-			FVector const& GrabLocation = CenterOfComponent;
-			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
+			
 			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
 			{
+				const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
+				FVector const& CenterOfComponent = Bounds.Origin;
+				FVector const& GrabLocation = CenterOfComponent;
+				FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
+				
 				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
 			}		
 
