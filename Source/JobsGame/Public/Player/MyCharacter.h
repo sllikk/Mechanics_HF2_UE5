@@ -114,26 +114,26 @@ public:
 	FORCEINLINE void						SetMaxSpeedRun(float fl_MaxSpeedRun)		 	 { m_MaxSpeedRun = fl_MaxSpeedRun; }
 	FORCEINLINE float						GetMaxSpeedCrouch() const						 { return m_MaxSpeedCrouch; }
 	FORCEINLINE void						SetMaxSpeedCrouch(float fl_MaxSpeedCrouch)		 { m_MaxSpeedCrouch = fl_MaxSpeedCrouch; }
-	FORCEINLINE	float						GetMaxAcceleration() const						 { return m_MaxAcceleration; }
-	FORCEINLINE	void						SetMaxAcceleration(float fl_MaxAcceleration)	 { m_MaxAcceleration =  fl_MaxAcceleration; } 
-	FORCEINLINE	float						GetGravityScale() const							 { return m_GravityScale; }
-	FORCEINLINE	void						SetGravityScale(float fl_GravityScale)		 	 { m_GravityScale = fl_GravityScale; }
-	FORCEINLINE	float						GetAirControl() const							 { return m_AirControl; }
-	FORCEINLINE	void						SetAirControl(float fl_AirControl)				 { m_AirControl = fl_AirControl; }
-	FORCEINLINE	float						GetMaxSpeedFly() const							 { return m_MaxSpeedFly; }
-	FORCEINLINE	void						SetMaxSpeedFly(float fl_MaxSpeedFly)			 { m_MaxSpeedFly = fl_MaxSpeedFly; }
-	FORCEINLINE	float						GetMassCharacter() const						 { return m_MassCharacter; }
-	FORCEINLINE	void						SetMassCharacter(float fl_MassCharacter)	 	 { m_MassCharacter = fl_MassCharacter; }
-	FORCEINLINE	float						GetJumpHeight() const						  	 { return m_JumpHeight; }
-	FORCEINLINE	void						SetJumpHeight(float fl_JumpHeight)				 { m_JumpHeight = fl_JumpHeight; }
-	FORCEINLINE	float						GetLineTraceLength() const						 { return m_LineTraceLength; }
-	FORCEINLINE	void						SetLineTraceLength(float fl_LineTraceLength)	 { m_LineTraceLength = fl_LineTraceLength; }
-	FORCEINLINE	float						GetDistanceTrace() const						 { return m_DistanceTrace; }
-	FORCEINLINE	void						SetDistanceTrace(float fl_DistanceTrace)	     { m_DistanceTrace = fl_DistanceTrace; }
-	FORCEINLINE	float						GetMaxGrabMassObject() const					 { return m_MaxGrabMassObject; }
-	FORCEINLINE	void						SetMaxGrabMassObject(float fl_MaxGrabMassObject) { m_MaxGrabMassObject = fl_MaxGrabMassObject; }
-	FORCEINLINE	float						GetTrowImpulse() const							 { return m_TrowImpulse; }
-	FORCEINLINE	void						SetTrowImpulse(float fl_TrowImpulse)			 { m_TrowImpulse = fl_TrowImpulse; }
+	FORCEINLINE float						GetMaxAcceleration() const						 { return m_MaxAcceleration; }
+	FORCEINLINE void						SetMaxAcceleration(float fl_MaxAcceleration)	 { m_MaxAcceleration =  fl_MaxAcceleration; } 
+	FORCEINLINE float						GetGravityScale() const							 { return m_GravityScale; }
+	FORCEINLINE void						SetGravityScale(float fl_GravityScale)		 	 { m_GravityScale = fl_GravityScale; }
+	FORCEINLINE float						GetAirControl() const							 { return m_AirControl; }
+	FORCEINLINE void						SetAirControl(float fl_AirControl)				 { m_AirControl = fl_AirControl; }
+	FORCEINLINE float						GetMaxSpeedFly() const							 { return m_MaxSpeedFly; }
+	FORCEINLINE void						SetMaxSpeedFly(float fl_MaxSpeedFly)			 { m_MaxSpeedFly = fl_MaxSpeedFly; }
+	FORCEINLINE float						GetMassCharacter() const						 { return m_MassCharacter; }
+	FORCEINLINE void						SetMassCharacter(float fl_MassCharacter)	 	 { m_MassCharacter = fl_MassCharacter; }
+	FORCEINLINE float						GetJumpHeight() const						  	 { return m_JumpHeight; }
+	FORCEINLINE void						SetJumpHeight(float fl_JumpHeight)				 { m_JumpHeight = fl_JumpHeight; }
+	FORCEINLINE float						GetLineTraceLength() const						 { return m_LineTraceLength; }
+	FORCEINLINE void						SetLineTraceLength(float fl_LineTraceLength)	 { m_LineTraceLength = fl_LineTraceLength; }
+	FORCEINLINE float						GetDistanceTrace() const						 { return m_DistanceTrace; }
+	FORCEINLINE void						SetDistanceTrace(float fl_DistanceTrace)	     { m_DistanceTrace = fl_DistanceTrace; }
+	FORCEINLINE float						GetMaxGrabMassObject() const					 { return m_MaxGrabMassObject; }
+	FORCEINLINE void						SetMaxGrabMassObject(float fl_MaxGrabMassObject) { m_MaxGrabMassObject = fl_MaxGrabMassObject; }
+	FORCEINLINE float						GetTrowImpulse() const							 { return m_TrowImpulse; }
+	FORCEINLINE void						SetTrowImpulse(float fl_TrowImpulse)			 { m_TrowImpulse = fl_TrowImpulse; }
 	
 	# pragma endregion
 	
