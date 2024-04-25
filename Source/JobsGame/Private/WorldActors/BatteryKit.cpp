@@ -16,7 +16,7 @@ ABatteryKit::ABatteryKit()
 	m_Amounth = 15.0f;
 
 	// Load Mesh in Battery Kit
-	FSoftObjectPath MeshAsset(TEXT("/Game/WorldActors/RestoreKits/BatteryKit_Box"));
+	FSoftObjectPath MeshAsset(TEXT("/Game/WorldActors/RestoreKits/SuitKit/suit_kit"));
 	UStaticMesh* StaticMesh = nullptr;
 
 	if (MeshAsset.IsValid())
@@ -27,17 +27,17 @@ ABatteryKit::ABatteryKit()
 	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BatteryKit"));
 		MeshComponent->SetStaticMesh(StaticMesh);
-		
-		MeshComponent->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
+		MeshComponent->SetWorldScale3D(FVector(0.05f, 0.05f, 0.05f));
 		SetRootComponent(MeshComponent);	
+		
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-		CollisionSphere->InitSphereRadius(110.0f);
+		CollisionSphere->InitSphereRadius(1200.0f);
 		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
 		CollisionSphere->SetupAttachment(MeshComponent);
 	}
 	else
 	{
-		UE_LOG(LogBatteryKit, Warning, TEXT("Eror find object!!!!"));
+		UE_LOG(LogBatteryKit, Warning, TEXT("Eror find object: %s"), *MeshAsset.ToString());
 	}
 
 	// Load PickUp Sound
@@ -65,7 +65,7 @@ void ABatteryKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	MeshComponent->SetMassScale(NAME_None, 35.0f);
+	
 }
 
 

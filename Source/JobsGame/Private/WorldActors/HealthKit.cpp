@@ -18,7 +18,7 @@ AHealthKit::AHealthKit()
 	m_Amounth = 25.0f;
 
 	// Load Mesh in Health Kit
-	FSoftObjectPath MeshAssets(TEXT("/Game/WorldActors/RestoreKits/HealthKit_Box"));	
+	FSoftObjectPath MeshAssets(TEXT("/Game/WorldActors/RestoreKits/HealthKit/health_kit"));	
 	UStaticMesh* StaticMesh = nullptr;
 
 	if (MeshAssets.IsValid())
@@ -29,18 +29,17 @@ AHealthKit::AHealthKit()
 	{
 		MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HealthKit"));
 		MeshComponent->SetStaticMesh(StaticMesh);
-		MeshComponent->SetWorldScale3D(FVector(0.4f, 0.4f, 0.4f));
+		MeshComponent->SetWorldScale3D(FVector(0.015f, 0.015f, 0.015f));
 		SetRootComponent(MeshComponent);
 		
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-		CollisionSphere->InitSphereRadius(110.0f);
+		CollisionSphere->InitSphereRadius(3000.0f);
 		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
 		CollisionSphere->SetupAttachment(MeshComponent);
 	}
 	else
 	{
-		FString NameActor = MeshComponent->GetName();
-		UE_LOG(LogHealthKit, Warning, TEXT("Eror find object: %ls"), *NameActor);
+		UE_LOG(LogHealthKit, Warning, TEXT("Eror find object: %s"), *MeshAssets.ToString());
 	}
 
 	// Load PickUp Sound
@@ -69,7 +68,6 @@ void AHealthKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	MeshComponent->SetMassScale(NAME_None, 35.0f);
 	 
 }
 
