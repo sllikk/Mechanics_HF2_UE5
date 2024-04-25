@@ -39,13 +39,11 @@ void UFlashLightComponent::ToggleFlashLight()
 	{
 		this->SetVisibility(false);
 		UGameplayStatics::PlaySoundAtLocation(this, FlashLightSound, GetComponentLocation());
-		UE_LOG(LogFlashLight, Warning, TEXT("Off!!!!!"));
 	}
 	else
 	{
 		this->SetVisibility(true);
 		UGameplayStatics::PlaySoundAtLocation(this, FlashLightSound, GetComponentLocation());
-		UE_LOG(LogFlashLight, Warning, TEXT("On!!!!!"));
 	}
 	
 }

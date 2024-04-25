@@ -68,14 +68,6 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	
 }
 
-bool UHealthComponent::RestoreHealth(float HealthAmount)
-{
-	m_flHealth += HealthAmount;
-	m_flHealth = FMath::Min(m_flHealth, m_flMaxHealth);
-	UE_LOG(LogHeathComponent, Warning, TEXT("Restore"))
-	return GetHealth() <= GetMaxHealth();
-	
-}
 
 void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatedBy, AActor* DamageCauser)
@@ -89,16 +81,19 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 
 	if (GetHealth() <= 0)
 	{
-
+		
 	}
 }
 
 
+bool UHealthComponent::RestoreHealth(float HealthAmount)
+{
+	m_flHealth += HealthAmount;
+	m_flHealth = FMath::Min(m_flHealth, m_flMaxHealth);
 
-
-
-
-
+	return GetHealth() <= GetMaxHealth();
+	
+}
 
 
 

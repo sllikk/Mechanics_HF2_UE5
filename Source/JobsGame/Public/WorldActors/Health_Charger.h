@@ -8,8 +8,8 @@
 #include "Health_Charger.generated.h"
 class AMyCharacter;
 class UStaticMeshComponent;
-class UBoxComponent;
 class UPointLightComponent;
+class USoundBase;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHealthCharger, Log, All);
 
@@ -40,19 +40,24 @@ public:
 	FORCEINLINE	void			SetMaxCharger(float flChargeMax)	{ m_flMaxCharger = flChargeMax; }
 	FORCEINLINE	void			SetCharger(float flCharge)			{ m_flCharger = flCharge; }
 	virtual void				Interact(AActor* Actor) override;
-			void				DebugStation();	
+			void				DebugStation() const;	
 			void				StartRestore(AActor* Actor);
 			void				StopRestore();
 			void				RestoreCharge(AActor* Actor);
 
 private:
-
-		FTimerHandle HealthRestoreTimer;
-
+		// Sound
+		UPROPERTY(VisibleAnywhere, Category = "SoundLoad")
+		TArray<USoundBase*> Health_ChargerSound;
+		UPROPERTY(VisibleAnywhere, Category = "SoundLoad")
+		TArray<UAudioComponent*> AudioComponents;
+	
+		FTimerHandle	 HealthRestoreTimer;
 		float			 m_flMaxCharger;
 		float			 m_flCharger;
+		float            m_flInteractCharacter;
 		bool			 m_blsDischarged;
-		bool             blsCharger;
+		bool			 bls_Interact;
 	
-
+	
 };

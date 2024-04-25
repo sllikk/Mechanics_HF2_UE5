@@ -226,11 +226,9 @@ void AMyCharacter::Interact()
 			{
 				if (HitActor->GetClass()->ImplementsInterface(Uinteract::StaticClass()))
 				{
-					// Создаем указатель на интерфейс IInteract для вызова метода Interact
 					Iinteract* InteractableActor = Cast<Iinteract>(HitActor);
 					if (InteractableActor)
 					{
-						// Вызываем метод Interact объекта, реализующего интерфейс UInteract
 						InteractableActor->Interact(this);
 					}
 				}	
