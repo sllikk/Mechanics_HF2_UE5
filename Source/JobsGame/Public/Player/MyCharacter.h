@@ -93,7 +93,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-
+	void DebugPhysics() const;
 
 protected:
 
