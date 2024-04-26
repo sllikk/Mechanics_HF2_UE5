@@ -98,7 +98,6 @@ void AMyCharacter::Tick(float DeltaTime)
 		FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
 		FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
-
 	}
 
 }
@@ -240,6 +239,11 @@ void AMyCharacter::Landed(const FHitResult& Hit)
 
 }
 
+void AMyCharacter::DebugPhysics() const
+{
+
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Function action character
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -275,6 +279,7 @@ void AMyCharacter::GrabComponent()
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = false;
 		QueryParams.bIgnoreTouches = true;
+
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
 	
@@ -298,7 +303,6 @@ void AMyCharacter::GrabComponent()
 				FVector const& CenterOfComponent = Bounds.Origin;
 				FVector const& GrabLocation = CenterOfComponent;
 				FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
-				
 				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
 			}		
 
