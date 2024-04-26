@@ -17,7 +17,6 @@ class UPhysicsHandleComponent;
 class UHealthComponent;
 class UCostumeComponent;
 struct FInputActionValue;
-
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All)
 
@@ -93,7 +92,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void DebugPhysics() const;
+	void DebugPhysics() ;
 
 protected:
 
@@ -115,7 +114,7 @@ public:
 	FORCEINLINE float						GetMaxSpeedCrouch() const						 { return m_MaxSpeedCrouch; }
 	FORCEINLINE void						SetMaxSpeedCrouch(float fl_MaxSpeedCrouch)		 { m_MaxSpeedCrouch = fl_MaxSpeedCrouch; }
 	FORCEINLINE	float						GetMaxAcceleration() const						 { return m_MaxAcceleration; }
-	FORCEINLINE	void						SetMaxAcceleration(float fl_MaxAcceleration)	 { m_MaxAcceleration =  fl_MaxAcceleration; } 
+	FORCEINLINE	void						SetMaxAcceleration(float fl_MaxAcceleration)	 { m_MaxAcceleration = fl_MaxAcceleration; } 
 	FORCEINLINE	float						GetGravityScale() const							 { return m_GravityScale; }
 	FORCEINLINE	void						SetGravityScale(float fl_GravityScale)		 	 { m_GravityScale = fl_GravityScale; }
 	FORCEINLINE	float						GetAirControl() const							 { return m_AirControl; }
@@ -130,7 +129,6 @@ public:
 	FORCEINLINE	void						SetLineTraceLength(float fl_LineTraceLength)	 { m_LineTraceLength = fl_LineTraceLength; }
 	FORCEINLINE	float						GetDistanceTrace() const						 { return m_DistanceTrace; }
 	FORCEINLINE	void						SetDistanceTrace(float fl_DistanceTrace)	     { m_DistanceTrace = fl_DistanceTrace; }
-	
 	/*----------------------------------------------------------------------------------------------------------------------------------------------------------*/
 											// Physics Handle
 	/*----------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -197,9 +195,9 @@ private:
 	float		m_AngularDamping = 500.0f;
 	float		m_AngularStiffness = 1500.0f;
 	float		m_InterpolationSpeed = 50.0f;
-	bool		m_blsSoftAngularConstraint = true;
-	bool		m_blsSoftLinearConstraint = true;
-	bool		m_blsInterpolateTarget = true;
+	bool		m_blsSoftAngularConstraint = false;
+	bool		m_blsSoftLinearConstraint = false;
+	bool		m_blsInterpolateTarget = false;
 
 
 	#pragma endregion

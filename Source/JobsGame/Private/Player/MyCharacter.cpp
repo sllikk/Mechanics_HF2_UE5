@@ -9,11 +9,9 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "../../../../../../../../UE5/UE_5.3/Engine/DebugMessages.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
-#include "Shared/Resourse.h"
-
-
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
 
@@ -57,24 +55,22 @@ void AMyCharacter::PostInitializeComponents()
 	GetCharacterMovement()->Mass = m_MassCharacter;
 	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
 	
-	PhysicsHandle->bSoftAngularConstraint = true;
-	PhysicsHandle->bSoftLinearConstraint = true;
-	PhysicsHandle->bInterpolateTarget = true;
-	PhysicsHandle->LinearDamping = 200.0f;
-	PhysicsHandle->LinearStiffness = 750.0f;
-	PhysicsHandle->AngularDamping = 500.0f;
-	PhysicsHandle->AngularStiffness = 1500.0f;
-	PhysicsHandle->InterpolationSpeed = 50.0f;
+	PhysicsHandle->bSoftAngularConstraint = m_blsSoftAngularConstraint;
+	PhysicsHandle->bSoftLinearConstraint = m_blsSoftLinearConstraint;
+	PhysicsHandle->bInterpolateTarget = m_blsInterpolateTarget;
+	PhysicsHandle->LinearDamping = m_LinearDamping;
+	PhysicsHandle->LinearStiffness = m_AngularStiffness;
+	PhysicsHandle->AngularDamping = m_AngularDamping;
+	PhysicsHandle->AngularStiffness = m_AngularStiffness;
+	PhysicsHandle->InterpolationSpeed = m_InterpolationSpeed;
 	
-
 }
 
 
 void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
+
 	if (const APlayerController* PlayerController = Cast<APlayerController>(Controller))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -82,7 +78,6 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
 	
 }
 
@@ -100,13 +95,14 @@ void AMyCharacter::Tick(float DeltaTime)
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
 	}
 
+	DebugPhysics();
 }
 
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
+	
 	// Assign functions to control the character and all actions associated with him in EIC
 	if (UEnhancedInputComponent* EInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
@@ -205,10 +201,8 @@ void AMyCharacter::Interact()
 		FHitResult HitResult;
 		FCollisionQueryParams QueryParams;
 		QueryParams.AddIgnoredActor(this);
-
 		FVector const&  StartLocation = FirstPersonCamera->GetComponentLocation();
 		FVector const&  EndLocation = StartLocation + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;
-
 		FCollisionShape CollisionShape;
 		CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
 
@@ -239,10 +233,6 @@ void AMyCharacter::Landed(const FHitResult& Hit)
 
 }
 
-void AMyCharacter::DebugPhysics() const
-{
-
-}
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Function action character
@@ -272,7 +262,7 @@ void AMyCharacter::ToggleGrab()
 // Physics grab
 void AMyCharacter::GrabComponent()
 {
-	if (FirstPersonCamera == nullptr)return;
+	if (FirstPersonCamera == nullptr) return;
 	{
 		FHitResult GrabResults;
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
@@ -290,22 +280,22 @@ void AMyCharacter::GrabComponent()
 			DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
 			
 			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
+
+			const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
+			FVector const& CenterOfComponent = Bounds.Origin;
+			FVector const& GrabLocation = CenterOfComponent;
+			FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
 			
 			if (!ComponentToGrab && !ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
 			{
 				DontInteract();
 				return;
 			}	
-			
+
 			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
 			{
-				const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
-				FVector const& CenterOfComponent = Bounds.Origin;
-				FVector const& GrabLocation = CenterOfComponent;
-				FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
 				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
 			}		
-
 		}
 	}
 }
@@ -316,10 +306,21 @@ void AMyCharacter::ReleaseComponent()
 	PhysicsHandle->ReleaseComponent();
 }
 
-// 
+
 void AMyCharacter::DontInteract()
 {
  
+}
+
+
+void AMyCharacter::DebugPhysics() 
+{
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		UPrimitiveComponent* PrimitiveComponent = PhysicsHandle->GrabbedComponent;
+		
+		printfk(-1, "Mass: %2.f", PrimitiveComponent->GetMass());
+	}
 }
 
 
@@ -329,7 +330,6 @@ void AMyCharacter::TrowObject()
 	{
 		UPrimitiveComponent* TrowComponent = PhysicsHandle->GrabbedComponent;
 		if(!TrowComponent) return;
-
 		const FBoxSphereBounds Bounds = TrowComponent->Bounds;  
 		FVector const& TrowCentreOfComponent = Bounds.Origin; 
 		FVector const& TrowLocation = TrowCentreOfComponent;
