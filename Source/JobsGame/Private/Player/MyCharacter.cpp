@@ -60,7 +60,7 @@ void AMyCharacter::PostInitializeComponents()
 	PhysicsHandle->bSoftAngularConstraint = true;
 	PhysicsHandle->bSoftLinearConstraint = true;
 	PhysicsHandle->bInterpolateTarget = true;
-	PhysicsHandle->LinearDamping = 200.0f;
+	PhysicsHandle->LinearDamping = 50.0f;
 	PhysicsHandle->LinearStiffness = 750.0f;
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
@@ -236,33 +236,17 @@ void AMyCharacter::TickPhysicsHandle() const
 	// Update Physics handle and grab object in World every frame
 	if (PhysicsHandle && PhysicsHandle->GrabbedComponent) 
 	{
-		 
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		FVector const& NewLocation = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;	
 		FRotator const& NewRotator = FirstPersonCamera->GetComponentRotation();
 		PhysicsHandle->SetTargetLocationAndRotation(NewLocation, NewRotator);
-		
+
 		// Release Component if distance > 250
 		if (FVector::Dist(Start, PhysicsHandle->GrabbedComponent->GetComponentLocation() ) > 250)
 		{
 			PhysicsHandle->ReleaseComponent();
 		}
 	}
-
-	///                               DontWork
-	/*
-	if (PhysicsHandle && PhysicsHandle->GrabbedComponent)
-	{
-		// Release Component if block speed this component		
-		FVector Velocity = PhysicsHandle->GrabbedComponent->GetComponentVelocity();
-		float SpeedComponent = Velocity.Size();
-		static float MinComponentSpeed = 25; 
-		if (SpeedComponent <= MinComponentSpeed)
-		{
-			PhysicsHandle->ReleaseComponent();	
-		}
-	}
-*/
 }
 
 void AMyCharacter::DebugPhysics() const
@@ -300,7 +284,7 @@ void AMyCharacter::GrabComponent()
 {
 	if (FirstPersonCamera == nullptr)return;
 	{
-		FHitResult GrabResults;
+		 FHitResult GrabResults;
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = false;

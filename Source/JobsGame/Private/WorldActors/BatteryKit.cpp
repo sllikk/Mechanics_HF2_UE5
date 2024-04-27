@@ -31,7 +31,7 @@ ABatteryKit::ABatteryKit()
 		SetRootComponent(MeshComponent);	
 		
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
-		CollisionSphere->InitSphereRadius(1200.0f);
+		CollisionSphere->InitSphereRadius(1000.0f);
 		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
 		CollisionSphere->SetupAttachment(MeshComponent);
 	}
