@@ -1,21 +1,21 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "World_InteractObject/HopperMine.h"
+#include "Weapon/gravity_gun.h"
 
-AHopperMine::AHopperMine()
+Agravity_gun::Agravity_gun()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
 }
 
-void AHopperMine::BeginPlay()
+void Agravity_gun::BeginPlay()
 {
 	Super::BeginPlay();
 	
 }
 
-void AHopperMine::Tick(float DeltaTime)
+void Agravity_gun::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 

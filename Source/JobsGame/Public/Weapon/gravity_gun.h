@@ -4,15 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "HopperMine.generated.h"
+#include "gravity_gun.generated.h"
 
 UCLASS()
-class JOBSGAME_API AHopperMine : public AActor
+class JOBSGAME_API Agravity_gun : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
-	AHopperMine();
+
+	Agravity_gun();
 
 protected:
 
