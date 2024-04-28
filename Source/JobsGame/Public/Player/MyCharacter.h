@@ -93,7 +93,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	void DebugPhysics() const;
+	
 
 protected:
 
@@ -102,7 +102,6 @@ protected:
 	virtual void Landed(const FHitResult& Hit) override;
 
 	void TickPhysicsHandle() const;
-
 
 public:
 	
@@ -149,50 +148,40 @@ public:
 	void Interact();
 	void Flashlight();
 	void ToggleGrab();
-	void GrabComponent();
-	void ReleaseComponent();
-	void DontInteract();
 	void TrowObject();
 	
 	#pragma endregion
 
+	void GrabComponent();
+	void ReleaseComponent() const;
+	void DontInteract() const;
+	void SoundResourceLoad();
+	
 private:
 
 	#pragma region Default_Character_Settings
 
-	UPROPERTY(Config)
-	float m_MaxSpeedWalk = 500.0f;
-	UPROPERTY(Config)
-	float m_MaxSpeedRun = 700.0f;
-	UPROPERTY(Config)
-	float m_MaxSpeedCrouch = 400.0f;
-	UPROPERTY(Config)
-	float m_MaxAcceleration = 2048.0f;        
-	UPROPERTY(Config)
-	float m_GravityScale = 1.0f;
-	UPROPERTY(Config)
-	float m_AirControl = 0.8f;
-	UPROPERTY(Config)
-	float m_MaxSpeedFly = 200.0f;
-	UPROPERTY(Config)
-	float m_MassCharacter = 20.0f;
-	UPROPERTY(Config)
-	float m_JumpHeight = 300.0f;
-	UPROPERTY(Config)
-	float m_DistanceTrace = 190;
-	UPROPERTY(Config)
-	float m_MaxGrabMassObject = 80;	
-	UPROPERTY(Config)
-	float m_TrowImpulse = 250;
+	float	m_MaxSpeedWalk = 500.0f;
+	float	m_MaxSpeedRun = 700.0f;
+	float	m_MaxSpeedCrouch = 400.0f;
+	float	m_MaxAcceleration = 2048.0f;        
+	float	m_GravityScale = 1.0f;
+	float	m_AirControl = 0.8f;
+	float	m_MaxSpeedFly = 200.0f;
+	float	m_MassCharacter = 20.0f;
+	float	m_JumpHeight = 300.0f;
+	float	m_DistanceTrace = 190;
+	float	m_MaxGrabMassObject = 80;	
+	float	m_TrowImpulse = 250;
 
+	bool    m_blsGrabProduct;
 	#pragma endregion
 	
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
-	TObjectPtr<USoundBase> SoundBase;
+	TArray<USoundBase*> CharacterSound;
 	
 	
-	bool blsDoorInteract;
 
 
 };

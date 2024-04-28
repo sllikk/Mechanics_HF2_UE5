@@ -9,6 +9,7 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
 #include "Shared/Resourse.h"
@@ -49,6 +50,7 @@ AMyCharacter::AMyCharacter()
 	//RayCastCapsule 
 	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::PostInitializeComponents()
 {
@@ -65,10 +67,10 @@ void AMyCharacter::PostInitializeComponents()
 	PhysicsHandle->AngularDamping = 500.0f;
 	PhysicsHandle->AngularStiffness = 1500.0f;
 	PhysicsHandle->InterpolationSpeed = 50.0f;
-	
 
+	SoundResourceLoad();
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::BeginPlay()
 {
@@ -85,7 +87,7 @@ void AMyCharacter::BeginPlay()
 	
 	
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::Tick(float DeltaTime)
 {
@@ -93,7 +95,7 @@ void AMyCharacter::Tick(float DeltaTime)
 
 	TickPhysicsHandle();
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -124,8 +126,32 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	}
 
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
-
+void AMyCharacter::SoundResourceLoad() 
+{
+	TArray<FResourceLoad> ResourceToLoad = {
+		FResourceLoad(TEXT("/Game/Sound/ActorSound/Cue/Sprint_Cue"), nullptr),
+		FResourceLoad(TEXT("/Game/Sound/ActorSound/Cue/Interact_Cue"), nullptr),
+		FResourceLoad(TEXT("/Game/Sound/ActorSound/Cue/No_Interact_Cue"), nullptr),
+		};
+	for (FResourceLoad& Resource : ResourceToLoad)
+	{
+		Resource.LoadedResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
+		if (!Resource.LoadedResource)
+		{
+			UE_LOG(LogCharacter, Warning, TEXT("Error load: %s"), *Resource.ResourcePath)
+		}
+	}
+	for (const FResourceLoad& Resource : ResourceToLoad)
+	{
+		USoundBase* SoundBase = Cast<USoundBase>(Resource.LoadedResource);
+		if (SoundBase != nullptr)
+		{
+			CharacterSound.Add(SoundBase);
+		}
+	}
+}
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Base Function character movement
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -143,6 +169,7 @@ void AMyCharacter::Move(const FInputActionValue& Value)
 		
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Function Look for control character
 void AMyCharacter::Look(const FInputActionValue& Value)
@@ -157,19 +184,25 @@ void AMyCharacter::Look(const FInputActionValue& Value)
 
 
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Function Run for control character and play sound
 void AMyCharacter::Run()
 {
-	GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
-		
+	if (CharacterSound.IsValidIndex(0) && CharacterSound[0] != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CharacterSound[0], GetActorLocation());	
+		GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedRun;
+	}
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Function StopRun for character to reduce running speed
 void AMyCharacter::StopRun()
 {
 	GetCharacterMovement()->MaxWalkSpeed = m_MaxSpeedWalk;
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Crouch 
 void AMyCharacter::StartCrouch()
@@ -180,6 +213,7 @@ void AMyCharacter::StartCrouch()
 	Crouch();
 
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Crouch 
 void AMyCharacter::StopCrouch()
@@ -187,7 +221,7 @@ void AMyCharacter::StopCrouch()
 	GetCapsuleComponent()->SetCapsuleHalfHeight(96.0f); //return scale collision how was it
 	UnCrouch();
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Interact Actors
 void AMyCharacter::Interact()
@@ -222,7 +256,7 @@ void AMyCharacter::Interact()
 		}
 	}
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::Landed(const FHitResult& Hit)
 {
@@ -230,6 +264,7 @@ void AMyCharacter::Landed(const FHitResult& Hit)
 	
 
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::TickPhysicsHandle() const
 {
@@ -248,16 +283,11 @@ void AMyCharacter::TickPhysicsHandle() const
 		}
 	}
 }
-
-void AMyCharacter::DebugPhysics() const
-{
-
-}
-
 //--------------------------------------------------------------------------------------------------------------------------------------------------
+
 //          Function action character
-//--------------------------------------------------------------------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 void AMyCharacter::Flashlight()
 {
 	if (FlashLightComponent != nullptr)
@@ -265,6 +295,7 @@ void AMyCharacter::Flashlight()
 		FlashLightComponent->ToggleFlashLight();
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Action Grab Object 
 void AMyCharacter::ToggleGrab()
@@ -278,13 +309,14 @@ void AMyCharacter::ToggleGrab()
 		GrabComponent();
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Physics grab
 void AMyCharacter::GrabComponent()
 {
 	if (FirstPersonCamera == nullptr)return;
 	{
-		 FHitResult GrabResults;
+		FHitResult GrabResults;
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
 		QueryParams.bTraceComplex = true;
 		QueryParams.bReturnPhysicalMaterial = false;
@@ -305,33 +337,40 @@ void AMyCharacter::GrabComponent()
 			{
 				DontInteract();
 				return;
-			}	
+			}
+			FBoxSphereBounds3d Bounds = ComponentToGrab->Bounds;
+			FVector const& CentreComponent = Bounds.Origin;
+			FVector const& GrabLocation = CentreComponent;
+			FRotator const& Rotator = ComponentToGrab->GetComponentRotation();
 			
 			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
 			{
-				const FBoxSphereBounds Bounds = ComponentToGrab->Bounds;	
-				FVector const& CenterOfComponent = Bounds.Origin;
-				FVector const& GrabLocation = CenterOfComponent;
-				FRotator const& GrabRotation = ComponentToGrab->GetComponentRotation();
-				PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, GrabRotation);
+				if (CharacterSound.IsValidIndex(1) && CharacterSound[1] != nullptr)
+				{
+					UGameplayStatics::PlaySoundAtLocation(this, CharacterSound[1], GetActorLocation());	
+					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, Rotator);
+				}
 			}
-			
 		}
 	}
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 // Release Grab object
-void AMyCharacter::ReleaseComponent()
+void AMyCharacter::ReleaseComponent() const
 {
 	PhysicsHandle->ReleaseComponent();
 }
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
-// 
-void AMyCharacter::DontInteract()
+void AMyCharacter::DontInteract() const
 {
- 
+	if (CharacterSound.IsValidIndex(2) && CharacterSound[2] != nullptr)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, CharacterSound[2], GetActorLocation());	
+	}
 }
-
+//--------------------------------------------------------------------------------------------------------------------------------------------------
 
 void AMyCharacter::TrowObject()
 {
