@@ -3,9 +3,16 @@
 
 #include "Weapon/gravity_gun.h"
 
+#include "PhysicsEngine/PhysicsHandleComponent.h"
+
 Agravity_gun::Agravity_gun()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	GravityGunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	RootComponent = GravityGunMesh;
+
+	MechanicsPhysics = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 
 }
 
