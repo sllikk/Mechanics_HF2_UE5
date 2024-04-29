@@ -16,7 +16,6 @@ class JOBSGAME_API Agravity_gun : public AActor
 
 	UPROPERTY(EditAnywhere, Blueprintable, Category = "WeaponMesh", meta=(AllowPrivateAccess = "true"))		
 	TObjectPtr<UStaticMeshComponent> GravityGunMesh;
-
 	UPROPERTY(EditAnywhere, Blueprintable, Category = "MechanicsPhysics", meta=(AllowPrivateAccess = "true"))		
 	TObjectPtr<UPhysicsHandleComponent> MechanicsPhysics;
 	
