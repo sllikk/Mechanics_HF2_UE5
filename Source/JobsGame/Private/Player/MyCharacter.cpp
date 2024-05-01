@@ -84,7 +84,8 @@ void AMyCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
-	
+
+	FActorSpawnParameters SpawnParameters;
 	
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -208,8 +209,7 @@ void AMyCharacter::StopRun()
 void AMyCharacter::StartCrouch()
 {
 	GetCapsuleComponent()->SetCapsuleHalfHeight(43.0f); // we compress our collision to half its size
-	GetCharacterMovement()->MaxWalkSpeedCrouched = m_MaxSpeedCrouch; // change speed
-	//Default UE function 
+	GetCharacterMovement()->MaxWalkSpeedCrouched = m_MaxSpeedCrouch; 
 	Crouch();
 
 }

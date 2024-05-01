@@ -3,32 +3,60 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "gravity_gun.generated.h"
-class UStaticMeshComponent;
+class AMyCharacter;
 class UPhysicsHandleComponent;
 class USoundBase;
+class UCustomDamage;
+class UInputMappingContext;
+class UInputAction;
 
-UCLASS()
-class JOBSGAME_API Agravity_gun : public AActor
+UCLASS(BlueprintType, Blueprintable, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+class JOBSGAME_API Ugravity_gun : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere, Blueprintable, Category = "WeaponMesh", meta=(AllowPrivateAccess = "true"))		
-	TObjectPtr<UStaticMeshComponent> GravityGunMesh;
-	UPROPERTY(EditAnywhere, Blueprintable, Category = "MechanicsPhysics", meta=(AllowPrivateAccess = "true"))		
-	TObjectPtr<UPhysicsHandleComponent> MechanicsPhysics;
 	
+	UPROPERTY(EditAnywhere, BlueprintType, Category = "MechanicsPhysics", meta=(AllowPrivateAccess = "true"))		
+	TObjectPtr<UPhysicsHandleComponent> MechanicsPhysics;
+	// Input
+	UPROPERTY(EditAnywhere, Category = "Input", meta=(AllowPrivateAccess = "true"))		
+	TObjectPtr<UInputMappingContext> WeaponMappingContext;
+	UPROPERTY(EditAnywhere, Category = "Input", meta=(AllowPrivateAccess = "true"))		
+	TObjectPtr<UInputAction> GrabAction;
+	UPROPERTY(EditAnywhere, Category = "Input", meta=(AllowPrivateAccess = "true"))		
+	TObjectPtr<UInputAction> ReleaseAction;
+
 public:	
 
-	Agravity_gun();
+	Ugravity_gun();
 
 protected:
 
 	virtual void BeginPlay() override;
 
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 public:	
+	UFUNCTION(BlueprintCallable, Category="Weapon")
+	void AttachWeapon(AMyCharacter* Character);
 
-	virtual void Tick(float DeltaTime) override;
+	void	PhysicsGrab();
+	void	PhysicsInteract();
+	void	Trow();
+	void	ReleaseObject();
+	void	PhysicsTickUpdate();
+
+private:
+
+	FTimerManager		m_InteractTimer;
+	float				m_flImpulce;
+	float				m_MaxDistance;
+	float				m_PhyDamage;						
+	
+	UPROPERTY(NotBlueprintable)
+	TObjectPtr<AMyCharacter> BaseCharacter;
+	UPROPERTY()
+	TObjectPtr<UCustomDamage> CustomDamage;
 
 };

@@ -106,7 +106,14 @@ protected:
 public:
 	
 	#pragma region Getters_Setters
-
+	// Animation
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
+	bool					m_HasRifle;
+	UFUNCTION(BlueprintCallable, Category=Weapon)
+	bool					GetHasRifle()					{ return m_HasRifle; }
+	UFUNCTION(BlueprintCallable, Category=Weapon)
+	void					SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
+	          
 	FORCEINLINE	USkeletalMeshComponent*		GetMesh1P() const								 { return Mesh1P; }
 	FORCEINLINE	UCameraComponent*			GetFirstPersonCamera() const					 { return FirstPersonCamera; }
 
@@ -175,6 +182,7 @@ private:
 	float	m_TrowImpulse = 250;
 
 	bool    m_blsGrabProduct;
+
 	#pragma endregion
 	
 	// Audio my Character
