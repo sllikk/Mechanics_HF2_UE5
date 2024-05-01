@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "HopperMine.generated.h"
+class USkeletalMeshComponent;
 
 UCLASS()
 class JOBSGAME_API AHopperMine : public AActor
