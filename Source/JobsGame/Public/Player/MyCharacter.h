@@ -6,6 +6,7 @@
 #include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
 #include "PlayerComponent/FlashLightComponent.h"
+#include "GenericTeamAgentInterface.h"
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
