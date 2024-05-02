@@ -36,35 +36,31 @@ protected:
 	
 public:
 	
-	/*
-	void	Spawn();
-	void	OnRestore();
+	
 	void	SetMineState( int iState );
 	int		GetMineState() { return m_iMineState; }
-	bool	IsValidLocation();
-	void	Flip( const FVector &vecForce, const AngularImpulse &torque );
+	static	void	Flip( const FVector &vecForce, const FVector& AngularImpulce);
 	void	SearchThink();
 	void	BounceThink();
 	void	 SettleThink();
 	void	CaptiveThink();
 	void	ExplodeThink();
-	void	ExplodeTouch( CBaseEntity *pOther );
-	void	CavernBounceThink(); ///< an alternative style of bouncing used for the citizen modded bouncers
+	void	ExplodeTouch(AActor *pOther);
 	bool	IsAwake() { return m_bAwake; }
 	void	Wake( bool bWake );
 
-*/
+
 
 
 protected:
 
-	int8			m_iHookN;
-	int8			m_iHookE;
-	int8			m_iHookS;
-	int8			m_iAllHooks;
-	int8			m_iMineState;
-	int8			m_iFlipAttempts;
-	int8			m_iModification;
+	int16			m_iHookN;
+	int16			m_iHookE;
+	int16			m_iHookS;
+	int16			m_iAllHooks;
+	int16			m_iMineState;
+	int16			m_iFlipAttempts;
+	int16			m_iModification;
 	
 	float		m_flIgnoreWorldTime;
 	float		m_flExplosionDelay;
@@ -77,5 +73,7 @@ protected:
 	bool		m_bFoeNearest;
 	bool		m_bPlacedByPlayer;
 	bool		m_bHeldByPhysgun;
-
+	bool		m_bAwake;
+	
+	FName      LightSocket = "LightSocket";
 };
