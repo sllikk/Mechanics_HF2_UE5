@@ -27,7 +27,7 @@ AAI_MineController::AAI_MineController(const FObjectInitializer& ObjectInitializ
 		SightConfig->DetectionByAffiliation.bDetectEnemies = true; 
 		SightConfig->DetectionByAffiliation.bDetectNeutrals = true; 
 		SightConfig->DetectionByAffiliation.bDetectFriendlies = false; 
-		SightConfig->SetMaxAge(0.0f);		
+		SightConfig->SetMaxAge(1.0f);		
 		PerceptionComponent->ConfigureSense(*SightConfig);
 		PerceptionComponent->SetDominantSense(*SightConfig->GetSenseImplementation());
  
@@ -53,6 +53,7 @@ void AAI_MineController::Tick(float DeltaSeconds)
 void AAI_MineController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
 
 }
 
