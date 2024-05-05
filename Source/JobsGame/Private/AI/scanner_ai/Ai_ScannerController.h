@@ -5,21 +5,42 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "Ai_ScannerController.generated.h"
+class UBehaviorTreeComponent;
+class UBlackboardComponent;
+class UAISenseConfig_Sight; 
+class UAIPerceptionComponent;
 
 UCLASS()
 class JOBSGAME_API AAi_ScannerController : public AAIController
 {
 	GENERATED_BODY()
+	
+	UPROPERTY(EditAnywhere, Category="AI_Sense", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAISenseConfig_Sight> Config_Sight;
+	UPROPERTY(EditAnywhere, Category="AI_Sense", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
 
 public:
 
-	AAi_ScannerController();
+	AAi_ScannerController(const FObjectInitializer& ObjectInitializer);
 
 protected:
 
 	virtual void BeginPlay() override;
 
-public:
-	
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void OnPossess(APawn* InPawn) override;
+	
+public:
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBehaviorTreeComponent> BTC;
+
+	UPROPERTY(Transient)
+	TObjectPtr<UBlackboardComponent> BBC;
+
+public:
+
+	
 };
