@@ -8,7 +8,8 @@ public class JobsGame : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PhysicsCore", "Chaos", "FieldSystemEngine", "AIModule", "NavigationSystem"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "PhysicsCore", 
+			"Chaos", "FieldSystemEngine", "AIModule", "NavigationSystem", "GameplayTasks"});
 
 		//PrivateDependencyModuleNames.AddRange(new string[] { });
 
