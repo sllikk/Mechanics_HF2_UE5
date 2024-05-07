@@ -5,7 +5,6 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "NPC/npc_cscanner.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -35,7 +34,7 @@ void AAi_ScannerController::BeginPlay()
 {
 	Super::BeginPlay();
 
-//	PerceptionComponent->OnTargetPerceptionUpdated;
+	//PerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &AAi_ScannerController::OnTargetPerception);
 }
 
 void AAi_ScannerController::Tick(float DeltaTime)
@@ -43,19 +42,24 @@ void AAi_ScannerController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+/*
 void AAi_ScannerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
-	 const Anpc_cscanner* npc_Cscanner = Cast<Anpc_cscanner>(InPawn);
+	 const Anpc_scanner* npc_Cscanner = Cast<Anpc_scanner>(InPawn);
 	
 	if (npc_Cscanner != nullptr && npc_Cscanner->TreeAsset != nullptr)
 	{
 		BBC->InitializeBlackboard(*npc_Cscanner->TreeAsset->BlackboardAsset);
 		BTC->StartTree(*npc_Cscanner->TreeAsset);
 	}
-
-		
 	
 
 }
 
+void AAi_ScannerController::OnTargetPerception(AActor* Actor, FAIStimulus Stimulus)
+{
+
+
+}
+*/

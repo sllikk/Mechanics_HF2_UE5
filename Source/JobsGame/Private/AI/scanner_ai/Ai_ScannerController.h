@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "AIController.h"
+#include "Perception/AIPerceptionTypes.h"
 #include "Ai_ScannerController.generated.h"
 class UBehaviorTreeComponent;
 class UBlackboardComponent;
@@ -30,8 +31,11 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
-	virtual void OnPossess(APawn* InPawn) override;
-	
+	//virtual void OnPossess(APawn* InPawn) override;
+
+	//UFUNCTION()
+	//void OnTargetPerception(AActor* Actor, FAIStimulus Stimulus);
+
 public:
 
 	UPROPERTY(Transient)
