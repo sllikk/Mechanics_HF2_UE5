@@ -4,22 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "BaseWeapon.generated.h"
+#include "Turret_Floor.generated.h"
 
 UCLASS()
-class JOBSGAME_API ABaseWeapon : public AActor
+class JOBSGAME_API ATurret_Floor : public AActor
 {
 	GENERATED_BODY()
-
-public:
+	
+public:	
 	// Sets default values for this actor's properties
-	ABaseWeapon();
+	ATurret_Floor();
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:
+public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 };
