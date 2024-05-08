@@ -132,8 +132,8 @@ public:
 	FORCEINLINE	void						SetAirControl(float fl_AirControl)				 { m_AirControl = fl_AirControl; }
 	FORCEINLINE	float						GetMaxSpeedFly() const							 { return m_MaxSpeedFly; }
 	FORCEINLINE	void						SetMaxSpeedFly(float fl_MaxSpeedFly)			 { m_MaxSpeedFly = fl_MaxSpeedFly; }
-	FORCEINLINE	float						GetMassCharacter() const						 { return m_MassCharacter; }
-	FORCEINLINE	void						SetMassCharacter(float fl_MassCharacter)	 	 { m_MassCharacter = fl_MassCharacter; }
+	FORCEINLINE	float						GetMassCombine() const							 { return m_MassCharacter; }
+	FORCEINLINE	void						SetMassCombine(float fl_MassCharacter)	 		 { m_MassCharacter = fl_MassCharacter; }
 	FORCEINLINE	float						GetJumpHeight() const						  	 { return m_JumpHeight; }
 	FORCEINLINE	void						SetJumpHeight(float fl_JumpHeight)				 { m_JumpHeight = fl_JumpHeight; }
 	FORCEINLINE	float						GetDistanceTrace() const						 { return m_DistanceTrace; }

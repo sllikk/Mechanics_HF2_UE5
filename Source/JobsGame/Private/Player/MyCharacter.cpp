@@ -40,7 +40,7 @@ AMyCharacter::AMyCharacter()
 	FlashLightComponent->SetupAttachment(FirstPersonCamera);
 	
 	Mesh1P = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("CharacterMesh1P"));
-	Mesh1P->SetOnlyOwnerSee(true);
+	Mesh1P->SetOnlyOwnerSee(false);
 	Mesh1P->SetupAttachment(FirstPersonCamera);
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
