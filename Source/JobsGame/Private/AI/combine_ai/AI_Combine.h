@@ -33,6 +33,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 
+	UFUNCTION()
 	void OnTargetUpdate(AActor* Actor, FAIStimulus Stimulus);
 
 public:

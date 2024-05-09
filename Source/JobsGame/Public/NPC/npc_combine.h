@@ -38,8 +38,7 @@ public:
 
 #pragma region Getters_Setters 
 
-	FORCEINLINE	USkeletalMeshComponent* GetCombineMesh() const
-										{return combine_mesh;}  
+	FORCEINLINE	USkeletalMeshComponent*		GetCombineMesh() const							 { return combine_mesh; }  
 	FORCEINLINE float						GetMaxSpeedWalk() const							 { return m_flMaxSpeedWalk; }
 	FORCEINLINE void						SetMaxSpeedWalk(float flMaxSpeedWalk)			 { m_flMaxSpeedWalk = flMaxSpeedWalk; }
 	FORCEINLINE	float						GetMaxAcceleration() const						 { return m_flMaxAcceleration; }
