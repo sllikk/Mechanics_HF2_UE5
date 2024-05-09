@@ -42,5 +42,4 @@ EBTNodeResult::Type UBT_PATROL::ExecuteTask(UBehaviorTreeComponent& OwnerComp, u
 		}
 	}
 		return EBTNodeResult::Failed;	
-	
 }

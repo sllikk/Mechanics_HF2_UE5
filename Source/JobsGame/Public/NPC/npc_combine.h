@@ -30,12 +30,15 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 	// Called Hit Land
 	virtual void Landed(const FHitResult& Hit) override;
-	
+
 public:
 
+	// Behavior Tree this npc
 	UPROPERTY(Transient, EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> TreeAsset;
-
+	// RagDolls
+	void RagDoll(bool Simulate);
+	
 #pragma region Getters_Setters 
 
 	FORCEINLINE	USkeletalMeshComponent*		GetCombineMesh() const							 { return combine_mesh; }  
@@ -58,22 +61,23 @@ public:
 	FORCEINLINE void						SetDead(bool bDead)								 { blsIsDead = bDead; } 
 	FORCEINLINE bool						GetRagDoll() const								 { return blsRagDolls; }
 	FORCEINLINE	void						SetRagDollState( bool bRagDoll)					 { blsRagDolls = bRagDoll; }
+	FORCEINLINE FName						GetNameWeaponSocket() const						 { return WeaponSocket; }	
 	#pragma endregion			
 
 protected:
-	 bool	blsIsDead;
-	 bool	blsRagDolls;
-	float	m_flMaxSpeedWalk;
-	float	m_flMaxSpeedRun;
-	float	m_flMaxAcceleration;        
-	float	m_flGravityScale;
-	float	m_flAirControl;
-	float	m_flMaxSpeedFly;
-	float	m_flMassCombine;
-	float	m_maxFallDead;
+
+	const FName&	WeaponSocket = "GripPoint";
+	bool		blsIsDead;
+	bool		blsRagDolls;
+	float		m_flMaxSpeedWalk;
+	float		m_flMaxSpeedRun;
+	float		m_flMaxAcceleration;        
+	float		m_flGravityScale;
+	float		m_flAirControl;
+	float		m_flMaxSpeedFly;
+	float		m_flMassCombine;
+	float		m_maxFallDead;
 		int16	m_iMaxHealth;
 		int16	m_iCurrentHealth;
-		
-	
-	
+
 };

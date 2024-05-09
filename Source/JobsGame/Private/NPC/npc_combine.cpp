@@ -14,7 +14,6 @@ Anpc_combine::Anpc_combine()
 	
 	// Default value
 	blsIsDead = false;
-	blsRagDolls = false;
 	m_flGravityScale = 1.0f;
 	m_flMassCombine = 80.0f;
 	m_flMaxSpeedFly = 1500.0f;
@@ -23,7 +22,6 @@ Anpc_combine::Anpc_combine()
 	m_flAirControl = 0.5f;
 	m_flMaxSpeedWalk = 600.0f;
 	m_flMaxSpeedRun = 0.0f;
-
 	m_iMaxHealth = 200.0f;
 	m_iCurrentHealth = m_iMaxHealth;
 	
@@ -75,6 +73,14 @@ void Anpc_combine::Tick(float DeltaTime)
 void Anpc_combine::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+}
+
+
+// Simulate PhysicsMesh Combine
+void Anpc_combine::RagDoll(bool Simulate)
+{
+	SetRagDollState(Simulate);
+	combine_mesh->SetSimulatePhysics(GetRagDoll());
 }
 
 
