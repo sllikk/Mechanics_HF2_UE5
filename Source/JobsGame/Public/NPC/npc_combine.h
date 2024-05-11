@@ -15,9 +15,8 @@ class JOBSGAME_API Anpc_combine : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly ,Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> combine_mesh;
-
 	
 public:
 	// Sets default values for this character's properties
@@ -36,11 +35,14 @@ public:
 	// Behavior Tree this npc
 	UPROPERTY(Transient, EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> TreeAsset;
-	// RagDolls
-	void RagDoll(bool Simulate);
 	
-#pragma region Getters_Setters 
+	
+	UFUNCTION(BlueprintCallable, Category="AttachGun")
+	void SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName);
 
+
+#pragma region Getters_Setters 
+	UFUNCTION(Blueprintable, Category="Mesh")
 	FORCEINLINE	USkeletalMeshComponent*		GetCombineMesh() const							 { return combine_mesh; }  
 	FORCEINLINE float						GetMaxSpeedWalk() const							 { return m_flMaxSpeedWalk; }
 	FORCEINLINE void						SetMaxSpeedWalk(float flMaxSpeedWalk)			 { m_flMaxSpeedWalk = flMaxSpeedWalk; }
@@ -61,7 +63,6 @@ public:
 	FORCEINLINE void						SetDead(bool bDead)								 { blsIsDead = bDead; } 
 	FORCEINLINE bool						GetRagDoll() const								 { return blsRagDolls; }
 	FORCEINLINE	void						SetRagDollState( bool bRagDoll)					 { blsRagDolls = bRagDoll; }
-	FORCEINLINE FName						GetNameWeaponSocket() const						 { return WeaponSocket; }	
 	#pragma endregion			
 
 protected:

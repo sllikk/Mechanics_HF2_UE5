@@ -20,13 +20,14 @@ Anpc_combine::Anpc_combine()
 	m_flMaxAcceleration = 1480.0f;
 	m_maxFallDead = 500.0f;
 	m_flAirControl = 0.5f;
-	m_flMaxSpeedWalk = 600.0f;
+	m_flMaxSpeedWalk = 250.0f;
 	m_flMaxSpeedRun = 0.0f;
 	m_iMaxHealth = 200.0f;
 	m_iCurrentHealth = m_iMaxHealth;
 	
 	// Load SkeletalMesh
 	combine_mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
+
 	const FSoftObjectPath SkeletalFind(TEXT("/Game/NPC/Combine/Combine"));
 	static TObjectPtr<USkeletalMesh> SkeletalMesh = nullptr;
 	if (SkeletalFind.IsValid())
@@ -36,9 +37,9 @@ Anpc_combine::Anpc_combine()
 	if (SkeletalMesh != nullptr)
 	{
 		combine_mesh->SetSkeletalMesh(SkeletalMesh);
-		combine_mesh->SetupAttachment(RootComponent);
 		combine_mesh->SetRelativeLocation(FVector(0, 0, -100));
 		combine_mesh->SetRelativeRotation(FRotator(0, -90, 0));
+		combine_mesh->SetupAttachment(RootComponent);
 	}
 	else
 	{
@@ -76,11 +77,14 @@ void Anpc_combine::Landed(const FHitResult& Hit)
 }
 
 
-// Simulate PhysicsMesh Combine
-void Anpc_combine::RagDoll(bool Simulate)
+void Anpc_combine::SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName)
 {
-	SetRagDollState(Simulate);
-	combine_mesh->SetSimulatePhysics(GetRagDoll());
+	const FTransform orientationSocket = GetCombineMesh()->GetSocketTransform(socketName, RTS_World);
+	const TObjectPtr<AActor> newGun = GetWorld()->SpawnActor(GunClass, &orientationSocket);
+	if (newGun == nullptr)return;
+	newGun->AttachToComponent(GetCombineMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, socketName);		
 }
+
+
 
 
