@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIController.h"
 #include "GameFramework/Character.h"
 #include "npc_combine.generated.h"
 class USkeletalMeshComponent;
@@ -31,19 +32,28 @@ protected:
 	virtual void Landed(const FHitResult& Hit) override;
 
 public:
-
 	// Behavior Tree this npc
 	UPROPERTY(Transient, EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> TreeAsset;
 	
-	
 	UFUNCTION(BlueprintCallable, Category="AttachGun")
 	void SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName);
 
+	UFUNCTION(BlueprintCallable, Category="AttachGun")
+	void Damage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+				AController* InstigatedBy, AActor* DamageCauser);
 
+	// GamePlay Sound this npc
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="gameplay_sound")
+	TArray<USoundBase*> GamePlaySound;
+
+
+	
 #pragma region Getters_Setters 
 	UFUNCTION(Blueprintable, Category="Mesh")
 	FORCEINLINE	USkeletalMeshComponent*		GetCombineMesh() const							 { return combine_mesh; }  
+	UFUNCTION(BlueprintCallable, Category="Dead")
+	FORCEINLINE bool						ISDead() const									 { return  blsIsDead; }
 	FORCEINLINE float						GetMaxSpeedWalk() const							 { return m_flMaxSpeedWalk; }
 	FORCEINLINE void						SetMaxSpeedWalk(float flMaxSpeedWalk)			 { m_flMaxSpeedWalk = flMaxSpeedWalk; }
 	FORCEINLINE	float						GetMaxAcceleration() const						 { return m_flMaxAcceleration; }
@@ -56,20 +66,22 @@ public:
 	FORCEINLINE	void						SetMaxSpeedFly(float fl_MaxSpeedFly)			 { m_flMaxSpeedFly = fl_MaxSpeedFly; }
 	FORCEINLINE	float						GetMassCharacter() const						 { return m_flMassCombine; }
 	FORCEINLINE	void						SetMassCharacter(float fl_MassCharacter)	 	 { m_flMassCombine = fl_MassCharacter; }
-	FORCEINLINE int16						GetCurrentHealth() const						 { return m_iCurrentHealth; }				
-	FORCEINLINE int16						GetMaxHealth() const							 { return m_iMaxHealth; }				
-	FORCEINLINE	void						SetMaxHealth(int16 iMaxHealth) 					 { m_iMaxHealth = iMaxHealth; }					
-	FORCEINLINE bool						ISDead() const									 { return  blsIsDead; }
-	FORCEINLINE void						SetDead(bool bDead)								 { blsIsDead = bDead; } 
-	FORCEINLINE bool						GetRagDoll() const								 { return blsRagDolls; }
-	FORCEINLINE	void						SetRagDollState( bool bRagDoll)					 { blsRagDolls = bRagDoll; }
+	FORCEINLINE float						GetCurrentHealth() const						 { return m_flCurrentHealth; }				
+	FORCEINLINE float						GetMaxHealth() const							 { return m_flMaxHealth; }				
+	FORCEINLINE	void						SetMaxHealth(float iMaxHealth) 					 { m_flMaxHealth = iMaxHealth; }					
+	
 	#pragma endregion			
 
-protected:
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-	const FName&	WeaponSocket = "GripPoint";
+	void CombineDead();
+	void CombineDebug() const;
+	void RagDoll() const;
+
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dead")	
 	bool		blsIsDead;
-	bool		blsRagDolls;
 	float		m_flMaxSpeedWalk;
 	float		m_flMaxSpeedRun;
 	float		m_flMaxAcceleration;        
@@ -78,7 +90,7 @@ protected:
 	float		m_flMaxSpeedFly;
 	float		m_flMassCombine;
 	float		m_maxFallDead;
-		int16	m_iMaxHealth;
-		int16	m_iCurrentHealth;
+	float		m_flMaxHealth;
+	float		m_flCurrentHealth;
 
 };
