@@ -74,11 +74,11 @@ public:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-	void CombineDead();
+	//void CombineDead();
 	void CombineDebug() const;
 	void RagDoll() const;
-
-
+	void Falling() override;
+	
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dead")	
 	bool		blsIsDead;
@@ -92,5 +92,5 @@ protected:
 	float		m_maxFallDead;
 	float		m_flMaxHealth;
 	float		m_flCurrentHealth;
-
+	float		m_flDistanceFallDead;
 };

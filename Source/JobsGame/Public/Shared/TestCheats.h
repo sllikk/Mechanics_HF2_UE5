@@ -18,5 +18,9 @@ public:
 	// Useful for identifying hanging pointers that could cause a crash when
 	UFUNCTION( exec )
 	void ForceGarbageCollection();
+
+	// Spawn Props
+	UFUNCTION( exec )
+	void Spawn_FlameBarrel();
 	
 };

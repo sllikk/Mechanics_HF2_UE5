@@ -7,7 +7,6 @@
 #include "Logging/LogMacros.h"
 #include "BasePlayerController.generated.h"
 class UInputMappingContext;
-class UPhysicsHandle;
 
 DECLARE_LOG_CATEGORY_EXTERN(BASE_CONTROLLER, Log, All);
 
@@ -23,6 +22,10 @@ class JOBSGAME_API ABasePlayerController : public APlayerController
 
 	
 public:
+
+	ABasePlayerController();	
+		
+protected:
 
 	virtual void BeginPlay() override;
 	

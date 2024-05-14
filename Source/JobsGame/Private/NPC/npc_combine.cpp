@@ -14,6 +14,7 @@ Anpc_combine::Anpc_combine()
 	PrimaryActorTick.bCanEverTick = true;
 	
 	// Default value
+	m_flDistanceFallDead = 100.0f;
 	m_flGravityScale = 1.0f;
 	m_flMassCombine = 80.0f;
 	m_flMaxSpeedFly = 1500.0f;
@@ -40,8 +41,6 @@ Anpc_combine::Anpc_combine()
 		combine_mesh->SetRelativeLocation(FVector(0, 0, -100));
 		combine_mesh->SetRelativeRotation(FRotator(0, -90, 0));
 		combine_mesh->SetupAttachment(RootComponent);
-		combine_mesh->SetDrawDebugSkeleton(true);
-
 	}
 	else
 	{
@@ -62,7 +61,7 @@ void Anpc_combine::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCapsuleComponent()->SetMassScale(NAME_Pawn, 60);
+	GetCapsuleComponent()->SetMassOverrideInKg(NAME_All, 75.0f, true);
 	GetCharacterMovement()->Mass = GetMassCharacter();
 
 	OnTakeAnyDamage.AddDynamic(this, &Anpc_combine::Damage);
@@ -84,6 +83,7 @@ void Anpc_combine::Tick(float DeltaTime)
 void Anpc_combine::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
+
 }
 
 
@@ -99,20 +99,42 @@ void Anpc_combine::SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName)
 													// GamePlay
 void Anpc_combine::CombineDebug() const
 {
-	const FString strDebug = FString::Printf(TEXT("charger: %2.f"), GetCurrentHealth());	
-	FVector  LocationDebug = GetActorLocation();
-	LocationDebug.Z += 100.0f; 
+	const FString& strHealth = FString::Printf(TEXT("charger: %2.f"), GetCurrentHealth());	
+	const FString& strMass = FString::Printf(TEXT("Mass: %2.f"), GetCharacterMovement()->Velocity.Z);
+
+	FVector vecHealthDebug = GetActorLocation();
+	vecHealthDebug.Z += 100.0f; 
+	FVector vecMassDebug  = GetActorLocation();
+	vecMassDebug.Z += 50.0f;
 	FColor Color = FColor::White;
-	DrawDebugString(GetWorld(), LocationDebug, strDebug, nullptr, Color, 0.0f, true);
+
+	DrawDebugString(GetWorld(), vecHealthDebug, strHealth, nullptr, Color, 0.0f, true);
+	DrawDebugString(GetWorld(), vecMassDebug, strMass, nullptr, Color, 0.0f, true);
+
 }
 
 
 void Anpc_combine::RagDoll() const
 {
-	combine_mesh->SetSimulatePhysics(true);
-	UE_LOG(LogCombineClass, Warning, TEXT("Dead: %s"), *this->GetName())
-	combine_mesh->TickAnimation(false, true);
-	GetCapsuleComponent()->DestroyComponent();
+		combine_mesh->SetSimulatePhysics(true);
+		UE_LOG(LogCombineClass, Warning, TEXT("Dead: %s"), *this->GetName())
+		combine_mesh->TickAnimation(false, true);
+		GetCapsuleComponent()->DestroyComponent();
+	
+}
+
+//------------------------------------------------------------------------------------------------------
+
+void Anpc_combine::Falling()
+{
+	Super::Falling();
+
+	float MaxFall = GetVelocity().Z;
+	if (MaxFall -= 200)
+	{
+//		CombineDead();
+	}
+
 }
 
 
@@ -123,32 +145,40 @@ void Anpc_combine::Damage(AActor* DamagedActor, float Damage, const UDamageType*
 	{
 		return;
 	}
+	UE_LOG(LogCombineClass, Warning, TEXT("Damage: %f"), Damage)
 	
 	m_flCurrentHealth = FMath::Clamp(GetCurrentHealth() - Damage, 0.0f, GetMaxHealth());
 
 	if (GetCurrentHealth() <= 0)
 	{
-		CombineDead();
+		//CombineDead();
 	}
+
+	if (combine_mesh->bApplyImpulseOnDamage)
+	{
+		RagDoll();
+	}
+
 }
 /*------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-
+/*
 void Anpc_combine::CombineDead()
 {
 	blsIsDead = true;
 
 	if (AAIController* Controllers = GetController<AAIController>())
 	{
+		Controllers->Destroy();  
+		RagDoll();
+
 		if(GamePlaySound[0]->IsValidLowLevel()) // Sound Dead
 		{
-			UGameplayStatics::PlaySoundAtLocation(this, GamePlaySound[0], GetActorLocation());
-			Controllers->Destroy();  
-			RagDoll();
+			UGameplayStatics::SpawnSoundAttached(GamePlaySound[0], combine_mesh);
 		}
 		
 	}
 	
 }
-
+*/
 
