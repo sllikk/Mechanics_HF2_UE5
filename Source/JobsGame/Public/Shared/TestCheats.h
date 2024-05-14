@@ -18,9 +18,19 @@ public:
 	// Useful for identifying hanging pointers that could cause a crash when
 	UFUNCTION( exec )
 	void ForceGarbageCollection();
-
+	
 	// Spawn Props
 	UFUNCTION( exec )
-	void Spawn_FlameBarrel();
+	void flamebarrel_spawn();
+
+	UFUNCTION( exec )
+	void healthkit_spawn();	
 	
+	UFUNCTION( exec )
+	void suitkit_spawn();	
+
+	
+private:
+
+	FORCEINLINE void SpawnInteractObject(TSubclassOf<AActor>);
 };
