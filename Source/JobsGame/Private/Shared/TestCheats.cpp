@@ -6,6 +6,7 @@
 #include "WorldActors/FlameBarrel.h"
 #include "WorldActors/HealthKit.h"
 
+
 void UTestCheats::ForceGarbageCollection()
 {
 	GEngine->ForceGarbageCollection(true);
@@ -13,7 +14,7 @@ void UTestCheats::ForceGarbageCollection()
 
 
 // DEFAULT SPAWN FUNC
-void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass)
+void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass) const
 {
 	if (GEngine != nullptr)
 	{
@@ -23,7 +24,7 @@ void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass)
 			const APlayerController* PlayerController = World->GetFirstPlayerController();
 			if (PlayerController)
 			{
-				const FVector& Location = PlayerController->GetPawn()->GetActorLocation() + PlayerController->GetPawn()->GetActorForwardVector() * 150.0f;
+				const FVector& Location = PlayerController->GetPawn()->GetActorLocation() + PlayerController->GetPawn()->GetActorForwardVector() * 300.0f;
 				const FRotator& Rotation = FRotator::ZeroRotator;
 				
 				FActorSpawnParameters SpawnParams;
@@ -34,18 +35,20 @@ void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass)
 	}
 }
 
-void UTestCheats::flamebarrel_spawn()
+
+void UTestCheats::spawn_flamebarrel()
 {
 	SpawnInteractObject(AFlameBarrel::StaticClass());
 }
 
 
-void UTestCheats::healthkit_spawn()
+void UTestCheats::spawn_healthkit()
 {
 	SpawnInteractObject(AHealthKit::StaticClass());
 }
 
-void UTestCheats::suitkit_spawn()
+
+void UTestCheats::spawn_batterykit()
 {
 	SpawnInteractObject(ABatteryKit::StaticClass());
 }

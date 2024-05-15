@@ -15,11 +15,12 @@ AFlameBarrel::AFlameBarrel()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	BarrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	
 	Trigger = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	Trigger->SetupAttachment(BarrelMesh);
 	Trigger->InitSphereRadius(255.0f);
-
+	Trigger->SetCollisionProfileName("Interaction");
+	Trigger->bHiddenInGame = true;
+	
 	const FSoftObjectPath FindMesh(TEXT("/Game/World_InteractObject/FlameBarrel/barrel"));	
 	static TObjectPtr<UStaticMesh> StaticMesh = nullptr;
 	if (FindMesh.IsValid())
@@ -58,7 +59,7 @@ void AFlameBarrel::BeginPlay()
 		FResourceLoad(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"), nullptr),		
 		//FResourceLoad(TEXT(""), nullptr),		
 	};
-
+	
 	for (FResourceLoad& Resource : ResourceLoads)
 	{
 		Resource.LoadedResource = LoadObject<UObject>(nullptr,*Resource.ResourcePath);
@@ -95,11 +96,10 @@ void AFlameBarrel::Detected(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 	if (Character != nullptr)
 	{
+		UE_LOG(LogActor, Warning, TEXT("Detected: "))
 		BarrelBurns();	
 	}
 	
-	Trigger->OnComponentBeginOverlap.RemoveAll(this);
-
 }
 
 
@@ -107,7 +107,6 @@ void AFlameBarrel::Explode()
 {
 	if (ParticleSystem[1]->IsValidLowLevel())
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
 		// create array for hit results
 		TArray<FHitResult> OutHits;
 		// get actor locations
@@ -126,6 +125,7 @@ void AFlameBarrel::Explode()
 
 			for(auto& OutHit : OutHits)
 			{
+				UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
 				UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
 									UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
 				UPrimitiveComponent* HitComp = OutHit.GetComponent();
@@ -134,7 +134,7 @@ void AFlameBarrel::Explode()
 				{
 					FVector ImpulseDirection = HitComp->GetComponentLocation() - GetActorLocation();
 					ImpulseDirection.Normalize();
-					HitComp->AddImpulse(ImpulseDirection * 35000.0f);  
+					HitComp->AddImpulse(ImpulseDirection * 40000.0f);  
 				}
 			}
 			Destroy();

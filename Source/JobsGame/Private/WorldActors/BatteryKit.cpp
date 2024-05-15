@@ -32,7 +32,7 @@ ABatteryKit::ABatteryKit()
 		
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 		CollisionSphere->InitSphereRadius(1000.0f);
-		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
+		CollisionSphere->SetCollisionProfileName(TEXT("Interaction"));
 		CollisionSphere->SetupAttachment(MeshComponent);
 	}
 	else
@@ -65,7 +65,8 @@ void ABatteryKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	
+	MeshComponent->SetMassOverrideInKg(NAME_None, 35.0f); 
+
 }
 
 

@@ -34,9 +34,9 @@ AHealthKit::AHealthKit()
 		
 		CollisionSphere = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollision"));
 		CollisionSphere->InitSphereRadius(3000.0f);
-		CollisionSphere->SetCollisionProfileName(TEXT("OverllupAll"));
+		CollisionSphere->SetCollisionProfileName(TEXT("Interaction"));
 		CollisionSphere->SetupAttachment(MeshComponent);
-	}
+	}	
 	else
 	{
 		UE_LOG(LogHealthKit, Warning, TEXT("Eror find object: %s"), *MeshAssets.ToString());
@@ -68,8 +68,9 @@ void AHealthKit::BeginPlay()
 	Super::BeginPlay();
 	
 	MeshComponent->SetSimulatePhysics(true);
-	 
+	MeshComponent->SetMassOverrideInKg(NAME_None, 35.0f); 
 }
+
 
 void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
 {

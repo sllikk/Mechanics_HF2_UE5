@@ -109,7 +109,7 @@ void Anpc_combine::CombineDebug() const
 	FColor Color = FColor::White;
 
 	DrawDebugString(GetWorld(), vecHealthDebug, strHealth, nullptr, Color, 0.0f, true);
-	DrawDebugString(GetWorld(), vecMassDebug, strMass, nullptr, Color, 0.0f, true);
+	//DrawDebugString(GetWorld(), vecMassDebug, strMass, nullptr, Color, 0.0f, true);
 
 }
 

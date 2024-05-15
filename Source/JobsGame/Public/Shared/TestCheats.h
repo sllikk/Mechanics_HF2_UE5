@@ -21,16 +21,16 @@ public:
 	
 	// Spawn Props
 	UFUNCTION( exec )
-	void flamebarrel_spawn();
+	void spawn_flamebarrel();
 
 	UFUNCTION( exec )
-	void healthkit_spawn();	
+	void spawn_healthkit();	
 	
 	UFUNCTION( exec )
-	void suitkit_spawn();	
+	void spawn_batterykit();	
 
 	
 private:
 
-	FORCEINLINE void SpawnInteractObject(TSubclassOf<AActor>);
+	FORCEINLINE void SpawnInteractObject(TSubclassOf<AActor>) const;
 };
