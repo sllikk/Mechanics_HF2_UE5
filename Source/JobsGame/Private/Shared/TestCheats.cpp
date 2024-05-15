@@ -19,17 +19,39 @@ void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass) cons
 	if (GEngine != nullptr)
 	{
 		UWorld* World = GEngine->GetWorldFromContextObjectChecked(this);
+
 		if (World)
 		{
 			const APlayerController* PlayerController = World->GetFirstPlayerController();
 			if (PlayerController)
 			{
-				const FVector& Location = PlayerController->GetPawn()->GetActorLocation() + PlayerController->GetPawn()->GetActorForwardVector() * 300.0f;
-				const FRotator& Rotation = FRotator::ZeroRotator;
+				FVector Location; 
+				FRotator Rotation; 
+				PlayerController->GetPlayerViewPoint(Location, Rotation);
+
+				FVector const& End = Location + (Rotation.Vector() * 500.0f);
+
+				FHitResult HitResult;
+				FCollisionQueryParams QueryParams;
+				QueryParams.AddIgnoredActor(PlayerController->GetPawn());
+
+				if (PlayerController->GetWorld()->LineTraceSingleByChannel(HitResult, Location, End, ECC_Visibility, QueryParams))
+				{
+					DrawDebugSphere(GetWorld(), HitResult.Location, 15, 32, FColor::Cyan, false, 2.0f);
+
+					const FRotator& SpawnRotator = FRotator::ZeroRotator;
+
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+					World->SpawnActor<AActor>(ActorClass, HitResult.Location, Rotation, SpawnParams);	
+					
+				}
+				else
+				{
+					// Место занято, возможно, выводим сообщение или логируем
+					UE_LOG(LogTemp, Warning, TEXT("Cannot spawn, location is blocked"));
+				}
 				
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-				World->SpawnActor<AActor>(ActorClass, Location, Rotation, SpawnParams);
 			}
 		}
 	}
