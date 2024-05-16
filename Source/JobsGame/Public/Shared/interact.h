@@ -24,5 +24,6 @@ class JOBSGAME_API Iinteract
 public:
 
 	virtual void Interact(AActor* Actor) = 0;
-
+	//virtual void CheatDebugHealth() = 0; 
+	
 };

@@ -14,6 +14,9 @@ AFlameBarrel::AFlameBarrel()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	Health = 20;
+
 	BarrelMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	Trigger = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	Trigger->SetupAttachment(BarrelMesh);
@@ -47,17 +50,17 @@ void AFlameBarrel::BeginPlay()
 	Super::BeginPlay();
 
 	BarrelMesh->SetSimulatePhysics(true);
-	BarrelMesh->SetMassOverrideInKg(NAME_None, 60);
+	BarrelMesh->SetMassOverrideInKg(NAME_None, 35);
 	BarrelMesh->SetAngularDamping(1.0f);
 	BarrelMesh->SetLinearDamping(0.5);
 
 //	BarrelMesh->OnComponentHit.AddDynamic(this, &AFlameBarrel::OnHit);
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AFlameBarrel::Detected);
-
+	OnTakeAnyDamage.AddDynamic(this, &AFlameBarrel::TakeDamage);
+	
 	 TArray<FResourceLoad> ResourceLoads = {
 		FResourceLoad(TEXT("/Game/M5VFXVOL2/Particles/Fire/Fire_02"), nullptr),
 		FResourceLoad(TEXT("/Game/VFX/Particles/Explosion/Hopper_Explosion"), nullptr),		
-		//FResourceLoad(TEXT(""), nullptr),		
 	};
 	
 	for (FResourceLoad& Resource : ResourceLoads)
@@ -74,11 +77,10 @@ void AFlameBarrel::BeginPlay()
 		 if (LoadParticleSystem != nullptr)
 		 {
 		 	ParticleSystem.Add(LoadParticleSystem);
+			
 		 }
 	}
 	
-
-
 }
 
 // Called every frame
@@ -105,8 +107,6 @@ void AFlameBarrel::Detected(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 void AFlameBarrel::Explode()
 {
-	if (ParticleSystem[1]->IsValidLowLevel())
-	{
 		// create array for hit results
 		TArray<FHitResult> OutHits;
 		// get actor locations
@@ -125,24 +125,33 @@ void AFlameBarrel::Explode()
 
 			for(auto& OutHit : OutHits)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
-				UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
-									UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
-				UPrimitiveComponent* HitComp = OutHit.GetComponent();
-
-				if (HitComp && HitComp->IsSimulatingPhysics())
+				
+				if (ParticleSystem[1]->IsValidLowLevel())
 				{
-					FVector ImpulseDirection = HitComp->GetComponentLocation() - GetActorLocation();
-					ImpulseDirection.Normalize();
-					HitComp->AddImpulse(ImpulseDirection * 40000.0f);  
+					UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
+					UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
+									UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
+					UPrimitiveComponent* HitComp = OutHit.GetComponent();
+
+					if (HitComp && HitComp->IsSimulatingPhysics())
+					{
+						FVector ImpulseDirection = HitComp->GetComponentLocation() - GetActorLocation();
+						ImpulseDirection.Normalize();
+						HitComp->AddImpulse(ImpulseDirection * 40000.0f);  
+						Destroy();
+					}
 				}
-			}
-			Destroy();
-			GetWorld()->GetTimerManager().ClearTimer(TimerExplode);
+				
 		
 		}
 	}
 	
+}
+
+void AFlameBarrel::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	AController* InstigatedBy, AActor* DamageCauser)
+{
+
 }
 
 
