@@ -21,6 +21,33 @@ struct FResourceLoad
 		: ResourcePath(resource_path), LoadedResource(loaded_resource){}
 	
 };
+/*
+USTRUCT()
+struct FDebugProps
+{
+	GENERATED_BODY()
+	
+	
+	UPROPERTY(EditAnywhere, Category="Debug")
+	FString& Name;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	FString& Model;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	FString& AnimationSequence;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	float& Health;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	FVector& Location;
+
+	UPROPERTY(EditAnywhere, Category="Debug")
+	FVector& Stress;
+	
+};
+*/
 
 UCLASS()
 class JOBSGAME_API UResourse : public UObject
