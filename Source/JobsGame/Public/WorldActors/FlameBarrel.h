@@ -41,17 +41,17 @@ protected:
 	void			Detected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 						  UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
-	void			TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	void			ChainsDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 						  AController* InstigatedBy, AActor* DamageCauser);
-	
-	
 	virtual void	EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	
 public:	
 
+	void ReduceHealth();
 	void BarrelBurns();
 	void Explode();
+	void Debug();
 	
 private:
 

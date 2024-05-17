@@ -7,25 +7,6 @@
 #include "Containers/Map.h"
 #include "TestCheats.generated.h"
 
-USTRUCT(BlueprintType)
-struct FDebugInfoHitActor
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(BlueprintReadWrite, Category="Debug")
-	FString Name;
-
-	UPROPERTY(BlueprintReadWrite, Category="Debug")
-	FString Model;
-	
-	//UPROPERTY(BlueprintReadWrite, Category="Debug")
-	//float Health;
-
-	UPROPERTY(BlueprintReadWrite, Category="Debug")
-	FVector Location;
-	
-};
-
 UCLASS()
 class JOBSGAME_API UTestCheats : public UCheatManager
 {

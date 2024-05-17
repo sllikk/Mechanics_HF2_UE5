@@ -6,6 +6,23 @@
 #include "WorldActors/FlameBarrel.h"
 #include "WorldActors/HealthKit.h"
 
+struct FSpawnCheat
+{
+	TMap<const FString, const TSubclassOf<AActor>> SPAWNNER; 
+
+	FSpawnCheat()
+	{
+		SPAWNNER.Add(TEXT("flamebarrel"), AFlameBarrel::StaticClass());
+		SPAWNNER.Add(TEXT("healthkit"), AHealthKit::StaticClass());
+		SPAWNNER.Add(TEXT("batterykit"), ABatteryKit::StaticClass());
+	}
+};
+
+
+UTestCheats::UTestCheats()
+{
+
+}
 
 void UTestCheats::ForceGarbageCollection()
 {
@@ -13,44 +30,43 @@ void UTestCheats::ForceGarbageCollection()
 }
 
 
-// DEFAULT SPAWN FUNC
-void UTestCheats::SpawnInteractObject(const TSubclassOf<AActor> ActorClass) const
+void UTestCheats::SpawnInteractObject(const FString& ObjectName) const
 {
-	if (GEngine != nullptr)
+	FSpawnCheat SpawnCheat;
+	if (SpawnCheat.SPAWNNER.Contains(ObjectName))
 	{
-		UWorld* World = GEngine->GetWorldFromContextObjectChecked(this);
-		if (World)
+		if (GEngine != nullptr)
 		{
-			const APlayerController* PlayerController = World->GetFirstPlayerController();
-			if (PlayerController)
+			UWorld* World = GetWorld();
+			if (World != nullptr)
 			{
-				const FVector& Location = PlayerController->GetPawn()->GetActorLocation() + PlayerController->GetPawn()->GetActorForwardVector() * 300.0f;
-				const FRotator& Rotation = FRotator::ZeroRotator;
+				const TSubclassOf<AActor>* SpawnActor = SpawnCheat.SPAWNNER.Find(ObjectName);
+				const APlayerController* PlayerController = World->GetFirstPlayerController();
+				if (PlayerController != nullptr)
+				{
+					const FVector& Location = PlayerController->GetPawn()->GetActorLocation() + PlayerController->GetPawn()->GetActorForwardVector() * 300.0f;
+					const FRotator& Rotation = FRotator::ZeroRotator;
 				
-				FActorSpawnParameters SpawnParams;
-				SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-				World->SpawnActor<AActor>(ActorClass, Location, Rotation, SpawnParams);
+					FActorSpawnParameters SpawnParams;
+					SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+					World->SpawnActor<AActor>(*SpawnActor, Location, Rotation, SpawnParams);
+				}
 			}
 		}
 	}
 }
 
 
-void UTestCheats::spawn_flamebarrel()
+void UTestCheats::spawn_props(const FString& SpawnerClass) const
 {
-	SpawnInteractObject(AFlameBarrel::StaticClass());
+	SpawnInteractObject(SpawnerClass);
 }
 
 
-void UTestCheats::spawn_healthkit()
+void UTestCheats::spawn_npc(const FString& SpawnerClass) const
 {
-	SpawnInteractObject(AHealthKit::StaticClass());
+	SpawnInteractObject(SpawnerClass);
 }
 
-
-void UTestCheats::spawn_batterykit()
-{
-	SpawnInteractObject(ABatteryKit::StaticClass());
-}
 
 

@@ -5,7 +5,6 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
-#include "Particles/ParticleSystemComponent.h"
 #include "Player/MyCharacter.h"
 #include "Shared/Resourse.h"
 
@@ -22,7 +21,6 @@ AFlameBarrel::AFlameBarrel()
 	Trigger->SetupAttachment(BarrelMesh);
 	Trigger->InitSphereRadius(255.0f);
 	Trigger->SetCollisionProfileName("Interaction");
-	Trigger->bHiddenInGame = true;
 	
 	const FSoftObjectPath FindMesh(TEXT("/Game/World_InteractObject/FlameBarrel/barrel"));	
 	static TObjectPtr<UStaticMesh> StaticMesh = nullptr;
@@ -56,7 +54,7 @@ void AFlameBarrel::BeginPlay()
 
 //	BarrelMesh->OnComponentHit.AddDynamic(this, &AFlameBarrel::OnHit);
 	Trigger->OnComponentBeginOverlap.AddDynamic(this, &AFlameBarrel::Detected);
-	OnTakeAnyDamage.AddDynamic(this, &AFlameBarrel::TakeDamage);
+	OnTakeAnyDamage.AddDynamic(this, &AFlameBarrel::ChainsDamage);
 	
 	 TArray<FResourceLoad> ResourceLoads = {
 		FResourceLoad(TEXT("/Game/M5VFXVOL2/Particles/Fire/Fire_02"), nullptr),
@@ -80,15 +78,17 @@ void AFlameBarrel::BeginPlay()
 			
 		 }
 	}
-	
+
+
 }
 
 // Called every frame
 void AFlameBarrel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	
+	Debug();
+
+
 }
 
 void AFlameBarrel::Detected(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -103,56 +103,101 @@ void AFlameBarrel::Detected(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 	
 }
+void AFlameBarrel::ReduceHealth()
+{
+	--Health; 
 
+	
+	if (Health <= 0)
+	{
+		Explode();
+	}
+}
 
 void AFlameBarrel::Explode()
 {
-		// create array for hit results
-		TArray<FHitResult> OutHits;
-		// get actor locations
-		const FVector& MyLocation = GetActorLocation();
-		// start and end locations. The sphere will create the radial sweep.
-		const FVector& Start = MyLocation;
-		const FVector& End = MyLocation;
-		// create a collision sphere
-		const FCollisionShape& MyColSphere = FCollisionShape::MakeSphere(500.0f);
-		// draw collision sphere
-		DrawDebugSphere(GetWorld(), GetActorLocation(), MyColSphere.GetSphereRadius(), 25, FColor::Green, true);
+	GetWorld()->GetTimerManager().ClearTimer(TimerExplode);
+	// Удалить все отладочные строки, связанные с этим объектом
+	FlushPersistentDebugLines(GetWorld());
+	FlushDebugStrings(GetWorld());
 
-		if (GetWorld()->SweepMultiByChannel(OutHits, Start, End, FQuat::Identity, ECC_Destructible, MyColSphere))
+	TArray<FHitResult> OutHits;
+
+	const FVector& MyLocation = GetActorLocation();
+	const FVector& Start = MyLocation;
+	const FVector& End = MyLocation;
+	const FCollisionShape& MyColSphere = FCollisionShape::MakeSphere(500.0f);
+	DrawDebugSphere(GetWorld(), GetActorLocation(), MyColSphere.GetSphereRadius(), 25, FColor::Green, true);
+
+	if (GetWorld()->SweepMultiByChannel(OutHits, Start, End, FQuat::Identity, ECC_Destructible, MyColSphere))
+	{
+		for(auto& OutHit : OutHits)
 		{
-			const TArray<AActor*> IgnoreActors;
-
-			for(auto& OutHit : OutHits)
+			if (ParticleSystem[1]->IsValidLowLevel())
 			{
-				
-				if (ParticleSystem[1]->IsValidLowLevel())
-				{
-					UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
-					UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
-									UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
-					UPrimitiveComponent* HitComp = OutHit.GetComponent();
+				const TArray<AActor*> IgnoreActors;
+				UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
+				UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
+								UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
+				UPrimitiveComponent* HitComp = OutHit.GetComponent();
 
-					if (HitComp && HitComp->IsSimulatingPhysics())
-					{
-						FVector ImpulseDirection = HitComp->GetComponentLocation() - GetActorLocation();
-						ImpulseDirection.Normalize();
-						HitComp->AddImpulse(ImpulseDirection * 40000.0f);  
-						Destroy();
-					}
+				if (HitComp && HitComp->IsSimulatingPhysics())
+				{
+					FVector ImpulseDirection = HitComp->GetComponentLocation() - GetActorLocation();
+					ImpulseDirection.Normalize();
+					HitComp->AddImpulse(ImpulseDirection * 40000.0f);  
+					Destroy();
 				}
-				
-		
+			}
 		}
 	}
-	
 }
 
-void AFlameBarrel::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatedBy, AActor* DamageCauser)
+
+void AFlameBarrel::Debug()
 {
+	const FString& TEXT = FString::Printf(TEXT("Health: %2.0f"), Health); 
+	const FVector& Location = GetActorLocation();
+	const FColor& Color = FColor::Yellow;
+
+	DrawDebugString(GetWorld(), Location, TEXT, nullptr, Color, 0);
 
 }
+
+
+void AFlameBarrel::ChainsDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+                                AController* InstigatedBy, AActor* DamageCauser)
+{
+	Health = FMath::Clamp(Health - Damage, 0.0f, 20.0f);
+
+	//if (Health <= 0)
+//	{
+//		Explode();
+//	}
+
+}
+
+
+void AFlameBarrel::BarrelBurns() 
+{	
+	GetWorld()->GetTimerManager().SetTimer(TimerExplode, this, &AFlameBarrel::ReduceHealth, 0.5f, true);
+	
+	if (ParticleSystem[0]->IsValidLowLevel())
+	{
+		UGameplayStatics::SpawnEmitterAttached(ParticleSystem[0], BarrelMesh);
+
+	}
+}
+
+
+void AFlameBarrel::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	GetWorld()->GetTimerManager().ClearTimer(TimerExplode);
+
+}
+
 
 
 /* 
@@ -166,22 +211,3 @@ void AFlameBarrel::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrim
 	
 }
 */
-
-void AFlameBarrel::BarrelBurns() 
-{	
-	GetWorld()->GetTimerManager().SetTimer(TimerExplode, this, &AFlameBarrel::Explode, 5.0f, false);
-	
-	if (ParticleSystem[0]->IsValidLowLevel())
-	{
-		UGameplayStatics::SpawnEmitterAttached(ParticleSystem[0], BarrelMesh);
-	}
-	
-}
-
-void AFlameBarrel::EndPlay(const EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	GetWorld()->GetTimerManager().ClearTimer(TimerExplode);
-
-}
