@@ -5,9 +5,11 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
+#include "Shared/damage.h"
 #include "npc_combine.generated.h"
 class USkeletalMeshComponent;
 class UBehaviorTree;
+class UDecalComponent;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCombineClass, Log, All);
 
@@ -18,6 +20,9 @@ class JOBSGAME_API Anpc_combine : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly ,Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> combine_mesh;
+
+	UPROPERTY(EditAnywhere, Blueprintable, Category="Decals", meta=(AllowPrivateAccess = "true"))
+	TArray<UMaterialInstance*> BloodDecal;
 	
 public:
 	// Sets default values for this character's properties
@@ -43,6 +48,9 @@ public:
 	void Damage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 				AController* InstigatedBy, AActor* DamageCauser);
 
+	UFUNCTION()
+	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+	
 	// GamePlay Sound this npc
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="gameplay_sound")
 	TArray<USoundBase*> GamePlaySound;
@@ -74,12 +82,14 @@ public:
 
 //------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------//
 
-	//void CombineDead();
-	void CombineDebug() const;
-	void RagDoll() const;
-	void Falling() override;
+	void	CombineDead();
+	void	CombineDebug() const;
+	void	RagDoll() const;
+	void	Falling() override;
+	void	OnHitMesh(float Impact);
+	void    SpawnDecals();
 	
-protected:
+	protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dead")	
 	bool		blsIsDead;
 	float		m_flMaxSpeedWalk;
@@ -93,4 +103,6 @@ protected:
 	float		m_flMaxHealth;
 	float		m_flCurrentHealth;
 	float		m_flDistanceFallDead;
+	
+
 };

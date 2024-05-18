@@ -1,8 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "NPC_WEAPON/shotgun.h"
-
 
 // Sets default values
 Ashotgun::Ashotgun()
@@ -11,7 +9,6 @@ Ashotgun::Ashotgun()
 	PrimaryActorTick.bCanEverTick = true;
 
 	ShotgunSkeletal = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-//	Shells = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 
 	// Load Skeletal mesh shotgun
 	const FSoftObjectPath GunPath(TEXT("/Game/Weapon/ShotGun/Spas12")); 	
@@ -23,32 +20,21 @@ Ashotgun::Ashotgun()
 	if (SkeletalMesh != nullptr)
 	{
 		ShotgunSkeletal->SetSkeletalMesh(SkeletalMesh);
-
+		RootComponent = ShotgunSkeletal;
 	} 
 	else
 	{
 		UE_LOG(LogLoad, Warning, TEXT("Error Load: %s"), *GunPath.ToString())
 	}
-	// Load Static mesh shell for shotgun
-/*
-	const FSoftObjectPath ShellPath(TEXT("/Game/Weapon/ShotGun/Shell/shell_shotgun"));
-	static TObjectPtr<UStaticMesh> ShellMesh = nullptr;
-	if (ShellPath.IsValid())
-	{
-		ShellMesh = Cast<UStaticMesh>(ShellPath.TryLoad());
-	}
-	if (ShellMesh != nullptr)
-	{
-		Shells->SetStaticMesh(ShellMesh);		
-	}
-*/
+
 }
 
 // Called when the game starts or when spawned
 void Ashotgun::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	UE_LOG(LogActor, Warning, TEXT("SpawnGun"))
 }
 
 // Called every frame

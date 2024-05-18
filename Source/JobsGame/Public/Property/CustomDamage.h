@@ -47,11 +47,8 @@ public:
 	FDamageTypeData GetDamageTypeData() const;
 	EDamageType GetCurrentDamageType() const;
 	void SetCurrentDamageType(EDamageType TypeDamage);
-
 	// Weapon is the weapon that did the attack
 	// Attacker is the character who originated the attack (like a player or an AI).
-	AActor* GetAttack() const{return m_Attacker;}
-	void SetAttacker(AActor* pAttacker){m_Attacker = pAttacker;}
 
 	// -------------------------------------------------------------------------------------------------- //
 	// Inlines.
@@ -77,6 +74,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	EDamageType DamageType;
+
 	UPROPERTY(EditAnywhere,  BlueprintReadOnly, Category = "Damage")
 	TMap<EDamageType, FDamageTypeData> DataType;
 	
@@ -90,12 +88,6 @@ protected:
 	FVector							m_vecDamageForce;
 	FVector							m_vecDamagePosition;
 	FVector							m_vecReportedPosition;	// Position players are told damage is coming from
-	UPROPERTY()
-	AActor*							m_Inflictor;
-	UPROPERTY()	
-	AActor*							m_Attacker;
-	UPROPERTY()
-	AActor*							m_Weapon;
 
 private:
 
@@ -103,3 +95,4 @@ private:
 	void InitialDamageType();
 
 };
+ 

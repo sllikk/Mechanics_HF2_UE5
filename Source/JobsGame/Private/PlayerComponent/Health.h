@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
+#include "Shared/damage.h"
 #include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
@@ -41,9 +42,12 @@ public:
 	FORCEINLINE	bool				IsDead() const							{ return m_blsDead; }
 	FORCEINLINE	bool				IsAlive() const							{ return m_blsDead; }
 				bool				RestoreHealth(float HealthAmount);
+
 	UFUNCTION()
-	void                TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+	void   TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 					  AController* InstigatedBy, AActor* DamageCauser);
+	
+
 protected:
 
 	bool							 m_blsDead;

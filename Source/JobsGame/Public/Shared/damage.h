@@ -10,8 +10,9 @@
 UENUM(BlueprintType, meta=(ScriptName = "EDamageType"))
 enum class EDamageType
 {
-    DMG_GENERIC							UMETA(DisplayName = "Non-specific"),												/**< Non-specific. */	
-    DMG_CRUSH							UMETA(DisplayName = "CrushDamage"),												/**< Being crushed by something heavy. */
+
+	DMG_GENERIC							UMETA(DisplayName = "GenericDamage"),												/**< Non-specific damage. */
+	DMG_CRUSH							UMETA(DisplayName = "CrushDamage"),												/**< Being crushed by something heavy. */
     DMG_BULLET							UMETA(DisplayName = "BulletDamage"),												/**< Shot by a gun. */
     DMG_SLASH							UMETA(DisplayName = "SlashDamage"),												/**< Cutting, from swords or knives. */
     DMG_BURN							UMETA(DisplayName = "BurnDamage"),												/**< Short flame, or on-fire type damage. */
@@ -25,11 +26,11 @@ enum class EDamageType
     DMG_NERVEGAS						UMETA(DisplayName = "Toxins to the nerve"),											/**< Toxins to the nerve, special effect? */
     DMG_POISON							UMETA(DisplayName = "PoisonousDamage"),												/**< Poisonous damage. Similar to nerves? */
     DMG_RADIATION						UMETA(DisplayName = "RadiationDamage"),												/**< Radiation damage. Geiger counter go brr */
-    DMG_DROWNRECOVER						UMETA(DisplayName = "DrownRecovery"),												/**< Health increase from drown recovery. */
+    DMG_DROWNRECOVER					UMETA(DisplayName = "DrownRecovery"),												/**< Health increase from drown recovery. */
     DMG_CHEMICAL						UMETA(DisplayName = "ChemicalDamage"),												/**< Chemical damage. */
     DMG_SLOWBURN						UMETA(DisplayName = "SlowBurn"),												/**< Slow burning, just like burning but different rate. */
     DMG_SKIP_ARMOR						UMETA(DisplayName = "Damage will skip armor "),											/**< This damage will skip armor checks entirely. */
-    DMG_SKIP_RAGDOLL						UMETA(DisplayName = "Damage will not affect ragdolls")									    	/**< This damage will not affect ragdolls. */
+    DMG_SKIP_RAGDOLL					UMETA(DisplayName = "Damage will not affect ragdolls")									    	/**< This damage will not affect ragdolls. */
 };
 
 

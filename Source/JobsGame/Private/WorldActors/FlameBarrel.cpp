@@ -137,7 +137,7 @@ void AFlameBarrel::Explode()
 			{
 				const TArray<AActor*> IgnoreActors;
 				UGameplayStatics::SpawnEmitterAtLocation(this, ParticleSystem[1], GetActorLocation());
-				UGameplayStatics::ApplyRadialDamage(this, 60, GetActorLocation(), 500,
+				UGameplayStatics::ApplyRadialDamage(this, 2, GetActorLocation(), 500,
 								UDamageType::StaticClass(), IgnoreActors, this, GetInstigatorController());
 				UPrimitiveComponent* HitComp = OutHit.GetComponent();
 
@@ -158,7 +158,7 @@ void AFlameBarrel::Debug()
 {
 	const FString& TEXT = FString::Printf(TEXT("Health: %2.0f"), Health); 
 	const FVector& Location = GetActorLocation();
-	const FColor& Color = FColor::Yellow;
+	const FColor& Color = FColor::White;
 
 	DrawDebugString(GetWorld(), Location, TEXT, nullptr, Color, 0);
 
@@ -170,10 +170,10 @@ void AFlameBarrel::ChainsDamage(AActor* DamagedActor, float Damage, const UDamag
 {
 	Health = FMath::Clamp(Health - Damage, 0.0f, 20.0f);
 
-	//if (Health <= 0)
-//	{
-//		Explode();
-//	}
+	if (Health <= 12)
+	{
+		BarrelBurns();
+	}
 
 }
 

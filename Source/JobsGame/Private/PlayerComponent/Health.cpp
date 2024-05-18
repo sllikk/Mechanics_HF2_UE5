@@ -76,12 +76,26 @@ void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDam
 	{
 		return;
 	}
-	
-	m_flHealth = FMath::Clamp(m_flHealth - Damage, 0.0f, GetMaxHealth());
-
-	if (GetHealth() <= 0)
+	// Custom Damage	
+	const UCustomDamage* CustomDamage = Cast<const UCustomDamage>(DamageType);
+	if ( CustomDamage != nullptr )
 	{
+		const EDamageType& DamageData =	CustomDamage->GetCurrentDamageType();
+		const FDamageTypeData& DamageTypeData = CustomDamage->GetDamageTypeData();
+		static float ModeferDamage = Damage * DamageTypeData.DamageMultiplayer;
+
+		m_flHealth = FMath::Clamp(GetHealth() - ModeferDamage, 0.0f, GetMaxHealth());
+
+		UE_LOG(LogActor, Warning, TEXT("Damage: %2.f, TYPE: %s"), ModeferDamage,  *UEnum::GetValueAsString(DamageData))
 		
+		if (GetHealth() <= 0)
+		{
+		
+		}
+	}
+	else
+	{
+		UE_LOG(LogActor, Warning, TEXT("Error"))
 	}
 }
 
@@ -94,6 +108,10 @@ bool UHealthComponent::RestoreHealth(float HealthAmount)
 	return GetHealth() <= GetMaxHealth();
 	
 }
+
+	
+
+
 
 
 
