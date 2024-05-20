@@ -233,7 +233,7 @@ void AMyCharacter::Interact()
 		QueryParams.AddIgnoredActor(this);
 
 		FVector const&  StartLocation = FirstPersonCamera->GetComponentLocation();
-		FVector const&  EndLocation = StartLocation + FirstPersonCamera->GetForwardVector() * m_DistanceTrace;
+		FVector const&  EndLocation = StartLocation + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace);
 
 		FCollisionShape CollisionShape;
 		CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
@@ -241,11 +241,13 @@ void AMyCharacter::Interact()
 		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, ECC_Visibility,
 			CollisionShape, QueryParams))
 		{
-			AActor* HitActor = HitResult.GetActor();
-			if (HitActor)
+			TObjectPtr<AActor> HitActor = HitResult.GetActor();
+			if (HitActor != nullptr)
 			{
 				if (HitActor->GetClass()->ImplementsInterface(Uinteract::StaticClass()))
 				{
+					DrawDebugSphere(GetWorld(), HitResult.Location, 20, 20, FColor::Green);
+
 					Iinteract* InteractableActor = Cast<Iinteract>(HitActor);
 					if (InteractableActor)
 					{
@@ -323,7 +325,7 @@ void AMyCharacter::GrabComponent()
 		QueryParams.bIgnoreTouches = true;
 
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
-		FVector const& End = Start + FirstPersonCamera->GetForwardVector() * m_DistanceTrace; 
+		FVector const& End = Start + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace); 
 	
 		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
 		{
