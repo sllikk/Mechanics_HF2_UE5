@@ -20,7 +20,7 @@ void Ugrab_sphere::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	this->OnComponentBeginOverlap.AddDynamic(this, &Ugrab_sphere::OnSphereBeginOverlap);
 	
 }
 
@@ -31,5 +31,21 @@ void Ugrab_sphere::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+void Ugrab_sphere::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor)
+	{
+		AMyCharacter* Character = Cast<AMyCharacter>(OtherActor);
+
+		if (Character != nullptr)
+		{
+			PicUp.Broadcast(Character);
+			OnComponentBeginOverlap.RemoveAll(this);
+		}
+	}
+	
 }
 

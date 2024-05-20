@@ -4,9 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
+#include "Player/MyCharacter.h"
 #include "grab_sphere.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FPicUp, AMyCharacter* , Character);
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class JOBSGAME_API Ugrab_sphere : public USphereComponent
 {
@@ -20,8 +21,15 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
-	                           FActorComponentTickFunction* ThisTickFunction) override;
+							   FActorComponentTickFunction* ThisTickFunction) override;
+	UFUNCTION()
+	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	
+public:
+
+	UPROPERTY(EditAnywhere, Category="OnPickUp", BlueprintAssignable)
+	FPicUp PicUp;
+
 };
