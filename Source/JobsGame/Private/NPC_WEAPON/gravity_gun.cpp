@@ -7,6 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
 #include "Camera/CameraComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
@@ -31,6 +32,9 @@ Ugravity_gun::Ugravity_gun()
 	m_flphyscannon_minforce = 700.0f;
 	m_flphyscannon_maxforce = 1500.0f;
 	m_flphyscannon_cone = 0.97f;
+
+	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+	RayCastCapsule->InitCapsuleSize(20, 50);
 	
 	const FSoftObjectPath FindSkeletalMesh(TEXT("/Game/Weapon/Gravity/GravityGun"));
 	static TObjectPtr<USkeletalMesh> LoadMesh = nullptr;
@@ -109,38 +113,38 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			// Bind 
-//			EIC->BindAction(GrabAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Grab);	
+			EIC->BindAction(GrabAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Grab);	
 			EIC->BindAction(TrowAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Trow);	
 		}
 		
 	}
 }
 
-/*
+
 void Ugravity_gun::Gravity_Grab()
 {
 	if (Character->GetFirstPersonCamera() == nullptr) return;
 	{
-		RayCastSphere = NewObject<USphereComponent>();
-		if (RayCastSphere != nullptr)
-		{
 			FHitResult HitResult;
 			FCollisionQueryParams QueryParams;
 			QueryParams.AddIgnoredComponent(this);	
 
 			FCollisionShape CollisionShape;
-			CollisionShape.SetCapsule(, RayCastSphere->Ge);
-			
+			CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
+
 			const FVector& Start = GetSocketLocation("Muzzle");
 			const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * GetPhyscannonTraceLength());
 
-		}
-		
+			if (GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity,ECC_Visibility, CollisionShape, QueryParams))
+			{
+				// Debug: Draw the ray for visualization
+				DrawDebugCapsule(GetWorld(), Start, CollisionShape.GetCapsuleHalfHeight(), CollisionShape.GetCapsuleRadius(),
+					FQuat::Identity, FColor::Red, false, 1.0f);
+			}
 	}
 	
-	
 }
-*/
+
 
 void Ugravity_gun::Gravity_Trow()
 {

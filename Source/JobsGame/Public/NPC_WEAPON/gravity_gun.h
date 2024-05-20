@@ -30,7 +30,7 @@ class JOBSGAME_API Ugravity_gun : public USkeletalMeshComponent
 	TObjectPtr<UInputMappingContext> WeaponMappingContext;
 	
 	UPROPERTY(EditAnywhere, Category="PhysicsHandle", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<USphereComponent> RayCastSphere;
+	TObjectPtr<UCapsuleComponent> RayCastCapsule;
 	
 	
 public:
@@ -45,14 +45,13 @@ protected:
 	UFUNCTION()
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-	
 public:
 
 	UFUNCTION(BlueprintCallable, Category="Weapon")
 	void AttachToWeapon(AMyCharacter* TargetCharacter);
 
 	// Input 
-	//void					Gravity_Grab(void);
+	void					Gravity_Grab(void);
 	void					Gravity_Trow(void);
 	void					Gravity_Realese(void);
 //----------------------Getter Setter--------------------------------------------------------
@@ -67,7 +66,6 @@ public:
 	FORCEINLINE float		GetPhyscannonMinForce() const						{ return m_flphyscannon_minforce; }
 	FORCEINLINE void		SetPhyscannonMaxForce(float MaxForce)				{ m_flphyscannon_maxforce = MaxForce; }
 	FORCEINLINE float		GetPhyscannonMaxForce() const						{ return m_flphyscannon_maxforce; }
-	//FORCEINLINE void		SetPhyscannonCone(float Cone);
 	FORCEINLINE float		GetPhyscannonCone() const							{ return m_flphyscannon_cone; }
 	FORCEINLINE void		SetPhyscannonBallCone(float BallCone)				{ m_flphyscannon_ball_cone = BallCone; }
 	FORCEINLINE float		GetPhyscannonBallCone() const						{ return m_flphyscannon_ball_cone; }
