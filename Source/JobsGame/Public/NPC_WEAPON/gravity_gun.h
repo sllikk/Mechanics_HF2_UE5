@@ -29,8 +29,6 @@ class JOBSGAME_API Ugravity_gun : public USkeletalMeshComponent
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputMappingContext> WeaponMappingContext;
 	
-	UPROPERTY(EditAnywhere, Category="PhysicsHandle", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UCapsuleComponent> RayCastCapsule;
 	
 	
 public:
@@ -54,7 +52,9 @@ public:
 	void					Gravity_Grab(void);
 	void					Gravity_Trow(void);
 	void					Gravity_Realese(void);
-//----------------------Getter Setter--------------------------------------------------------
+	void					PhysicsTick() const;
+	
+	//----------------------Getter Setter--------------------------------------------------------
 
 	FORCEINLINE float		GetPhyscanon_Maxmass() const						{ return m_flphyscanon_maxmass; }
 	FORCEINLINE void        SetPhyscanon_Maxmass(float MaxMass)					{ m_flphyscanon_maxmass = MaxMass; }
@@ -66,24 +66,22 @@ public:
 	FORCEINLINE float		GetPhyscannonMinForce() const						{ return m_flphyscannon_minforce; }
 	FORCEINLINE void		SetPhyscannonMaxForce(float MaxForce)				{ m_flphyscannon_maxforce = MaxForce; }
 	FORCEINLINE float		GetPhyscannonMaxForce() const						{ return m_flphyscannon_maxforce; }
-	FORCEINLINE float		GetPhyscannonCone() const							{ return m_flphyscannon_cone; }
-	FORCEINLINE void		SetPhyscannonBallCone(float BallCone)				{ m_flphyscannon_ball_cone = BallCone; }
-	FORCEINLINE float		GetPhyscannonBallCone() const						{ return m_flphyscannon_ball_cone; }
-	FORCEINLINE void		SetPhyscannonPuntCone(float PuntCone)				{ m_flphyscannon_punt_cone = PuntCone; }
-	FORCEINLINE float		GetPhyscannonPuntCone() const						{ return m_flphyscannon_punt_cone; }
-
+	FORCEINLINE float		GetTraceSphereRadius() const						{ return m_trace_sphere_radius; }	
+	FORCEINLINE float       GetTraceSphereHalfHeight() const					{ return m_trace_sphere_halfheight; }
+	
 private:
 
 	UPROPERTY()
 	AMyCharacter* Character;
+	TArray<FName> ComponentTag;    // Tag GrabComponent
 	
 	float		m_flphyscanon_maxmass;        // Sets the maximum mass at which an object can be picked up  
 	float		m_flphyscanon_tracelength;     // How far an object can be pulled
 	float		m_flphyscannon_pullforce;         // How much force to be used when pulling objects to the player
 	float		m_flphyscannon_minforce;
 	float		m_flphyscannon_maxforce;
-	float		m_flphyscannon_cone;               // Changes how wide the pickup range is, lower numbers are wider
-	float		m_flphyscannon_ball_cone;
-	float		m_flphyscannon_punt_cone;
+	float		m_trace_sphere_radius;
+	float		m_trace_sphere_halfheight;
+	
 
 };

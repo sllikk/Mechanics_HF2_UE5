@@ -8,7 +8,6 @@
 #include "EnhancedPlayerInput.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 
 class UEnhancedInputLocalPlayerSubsystem;
@@ -26,15 +25,13 @@ Ugravity_gun::Ugravity_gun()
 	Gravity_Physics->AngularStiffness = 1500.0f;
 	Gravity_Physics->InterpolationSpeed = 50.0f;	
 
-	m_flphyscanon_maxmass = 200.0f;
-	m_flphyscanon_tracelength = 250.0f;
+	m_flphyscanon_maxmass = 250.0f;
+	m_flphyscanon_tracelength = 500.0f;
 	m_flphyscannon_pullforce = 2000.0f;
 	m_flphyscannon_minforce = 700.0f;
 	m_flphyscannon_maxforce = 1500.0f;
-	m_flphyscannon_cone = 0.97f;
-
-	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
-	RayCastCapsule->InitCapsuleSize(20, 50);
+	m_trace_sphere_radius = 15.0f;
+	m_trace_sphere_halfheight = 30.0f;
 	
 	const FSoftObjectPath FindSkeletalMesh(TEXT("/Game/Weapon/Gravity/GravityGun"));
 	static TObjectPtr<USkeletalMesh> LoadMesh = nullptr;
@@ -84,6 +81,8 @@ void Ugravity_gun::EndPlay(const EEndPlayReason::Type EndPlayReason)
 void Ugravity_gun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	PhysicsTick();
 }
 
 
@@ -104,7 +103,7 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 	Character->SetHasRifle(true);
 
 	// Set up action bindings
-	if (APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+	if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -125,22 +124,31 @@ void Ugravity_gun::Gravity_Grab()
 {
 	if (Character->GetFirstPersonCamera() == nullptr) return;
 	{
-			FHitResult HitResult;
-			FCollisionQueryParams QueryParams;
-			QueryParams.AddIgnoredComponent(this);	
+		TArray<FHitResult> HitResult;
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredComponent(this);	
+		
+		FCollisionShape CollisionShape;
+		CollisionShape.MakeSphere(GetTraceSphereRadius());
+		
+		const FVector& Start = GetSocketLocation("Muzzle");
+		const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * m_flphyscanon_tracelength);
 
-			FCollisionShape CollisionShape;
-			CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
-
-			const FVector& Start = GetSocketLocation("Muzzle");
-			const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * GetPhyscannonTraceLength());
-
-			if (GetWorld()->SweepSingleByChannel(HitResult, Start, End, FQuat::Identity,ECC_Visibility, CollisionShape, QueryParams))
+		if ( GetWorld()->SweepMultiByChannel(HitResult, Start, End,  FQuat::Identity,ECC_Visibility, CollisionShape, QueryParams) )
+		{
+			for (const FHitResult ComponentHit : HitResult)
 			{
-				// Debug: Draw the ray for visualization
-				DrawDebugCapsule(GetWorld(), Start, CollisionShape.GetCapsuleHalfHeight(), CollisionShape.GetCapsuleRadius(),
-					FQuat::Identity, FColor::Red, false, 1.0f);
-			}
+				TObjectPtr<UPrimitiveComponent> Component = ComponentHit.GetComponent(); 
+				if (Component != nullptr)
+				{
+					DrawDebugSphere(GetWorld(), ComponentHit.Location, GetTraceSphereRadius(), 32, FColor::Cyan, false, 2);
+					DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2);
+					const FVector& GrabLocation = Component->GetComponentLocation();  
+					const FRotator& Rotator = Component->GetComponentRotation(); 
+					Gravity_Physics->GrabComponentAtLocationWithRotation(Component, NAME_None, GrabLocation, Rotator);
+				}
+			}	
+		}
 	}
 	
 }
@@ -154,7 +162,25 @@ void Ugravity_gun::Gravity_Trow()
 
 void Ugravity_gun::Gravity_Realese()
 {
-	UE_LOG(LogActor, Warning, TEXT("Release"));
+	if (Gravity_Physics)
+	{
+		Gravity_Physics->ReleaseComponent();
+	}
+	
+}
 
+void Ugravity_gun::PhysicsTick() const
+{
+	if (Gravity_Physics->GrabbedComponent)
+	{
+		TObjectPtr<UPrimitiveComponent> Component = Gravity_Physics->GrabbedComponent;
+
+		FVector const& Start = Character->GetFirstPersonCamera()->GetComponentLocation();
+		FVector const& NewLocation = Start + Character->GetFirstPersonCamera()->GetForwardVector() * 150;	
+		FRotator const& NewRotator = Character->GetFirstPersonCamera()->GetComponentRotation();
+
+		Gravity_Physics->SetTargetLocationAndRotation(NewLocation, NewRotator);
+
+	}
 }
 
