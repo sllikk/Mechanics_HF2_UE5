@@ -340,6 +340,7 @@ void AMyCharacter::GrabComponent()
 				DontInteract();
 				return;
 			}
+
 			FBoxSphereBounds3d Bounds = ComponentToGrab->Bounds;
 			FVector const& CentreComponent = Bounds.Origin;
 			FVector const& GrabLocation = CentreComponent;

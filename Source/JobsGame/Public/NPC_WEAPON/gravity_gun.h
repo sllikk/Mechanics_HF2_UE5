@@ -37,11 +37,9 @@ public:
 
 protected:
 
-	void BeginPlay() override;
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	/** Ends gameplay for this component. */
-	UFUNCTION()
-	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	void			BeginPlay() override;
+	void			TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void	EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
 
@@ -53,6 +51,8 @@ public:
 	void					Gravity_Trow(void);
 	void					Gravity_Realese(void);
 	void					PhysicsTick() const;
+	void					TrowImpulce() const;
+	void					PullObject(UPrimitiveComponent* ComponentToPull);
 	
 	//----------------------Getter Setter--------------------------------------------------------
 
@@ -72,8 +72,11 @@ public:
 private:
 
 	UPROPERTY()
-	AMyCharacter* Character;
+	AMyCharacter* Character;       // Player
+	UPROPERTY()
 	TArray<FName> ComponentTag;    // Tag GrabComponent
+	UPROPERTY()
+	TObjectPtr<UPrimitiveComponent> CurrentPulledComponent = nullptr;
 	
 	float		m_flphyscanon_maxmass;        // Sets the maximum mass at which an object can be picked up  
 	float		m_flphyscanon_tracelength;     // How far an object can be pulled
