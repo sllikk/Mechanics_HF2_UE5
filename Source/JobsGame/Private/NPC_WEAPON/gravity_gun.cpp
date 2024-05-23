@@ -9,12 +9,12 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
-
 class UEnhancedInputLocalPlayerSubsystem;
 
+// Constructor to initialize default properties and load mesh
 Ugravity_gun::Ugravity_gun()
 {
-	// DefaultProperty
+	// Initialize default properties for physics handle
 	Gravity_Physics = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
 	Gravity_Physics->bSoftAngularConstraint = true;
 	Gravity_Physics->bSoftLinearConstraint = true;
@@ -32,6 +32,7 @@ Ugravity_gun::Ugravity_gun()
 	m_flphyscannon_maxforce = 1500.0f;
 	m_trace_sphere_radius = 20.0f;
 	m_trace_sphere_halfheight = 30.0f;
+	bIsPullingObject = false;
 	
 	const FSoftObjectPath FindSkeletalMesh(TEXT("/Game/Weapon/Gravity/GravityGun"));
 	static TObjectPtr<USkeletalMesh> LoadMesh = nullptr;
@@ -51,7 +52,7 @@ Ugravity_gun::Ugravity_gun()
 	
 }
 
-
+// Called when the game starts, adds component tags
 void Ugravity_gun::BeginPlay()
 {
 	Super::BeginPlay();
@@ -62,7 +63,7 @@ void Ugravity_gun::BeginPlay()
 	
 }
 
-
+// Called when the game ends, removes mapping context
 void Ugravity_gun::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
@@ -82,14 +83,14 @@ void Ugravity_gun::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 
-
+// Called every frame, handles physics tick and object pulling
 void Ugravity_gun::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	PhysicsTick();
 
-	if (CurrentPulledComponent && Gravity_Physics)
+	if (bIsPullingObject && CurrentPulledComponent && Gravity_Physics)
 	{
 		const FVector Start = Character->GetFirstPersonCamera()->GetComponentLocation();
 		const FVector TargetLocation = CurrentPulledComponent->GetComponentLocation();
@@ -106,13 +107,14 @@ void Ugravity_gun::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 			// Захват объекта
 			const FRotator Rotator = CurrentPulledComponent->GetComponentRotation();
 			Gravity_Physics->GrabComponentAtLocationWithRotation(CurrentPulledComponent, NAME_None, TargetLocation, Rotator);
-			CurrentPulledComponent = nullptr; // Сбрасываем указатель на притягиваемый объект, т.к. объект уже захвачен
+			CurrentPulledComponent = nullptr; 
 		}
 	}
 
 }
 
 
+// Attaches the weapon to the character and sets up action bindings
 void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
@@ -149,7 +151,7 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 }
 
 
-
+// Initiates object pulling when the grab action is triggered
 void Ugravity_gun::Gravity_Grab()
 {
 	if (!Character || !Character->GetFirstPersonCamera()) return;
@@ -161,7 +163,7 @@ void Ugravity_gun::Gravity_Grab()
 	CollisionShape.MakeSphere(GetTraceSphereRadius());
 
 	const FVector& Start = Character->GetFirstPersonCamera()->GetComponentLocation();
-	const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * m_flphyscannon_pullforce);
+	const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * 5000);
 
 	if (GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_Visibility, CollisionShape, QueryParams))
 	{
@@ -179,7 +181,7 @@ void Ugravity_gun::Gravity_Grab()
 					DrawDebugSphere(GetWorld(), ComponentHit.Location, GetTraceSphereRadius(), 32, FColor::Cyan, false, 2);
 					DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2);
 					#endif					
-
+					bIsPullingObject = true;
 					CurrentPulledComponent = Component;
 					return;
 				}
@@ -188,7 +190,7 @@ void Ugravity_gun::Gravity_Grab()
 	}
 }
 
-
+// Throws the grabbed object with a specified force when the throw action is triggered
 void Ugravity_gun::Gravity_Trow()
 {
 	if (Gravity_Physics->GrabbedComponent)
@@ -210,15 +212,18 @@ void Ugravity_gun::Gravity_Trow()
 }
 
 
+// Releases the grabbed object and stops pullin
 void Ugravity_gun::Gravity_Realese()
 {
 	if (Gravity_Physics)
 	{
+		bIsPullingObject = false;
 		Gravity_Physics->ReleaseComponent();
 	}
 	
 }
 
+// Updates the position and rotation of the grabbed component based on camera direction
 void Ugravity_gun::PhysicsTick() const
 {
 	if (Gravity_Physics->GrabbedComponent)
@@ -234,7 +239,7 @@ void Ugravity_gun::PhysicsTick() const
 }
 
 
-	
+// Performs impulse throw when the impulse action is triggered	
 void Ugravity_gun::TrowImpulce() 
 {
 	if (Gravity_Physics->GrabbedComponent)

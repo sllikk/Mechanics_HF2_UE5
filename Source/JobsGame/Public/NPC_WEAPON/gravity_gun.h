@@ -84,6 +84,7 @@ private:
 	float		m_flphyscannon_maxforce;
 	float		m_trace_sphere_radius;
 	float		m_trace_sphere_halfheight;
-	
+	bool		bIsPullingObject;
+
 
 };
