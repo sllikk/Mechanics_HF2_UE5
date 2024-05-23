@@ -51,8 +51,7 @@ public:
 	void					Gravity_Trow(void);
 	void					Gravity_Realese(void);
 	void					PhysicsTick() const;
-	void					TrowImpulce() const;
-	void					PullObject(UPrimitiveComponent* ComponentToPull);
+	void					TrowImpulce();
 	
 	//----------------------Getter Setter--------------------------------------------------------
 

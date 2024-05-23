@@ -27,8 +27,8 @@ Ugravity_gun::Ugravity_gun()
 
 	m_flphyscanon_maxmass = 250.0f;
 	m_flphyscanon_tracelength = 5000.0f;
-	m_flphyscannon_pullforce = -10000.0f;
-	m_flphyscannon_minforce = 700.0f;
+	m_flphyscannon_pullforce = 2000.0f;
+	m_flphyscannon_minforce = 90.0f;
 	m_flphyscannon_maxforce = 1500.0f;
 	m_trace_sphere_radius = 20.0f;
 	m_trace_sphere_halfheight = 30.0f;
@@ -88,6 +88,28 @@ void Ugravity_gun::TickComponent(float DeltaTime, ELevelTick TickType, FActorCom
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	PhysicsTick();
+
+	if (CurrentPulledComponent && Gravity_Physics)
+	{
+		const FVector Start = Character->GetFirstPersonCamera()->GetComponentLocation();
+		const FVector TargetLocation = CurrentPulledComponent->GetComponentLocation();
+		float Distance = FVector::Dist(Start, TargetLocation);
+
+		if (Distance > 300)
+		{
+			// Притягивание объекта к игроку
+			FVector Direction = (Start - TargetLocation).GetSafeNormal();
+			CurrentPulledComponent->AddForce(Direction * CurrentPulledComponent->GetMass() * m_flphyscannon_pullforce);
+		}
+		else
+		{
+			// Захват объекта
+			const FRotator Rotator = CurrentPulledComponent->GetComponentRotation();
+			Gravity_Physics->GrabComponentAtLocationWithRotation(CurrentPulledComponent, NAME_None, TargetLocation, Rotator);
+			CurrentPulledComponent = nullptr; // Сбрасываем указатель на притягиваемый объект, т.к. объект уже захвачен
+		}
+	}
+
 }
 
 
@@ -120,57 +142,49 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 			EIC->BindAction(GrabAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Grab);	
 			EIC->BindAction(GrabAction, ETriggerEvent::Completed, this, &Ugravity_gun::Gravity_Realese);	
 			EIC->BindAction(TrowAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Trow);	
+			EIC->BindAction(TrowAction, ETriggerEvent::Started, this, &Ugravity_gun::TrowImpulce);	
 		}
 		
 	}
 }
 
 
+
 void Ugravity_gun::Gravity_Grab()
 {
-	if (Character->GetFirstPersonCamera() == nullptr) return;
+	if (!Character || !Character->GetFirstPersonCamera()) return;
+
+	TArray<FHitResult> HitResults;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredComponent(this);	
+	FCollisionShape CollisionShape;
+	CollisionShape.MakeSphere(GetTraceSphereRadius());
+
+	const FVector& Start = Character->GetFirstPersonCamera()->GetComponentLocation();
+	const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * m_flphyscannon_pullforce);
+
+	if (GetWorld()->SweepMultiByChannel(HitResults, Start, End, FQuat::Identity, ECC_Visibility, CollisionShape, QueryParams))
 	{
-		TArray<FHitResult> HitResult;
-		FCollisionQueryParams QueryParams;
-		QueryParams.AddIgnoredComponent(this);	
-		FCollisionShape CollisionShape;
-		CollisionShape.MakeSphere(GetTraceSphereRadius());
-
-		const FVector& Start = Character->GetFirstPersonCamera()->GetComponentLocation();
-		const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * m_flphyscanon_tracelength);
-
-		if ( GetWorld()->SweepMultiByChannel(HitResult, Start, End,  FQuat::Identity,ECC_Visibility, CollisionShape, QueryParams) )
+		for (const FHitResult& ComponentHit : HitResults)
 		{
-			for (const FHitResult ComponentHit : HitResult)
+			UPrimitiveComponent* Component = ComponentHit.GetComponent(); 
+			if (!Component || !Component->IsSimulatingPhysics() || Component->GetMass() > GetPhyscanon_Maxmass()) continue;
+
+			const TArray<FName>& Tags = Component->ComponentTags;	
+			for (const FName& Tag : Tags)
 			{
-				TObjectPtr<UPrimitiveComponent> Component = ComponentHit.GetComponent(); 
-				if (!Component) continue;
-				if (!Component->IsSimulatingPhysics() || Component->GetMass() <= 0) return;
-
-				const TArray<FName>& Tags = Component->ComponentTags;	
-				for (const FName& Tag : Tags)
+				if (ComponentTag.Contains(Tag))
 				{
-					if (ComponentTag.Contains(Tag))
-					{
-						#if WITH_EDITOR  
+					#if WITH_EDITOR  
+					DrawDebugSphere(GetWorld(), ComponentHit.Location, GetTraceSphereRadius(), 32, FColor::Cyan, false, 2);
+					DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2);
+					#endif					
 
-						DrawDebugSphere(GetWorld(), ComponentHit.Location, GetTraceSphereRadius(), 32, FColor::Cyan, false, 2);
-						DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2);
-
-						#endif					
-
-						const FVector& GrabLocation = Component->GetComponentLocation();   
-						const FRotator& Rotator = Component->GetComponentRotation();
-
-						if (Component->GetMass() <= GetPhyscanon_Maxmass())
-						{
-							Gravity_Physics->GrabComponentAtLocationWithRotation(Component, NAME_None, GrabLocation, Rotator);
-							return;
-						}
-					}
+					CurrentPulledComponent = Component;
+					return;
 				}
-			}	
-		}
+			}
+		}	
 	}
 }
 
@@ -220,27 +234,14 @@ void Ugravity_gun::PhysicsTick() const
 }
 
 
-void Ugravity_gun::PullObject(UPrimitiveComponent* ComponentToPull)
-{
-	if (!ComponentToPull) return;
-
-		const FVector Start = Character->GetFirstPersonCamera()->GetComponentLocation();
-		const FVector ComponentLocation = ComponentToPull->GetComponentLocation();
-		const FVector Direction = (Start - ComponentLocation).GetSafeNormal();
-		const float Distance = FVector::Dist(Start, ComponentLocation);
-
-		const FVector Force = Direction * m_flphyscannon_pullforce * Distance;
-
-		ComponentToPull->AddForce(Force);
-
-		const FRotator Rotator = ComponentToPull->GetComponentRotation();
-		CurrentPulledComponent = nullptr; // Сбросить указатель, так как мы уже захватили объект	
 	
-}
-
-	
-void Ugravity_gun::TrowImpulce() const
+void Ugravity_gun::TrowImpulce() 
 {
+	if (Gravity_Physics->GrabbedComponent)
+	{
+		return;
+	}
+
 	if (Character == nullptr) return;
 	{
 		FHitResult HitResult;
@@ -248,13 +249,23 @@ void Ugravity_gun::TrowImpulce() const
 		QueryParams.AddIgnoredComponent(this);	
 
 		const FVector& Start = Character->GetFirstPersonCamera()->GetComponentLocation();
-		const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * 200);
+		const FVector& End = Start + (Character->GetFirstPersonCamera()->GetForwardVector() * 1000);
 
 		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility ,QueryParams))
 		{
 			UPrimitiveComponent* Component = HitResult.GetComponent();
 			if(!Component) return;	
-
+			
+			DrawDebugLine(GetWorld(), Start, End, FColor::Green, false, 2);
+			if (Component->IsSimulatingPhysics())
+			{
+				FBoxSphereBounds Bound = Component->Bounds;
+				FVector Centre = Bound.Origin;
+				FVector Location = Centre;
+				FVector const& Force = HitResult.TraceEnd * m_flphyscannon_minforce;
+				Component->AddImpulseAtLocation(Force, Location);	
+			}
+			
 		}
 
 	}
