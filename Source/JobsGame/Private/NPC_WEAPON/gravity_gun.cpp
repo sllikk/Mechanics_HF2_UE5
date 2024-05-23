@@ -8,6 +8,8 @@
 #include "EnhancedPlayerInput.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Engine/DamageEvents.h"
+#include "Kismet/GameplayStatics.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -132,7 +134,7 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 	Character->SetHasRifle(true);
 
 	// Set up action bindings
-	if (const APlayerController* PlayerController = Cast<APlayerController>(Character->GetController()))
+	if (const APlayerController* PlayerController = Cast<const APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -141,7 +143,7 @@ void Ugravity_gun::AttachToWeapon(AMyCharacter* TargetCharacter)
 		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			// Bind 
-			EIC->BindAction(GrabAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Grab);	
+			EIC->BindAction(GrabAction, ETriggerEvent::Triggered, this, &Ugravity_gun::Gravity_Grab);	
 			EIC->BindAction(GrabAction, ETriggerEvent::Completed, this, &Ugravity_gun::Gravity_Realese);	
 			EIC->BindAction(TrowAction, ETriggerEvent::Started, this, &Ugravity_gun::Gravity_Trow);	
 			EIC->BindAction(TrowAction, ETriggerEvent::Started, this, &Ugravity_gun::TrowImpulce);	
@@ -231,7 +233,7 @@ void Ugravity_gun::PhysicsTick() const
 		const TObjectPtr<UPrimitiveComponent> Component = Gravity_Physics->GrabbedComponent;
 
 		FVector const& Start = GetSocketLocation("Muzzle");
-		FVector const& TargetLocation = Start + Character->GetFirstPersonCamera()->GetForwardVector() * 150;    
+		FVector const& TargetLocation = Start + Character->GetFirstPersonCamera()->GetForwardVector() * 200;    
 		FRotator const& NewRotator = Character->GetFirstPersonCamera()->GetComponentRotation();
 		
 		Gravity_Physics->SetTargetLocationAndRotation(TargetLocation, NewRotator);
@@ -246,7 +248,7 @@ void Ugravity_gun::TrowImpulce()
 	{
 		return;
 	}
-
+	
 	if (Character == nullptr) return;
 	{
 		FHitResult HitResult;
@@ -269,6 +271,12 @@ void Ugravity_gun::TrowImpulce()
 				FVector Location = Centre;
 				FVector const& Force = HitResult.TraceEnd * m_flphyscannon_minforce;
 				Component->AddImpulseAtLocation(Force, Location);	
+				/*
+				// Apply damage to the owning actor
+				float DamageAmount = 50.0f;  // Example damage amount
+				FDamageEvent DamageEvent;
+				OwnerActor->TakeDamage(DamageAmount, DamageEvent, Character->GetController(), nullptr);
+*/
 			}
 			
 		}
