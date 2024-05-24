@@ -71,7 +71,7 @@ void ATestChaosActor::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* 
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 
-	if (NormalImpulse.Size() >= 10000.0f)
+	if (NormalImpulse.Size() >= 100000.0f)
 	{
 		float Damage = 1;
 		
@@ -95,8 +95,9 @@ void ATestChaosActor::DestroyBox(FVector HitLocation)
 	if (GeometryCollectionComponent)
 	{
 		SpawnDestructionActor(HitLocation);
-		// Спавним предметы из разрушенной коробки
+
 		SpawnProps(GeometryCollectionComponent->Bounds.Origin);
+		
 	}
 }
 
@@ -106,8 +107,14 @@ void ATestChaosActor::SpawnDestructionActor(FVector SpawnLocation)
 	if (DestructionBlueprint != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
-		GetWorld()->SpawnActor<AActor>(DestructionBlueprint, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+		AActor* SpawnActor =  GetWorld()->SpawnActor<AActor>(DestructionBlueprint, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
 		spawn = true;
+		
+		if (SpawnActor)
+		{
+			SpawnActor->SetLifeSpan(0.5);
+		}
+		
 	}
 }
 
@@ -116,15 +123,15 @@ void ATestChaosActor::Debug()
 {
 	FString String = FString::Printf(TEXT("Health: %2.f"), MaxHealth);
 	FVector Location = GetActorLocation();	
+
 	DrawDebugString(GetWorld(), Location, String, nullptr, FColor::White, -1);
 	
-
 }
 
 
 void ATestChaosActor::SpawnProps(FVector HitLocation)
 {
-	const int16 MAXSPAWN = 3;
+	const int16 MAXSPAWN = 2;
 
 	TArray<TSubclassOf<AActor>> ItemClasses;
 	ItemClasses.Add(AHealthKit::StaticClass());
