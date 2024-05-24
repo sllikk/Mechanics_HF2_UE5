@@ -41,7 +41,7 @@ public:
 
 	void DestroyBox(FVector HitLocation);
 	void SpawnDestructionActor(FVector SpawnLocation);
-
+	void SpawnProps(FVector HitLocation);
 	void Debug();
 	bool spawn;
 	

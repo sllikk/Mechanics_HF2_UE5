@@ -4,6 +4,8 @@
 #include "WorldActors/TestChaosActor.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "GeometryCollection/GeometryCollectionObject.h"
+#include "WorldActors/BatteryKit.h"
+#include "WorldActors/HealthKit.h"
 
 // Sets default values
 ATestChaosActor::ATestChaosActor()
@@ -93,8 +95,11 @@ void ATestChaosActor::DestroyBox(FVector HitLocation)
 	if (GeometryCollectionComponent)
 	{
 		SpawnDestructionActor(HitLocation);
+		// Спавним предметы из разрушенной коробки
+		SpawnProps(GeometryCollectionComponent->Bounds.Origin);
 	}
 }
+
 
 void ATestChaosActor::SpawnDestructionActor(FVector SpawnLocation)
 {
@@ -106,6 +111,7 @@ void ATestChaosActor::SpawnDestructionActor(FVector SpawnLocation)
 	}
 }
 
+
 void ATestChaosActor::Debug()
 {
 	FString String = FString::Printf(TEXT("Health: %2.f"), MaxHealth);
@@ -113,4 +119,28 @@ void ATestChaosActor::Debug()
 	DrawDebugString(GetWorld(), Location, String, nullptr, FColor::White, -1);
 	
 
+}
+
+
+void ATestChaosActor::SpawnProps(FVector HitLocation)
+{
+	const int16 MAXSPAWN = 3;
+
+	TArray<TSubclassOf<AActor>> ItemClasses;
+	ItemClasses.Add(AHealthKit::StaticClass());
+	ItemClasses.Add(ABatteryKit::StaticClass());
+
+	for (int16 i = 0; i < MAXSPAWN; i++)
+	{
+		if (ItemClasses.Num() > 0)
+		{
+			int16 ItemIndex = FMath::RandRange(0, ItemClasses.Num() - 1);
+			TSubclassOf<AActor> SpawnActor = ItemClasses[ItemIndex];	
+
+			GetWorld()->SpawnActor<AActor>(SpawnActor, HitLocation, FRotator::ZeroRotator);
+
+		}
+	}
+
+	
 }
