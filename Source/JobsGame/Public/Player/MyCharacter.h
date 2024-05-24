@@ -111,9 +111,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool					m_HasRifle;
 	UFUNCTION(BlueprintCallable, Category=Weapon)
-	bool					GetHasRifle()					{ return m_HasRifle; }
+	bool									GetHasRifle()					{ return m_HasRifle; }
 	UFUNCTION(BlueprintCallable, Category=Weapon)
-	void					SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
+	void									SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
 	          
 	FORCEINLINE	USkeletalMeshComponent*		GetMesh1P() const								 { return Mesh1P; }
 	FORCEINLINE	UCameraComponent*			GetFirstPersonCamera() const					 { return FirstPersonCamera; }
@@ -181,7 +181,6 @@ private:
 	float	m_DistanceTrace = 190;
 	float	m_MaxGrabMassObject = 80;	
 	float	m_TrowImpulse = 250;
-
 	bool    m_blsGrabProduct;
 
 	#pragma endregion

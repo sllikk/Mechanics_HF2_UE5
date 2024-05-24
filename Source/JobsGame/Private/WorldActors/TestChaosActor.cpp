@@ -2,9 +2,8 @@
 
 
 #include "WorldActors/TestChaosActor.h"
-
 #include "GeometryCollection/GeometryCollectionComponent.h"
-#include "PhysicsField/PhysicsFieldComponent.h"
+#include "GeometryCollection/GeometryCollectionObject.h"
 
 // Sets default values
 ATestChaosActor::ATestChaosActor()
@@ -12,19 +11,48 @@ ATestChaosActor::ATestChaosActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	PhysicsFieldComponent = CreateDefaultSubobject<UPhysicsFieldComponent>(TEXT("Destruction"));
 	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GC"));
-	RootComponent = GeometryCollectionComponent; 
 
+	
+	const FSoftObjectPath FindGC(TEXT("/Game/GC/GC_SupplyCrate"));
+	static UGeometryCollection* LoadGeometry = nullptr;
+    if (FindGC.IsValid())
+    {
+	    LoadGeometry = Cast<UGeometryCollection>(FindGC.TryLoad());
+    }
+    if (LoadGeometry != nullptr)
+    {
+    	GeometryCollectionComponent->SetRestCollection(LoadGeometry);
+    	RootComponent = GeometryCollectionComponent; 
+    }
+    else
+    {
+		UE_LOG(LogLoad, Warning, TEXT("Error Load: %s"), *FindGC.ToString());
+    }
+
+
+	// Загрузка Blueprint класса для разрушения
+	static ConstructorHelpers::FClassFinder<AActor> DestructionBPClass(TEXT("/Game/GC/Impact"));
+	if (DestructionBPClass.Class != nullptr)
+	{
+		DestructionBlueprint = DestructionBPClass.Class;
+	}
+	
 	MaxHealth = 25.0f;
-
+	
 }
 
 // Called when the game starts or when spawned
 void ATestChaosActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GeometryCollectionComponent->OnComponentHit.AddDynamic(this, &ATestChaosActor::OnComponentHit);
+	GeometryCollectionComponent->SetMassOverrideInKg(NAME_None, 60.0f);
+
+	Debug();
 	
+
 }
 
 // Called every frame
@@ -32,25 +60,31 @@ void ATestChaosActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Debug();
+
 }
 
 
 void ATestChaosActor::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// Урон на основе импульса столкновения
-	float Damage = NormalImpulse.Size() * 0.01f; // Настройте коэффициент урона по своему усмотрению
-	ApplyDamage(Damage, Hit.ImpactPoint);
+
+	if (NormalImpulse.Size() >= 10000.0f)
+	{
+		float Damage = 1;
+		
+		ApplyDamage(Damage,  Hit.Location);
+	}
+	if (spawn)
+	{
+		GeometryCollectionComponent->OnComponentHit.RemoveAll(this);
+	}
 }
 
 
 void ATestChaosActor::ApplyDamage(float Damage, FVector HitDamage)
 {
-	MaxHealth -= Damage;
-	if (MaxHealth <= 0.0f)
-	{
 		DestroyBox(HitDamage);
-	}
 }
 
 
@@ -58,7 +92,25 @@ void ATestChaosActor::DestroyBox(FVector HitLocation)
 {
 	if (GeometryCollectionComponent)
 	{
-	//	GeometryCollectionComponent->ApplyBreakDamage(1.0f, HitLocation, 1000.0f);
+		SpawnDestructionActor(HitLocation);
 	}
 }
 
+void ATestChaosActor::SpawnDestructionActor(FVector SpawnLocation)
+{
+	if (DestructionBlueprint != nullptr)
+	{
+		FActorSpawnParameters SpawnParams;
+		GetWorld()->SpawnActor<AActor>(DestructionBlueprint, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+		spawn = true;
+	}
+}
+
+void ATestChaosActor::Debug()
+{
+	FString String = FString::Printf(TEXT("Health: %2.f"), MaxHealth);
+	FVector Location = GetActorLocation();	
+	DrawDebugString(GetWorld(), Location, String, nullptr, FColor::White, -1);
+	
+
+}

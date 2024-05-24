@@ -4,20 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Shared/PropsDamage.h"
 #include "TestChaosActor.generated.h"
-class UPhysicsFieldComponent;
 class UGeometryCollectionComponent; 
 
+
 UCLASS()
-class JOBSGAME_API ATestChaosActor : public AActor
+class JOBSGAME_API ATestChaosActor : public AActor, public IPropsDamage 
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category="Destruction", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollectionComponent;
-	
-	UPROPERTY(EditAnywhere, Category="Destruction", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UPhysicsFieldComponent> PhysicsFieldComponent;
+	\
+
+	UPROPERTY(EditAnywhere, Category = "Spawning", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<AActor> DestructionBlueprint;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -35,7 +37,12 @@ protected:
 public:	
 
 	float MaxHealth;
-	void ApplyDamage(float Damage, FVector HitDamage);
+	virtual void ApplyDamage(float Damage, FVector HitDamage) override;
 
 	void DestroyBox(FVector HitLocation);
+	void SpawnDestructionActor(FVector SpawnLocation);
+
+	void Debug();
+	bool spawn;
+	
 };
