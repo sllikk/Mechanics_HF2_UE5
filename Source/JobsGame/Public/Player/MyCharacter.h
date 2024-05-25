@@ -115,8 +115,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category=Weapon)
 	void									SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
 	          
-	FORCEINLINE	USkeletalMeshComponent*		GetMesh1P() const								 { return Mesh1P; }
-	FORCEINLINE	UCameraComponent*			GetFirstPersonCamera() const					 { return FirstPersonCamera; }
+	FORCEINLINE	TObjectPtr<USkeletalMeshComponent>		GetMesh1P() const								 { return Mesh1P; }
+	FORCEINLINE	TObjectPtr<UCameraComponent>			GetFirstPersonCamera() const					 { return FirstPersonCamera; }
 
 	FORCEINLINE float						GetMaxSpeedWalk() const							 { return m_MaxSpeedWalk; }
 	FORCEINLINE void						SetMaxSpeedWalk(float fl_MaxSpeedWalk)			 { m_MaxSpeedWalk = fl_MaxSpeedWalk; }

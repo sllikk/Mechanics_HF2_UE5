@@ -16,7 +16,6 @@ class JOBSGAME_API ATestChaosActor : public AActor, public IPropsDamage
 
 	UPROPERTY(EditAnywhere, Category="Destruction", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UGeometryCollectionComponent> GeometryCollectionComponent;
-	\
 
 	UPROPERTY(EditAnywhere, Category = "Spawning", meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> DestructionBlueprint;
