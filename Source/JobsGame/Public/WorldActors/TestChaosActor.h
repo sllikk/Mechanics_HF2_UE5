@@ -8,7 +8,6 @@
 #include "TestChaosActor.generated.h"
 class UGeometryCollectionComponent; 
 
-
 UCLASS()
 class JOBSGAME_API ATestChaosActor : public AActor, public IPropsDamage 
 {

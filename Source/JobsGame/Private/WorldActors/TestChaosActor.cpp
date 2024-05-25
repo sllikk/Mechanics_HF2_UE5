@@ -35,7 +35,7 @@ ATestChaosActor::ATestChaosActor()
 
 	// Загрузка Blueprint класса для разрушения
 	static ConstructorHelpers::FClassFinder<AActor> DestructionBPClass(TEXT("/Game/GC/Impact"));
-	if (DestructionBPClass.Class != nullptr)
+	if (DestructionBPClass.Succeeded())
 	{
 		DestructionBlueprint = DestructionBPClass.Class;
 	}
@@ -94,7 +94,7 @@ void ATestChaosActor::DestroyBox(FVector HitLocation)
 {
 	if (GeometryCollectionComponent)
 	{
-		SpawnDestructionActor(HitLocation);
+		SpawnDestructionActor(GeometryCollectionComponent->Bounds.Origin);
 
 		SpawnProps(GeometryCollectionComponent->Bounds.Origin);
 		
@@ -108,6 +108,7 @@ void ATestChaosActor::SpawnDestructionActor(FVector SpawnLocation)
 	{
 		FActorSpawnParameters SpawnParams;
 		AActor* SpawnActor =  GetWorld()->SpawnActor<AActor>(DestructionBlueprint, SpawnLocation, FRotator::ZeroRotator, SpawnParams);
+		SpawnActor->SetActorScale3D(FVector(1, 1,1));
 		spawn = true;
 		
 		if (SpawnActor)

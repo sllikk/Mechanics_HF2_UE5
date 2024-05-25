@@ -9,6 +9,8 @@
 class UGeometryCollectionComponent;
 class USoundBase; 
 
+DECLARE_LOG_CATEGORY_EXTERN(LogDestructionProps, Log, All);
+
 UCLASS()
 class JOBSGAME_API ADestructionProps : public AActor, public IPropsDamage 
 {
@@ -36,6 +38,8 @@ protected:
 
 	virtual void    ApplyDamage(float Damage, FVector HitLocation) override;
 
+	virtual void	Debug() override;
+	
 public:	
 	
 	#pragma region GETTER_SETTER
@@ -43,19 +47,33 @@ public:
 	FORCEINLINE	TObjectPtr<UGeometryCollectionComponent>
 		GetGeometryCollectionComponent() const					    { return GeometryCollectionComponent; }
 
-	void SetGeometryCollectionComponet
+	FORCEINLINE	void SetGeometryCollectionComponet
 		(TObjectPtr<UGeometryCollectionComponent> NewGeometry)		{ GeometryCollectionComponent = NewGeometry; }
 	
-	FORCEINLINE float	GetHealth() const							{ return m_flHealth; }
-				void	SetHealth(float fl_health)					{ m_flHealth = fl_health; }
-
+	FORCEINLINE float	GetHealth() const							 { return m_flHealth; }
+	FORCEINLINE float	GetMaxHealth() const						 { return m_flMaxHealth; }
+	FORCEINLINE	void	SetMaxHealth(float fl_health)				 { m_flHealth = fl_health; }
+	FORCEINLINE float   GetMinSpeedForDestruction() const			 { return m_flMinSpeedForDestruction; }		
+	FORCEINLINE	void	SetMinSpeedForDestruction(float flmin_speed) { m_flMinSpeedForDestruction = flmin_speed; }	
+	FORCEINLINE bool	GetSpawn() const							 { return blsSpawn; }
+	FORCEINLINE	void    SetSpawn(bool bspawn_stat)					 { blsSpawn = bspawn_stat; }	
+	FORCEINLINE float   GetMassProps() const						 { return m_flMassProps; }	
+	FORCEINLINE void    SetMassProps(float flmass)					 { m_flMassProps = flmass; } 
+	
 	#pragma endregion 
-	
-	void SpawnFieldComponent(FVector vecSpawnLocation);
-		
-	
+
+				void	PhysicsDestroy();
+				void	SpawnFieldComponent(FVector vecSpawnLocation);
+				void	EmitAINoise() const;
+	FORCEINLINE void	LoadGeometry(const FString& Path) const;
+ 	FORCEINLINE	void	LoadFieldComponent(const FString& Path);
+
 private:	
 
-	float m_flHealth;
-
+	float	m_flHealth;
+	float   m_flMaxHealth;
+	float   m_flMinSpeedForDestruction;
+	float	m_flMassProps;
+	bool	blsSpawn; 
+	
 };

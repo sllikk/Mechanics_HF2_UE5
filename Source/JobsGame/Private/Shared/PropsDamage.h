@@ -21,5 +21,6 @@ class JOBSGAME_API IPropsDamage
 public:
 
 	virtual void ApplyDamage(float Damage, FVector HitLocation) = 0;
+	virtual void Debug() = 0;
 
 };
