@@ -41,8 +41,17 @@ protected:
 	
 public:
 	
+#pragma region Get_Set
+
+	FORCEINLINE TObjectPtr<USkeletalMeshComponent> GetSkeletalMeshComponent() const  { return WeaponSkeletalMeshComponent; }	
+	FORCEINLINE void SetSkeletalMesh(TObjectPtr<USkeletalMeshComponent> NewMesh)     { WeaponSkeletalMeshComponent = NewMesh; }  
+	
+#pragma endregion 
+
+
 	FORCEINLINE void LoadSkeletalMesh(const FString& Path);
 //	FORCEINLINE void LoadShellMesh(const FString& Path);
+	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void AttachWeapon(AMyCharacter* Character);
 
 	virtual void Fire();	
