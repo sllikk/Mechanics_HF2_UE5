@@ -17,7 +17,7 @@ class JOBSGAME_API Asupply_crate : public ADestructionProps
 
 	
 public:
-
+ 
 	Asupply_crate();
 
 
@@ -37,4 +37,6 @@ protected:
 	
 public:
 
+ 	FORCEINLINE void SpawnSupply(FVector vecSpawn);
+	
 };

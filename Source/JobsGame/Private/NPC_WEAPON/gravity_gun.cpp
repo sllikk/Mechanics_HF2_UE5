@@ -7,9 +7,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedPlayerInput.h"
 #include "Camera/CameraComponent.h"
-#include "Components/CapsuleComponent.h"
-#include "Engine/DamageEvents.h"
-#include "Kismet/GameplayStatics.h"
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 class UEnhancedInputLocalPlayerSubsystem;
 
@@ -18,14 +16,7 @@ Ugravity_gun::Ugravity_gun()
 {
 	// Initialize default properties for physics handle
 	Gravity_Physics = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle"));
-	Gravity_Physics->bSoftAngularConstraint = true;
-	Gravity_Physics->bSoftLinearConstraint = true;
-	Gravity_Physics->bInterpolateTarget = true;
-	Gravity_Physics->LinearDamping = 50.0f;
-	Gravity_Physics->LinearStiffness = 750.0f;
-	Gravity_Physics->AngularDamping = 500.0f;
-	Gravity_Physics->AngularStiffness = 1500.0f;
-	Gravity_Physics->InterpolationSpeed = 50.0f;	
+	
 
 	m_flphyscanon_maxmass = 250.0f;
 	m_flphyscanon_tracelength = 5000.0f;
@@ -62,6 +53,15 @@ void Ugravity_gun::BeginPlay()
 	ComponentTag.Add("PhysCannon");
 	ComponentTag.Add("Destruction");
 	ComponentTag.Add("PhysicsObject");
+
+	Gravity_Physics->bSoftAngularConstraint = true;
+	Gravity_Physics->bSoftLinearConstraint = true;
+	Gravity_Physics->bInterpolateTarget = true;
+	Gravity_Physics->LinearDamping = 50.0f;
+	Gravity_Physics->LinearStiffness = 750.0f;
+	Gravity_Physics->AngularDamping = 500.0f;
+	Gravity_Physics->AngularStiffness = 1500.0f;
+	Gravity_Physics->InterpolationSpeed = 50.0f;	
 	
 }
 
@@ -171,7 +171,7 @@ void Ugravity_gun::Gravity_Grab()
 	{
 		for (const FHitResult& ComponentHit : HitResults)
 		{
-			UPrimitiveComponent* Component = ComponentHit.GetComponent(); 
+			TObjectPtr<UPrimitiveComponent> Component = ComponentHit.GetComponent(); 
 			if (!Component || !Component->IsSimulatingPhysics() || Component->GetMass() > GetPhyscanon_Maxmass()) continue;
 
 			const TArray<FName>& Tags = Component->ComponentTags;	
@@ -183,21 +183,23 @@ void Ugravity_gun::Gravity_Grab()
 					DrawDebugSphere(GetWorld(), ComponentHit.Location, GetTraceSphereRadius(), 32, FColor::Cyan, false, 2);
 					DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2);
 					#endif					
+
 					bIsPullingObject = true;
 					CurrentPulledComponent = Component;
 					return;
 				}
 			}
-		}	
+		}
 	}
 }
+
 
 // Throws the grabbed object with a specified force when the throw action is triggered
 void Ugravity_gun::Gravity_Trow()
 {
 	if (Gravity_Physics->GrabbedComponent)
 	{
-		UPrimitiveComponent* TrowComponent = Gravity_Physics->GrabbedComponent;
+		TObjectPtr<UPrimitiveComponent> TrowComponent = Gravity_Physics->GrabbedComponent;
 		if(!TrowComponent) return;
 
 		const FBoxSphereBounds SphereBounds = TrowComponent->Bounds;  

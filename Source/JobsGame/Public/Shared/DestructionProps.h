@@ -35,7 +35,7 @@ protected:
 	// HitComponent
 	UFUNCTION()
 	virtual void	OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
+	// Interface Apply Damage for Destruction
 	virtual void    ApplyDamage(float Damage, FVector HitLocation) override;
 
 	virtual void	Debug() override;
@@ -62,14 +62,18 @@ public:
 	
 	#pragma endregion 
 
+						// Chaos Destroy GC	
 		virtual void	PhysicsDestroy(FVector DestroyLocation);
+						// Blueprint Field Master spawn
 				void	SpawnFieldComponent(FVector vecSpawnLocation);
+						// mb use
 				void	EmitAINoise() const;
+				// Load Geometry and Field Master
 	FORCEINLINE void	LoadGeometry(const FString& Path) const;
  	FORCEINLINE	void	LoadFieldComponent(const FString& Path);
 
 private:	
-
+	
 	float	m_flHealth;
 	float   m_flMaxHealth;
 	float   m_flMinSpeedForDestruction;

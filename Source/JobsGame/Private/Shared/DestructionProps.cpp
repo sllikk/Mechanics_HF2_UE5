@@ -1,10 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Shared/DestructionProps.h"
+
+#include "GameFramework/Character.h"
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "GeometryCollection/GeometryCollectionObject.h"
-#include "Perception/AIPerceptionSystem.h"
-#include "Perception/AISense_Hearing.h"
 
 DEFINE_LOG_CATEGORY(LogDestructionProps)
 
@@ -44,6 +44,15 @@ void ADestructionProps::Tick(float DeltaTime)
 void ADestructionProps::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (OtherActor)
+	{
+		const TObjectPtr<ACharacter> Character = Cast<ACharacter>(OtherActor);
+		if (Character != nullptr)
+		{
+			return;
+		}
+	}
+
 	if (OtherComp != nullptr)
 	{
 		// Calculate the velocity of the hitting object at the point of impact
@@ -61,7 +70,7 @@ void ADestructionProps::OnComponentHit(UPrimitiveComponent* HitComponent, AActor
 		{
 			PhysicsDestroy(Hit.Location);
 		}
-
+		
 		if (GetSpawn())
 		{
 			GeometryCollectionComponent->OnComponentHit.RemoveAll(this);
@@ -154,5 +163,6 @@ void ADestructionProps::LoadFieldComponent(const FString& Path)
 
 void ADestructionProps::Debug()
 {
+// mb use 
 }
 

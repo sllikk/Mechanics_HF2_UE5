@@ -52,7 +52,6 @@ public:
 	void					Gravity_Realese(void);
 	void					PhysicsTick() const;
 	void					TrowImpulce();
-	
 	//----------------------Getter Setter--------------------------------------------------------
 
 	FORCEINLINE float		GetPhyscanon_Maxmass() const						{ return m_flphyscanon_maxmass; }
