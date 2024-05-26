@@ -7,9 +7,8 @@ Ashotgun::Ashotgun()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	ShotgunSkeletal = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
-
+	
 	// Load Skeletal mesh shotgun
 	const FSoftObjectPath GunPath(TEXT("/Game/Weapon/ShotGun/Spas12")); 	
 	static TObjectPtr<USkeletalMesh> SkeletalMesh = nullptr;
