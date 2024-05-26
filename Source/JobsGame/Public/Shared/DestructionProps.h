@@ -62,7 +62,7 @@ public:
 	
 	#pragma endregion 
 
-				void	PhysicsDestroy();
+		virtual void	PhysicsDestroy(FVector DestroyLocation);
 				void	SpawnFieldComponent(FVector vecSpawnLocation);
 				void	EmitAINoise() const;
 	FORCEINLINE void	LoadGeometry(const FString& Path) const;

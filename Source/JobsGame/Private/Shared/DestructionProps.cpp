@@ -29,7 +29,8 @@ void ADestructionProps::BeginPlay()
 	// Simulate physics and physics property
 	GeometryCollectionComponent->SetSimulatePhysics(true);	   	
 	GeometryCollectionComponent->SetMassOverrideInKg(NAME_Actor, GetMassProps(), true);
-	
+
+	m_flHealth = m_flMaxHealth;
 }
 
 // Called every frame
@@ -54,10 +55,11 @@ void ADestructionProps::OnComponentHit(UPrimitiveComponent* HitComponent, AActor
 		//Kinetic energy of the hitting object
 		float KineticEnergy = 0.5f * OtherComp->GetMass() * SpeedAtImpact * SpeedAtImpact;
 
+		UE_LOG(LogDestructionProps, Warning, TEXT("KineticEnergy: %2.f"), KineticEnergy)
 		// Use SpeedAtImpact or KineticEnergy to determine if the hit was strong enough to trigger destruction
 		if (KineticEnergy > GetMinSpeedForDestruction())
 		{
-			PhysicsDestroy();
+			PhysicsDestroy(Hit.Location);
 		}
 
 		if (GetSpawn())
@@ -77,7 +79,7 @@ void ADestructionProps::ApplyDamage(float Damage, FVector HitLocation)
 	// Destroy hit object
 	if (GetHealth() <= 0)
 	{
-		PhysicsDestroy();
+		PhysicsDestroy(HitLocation);
 	}
 
 }
@@ -94,17 +96,17 @@ void ADestructionProps::SpawnFieldComponent(FVector vecSpawnLocation)
 
 	if (Spawn)
 	{
-		SetLifeSpan(0.5);	// Life Span MasterField And Destroy	
+		Spawn->SetLifeSpan(0.5);	// Life Span MasterField And Destroy	
 	}
 }
 /*--------------------------------------------------------------------------------------------------------------------------------------*/
 
 
-void ADestructionProps::PhysicsDestroy()
+void ADestructionProps::PhysicsDestroy(FVector DestroyLocation)
 {
 	if (GeometryCollectionComponent)
 	{
-		SpawnFieldComponent(GeometryCollectionComponent->Bounds.Origin);
+		SpawnFieldComponent(DestroyLocation);
 	}
 	
 }
