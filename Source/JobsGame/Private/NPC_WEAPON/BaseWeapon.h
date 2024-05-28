@@ -14,7 +14,7 @@ class UInputAction;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
-UCLASS()
+UCLASS(Abstract)
 class JOBSGAME_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
@@ -48,18 +48,16 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE void		AttachWeapon(AMyCharacter* Character);
-	
+	void					AttachWeapon(AMyCharacter* Character, const FName& SocketName);
 
 public:
 	
-
 	FORCEINLINE	USkeletalMeshComponent*  GetSkeletalMeshComponent() const					{ return WeaponSkeletalMeshComponent; }	
 	FORCEINLINE	void					 SetSkeletalMesh(USkeletalMeshComponent* NewMesh)	{ WeaponSkeletalMeshComponent = NewMesh;}  
 	FORCEINLINE	float					 GetMaxShootDistance() const						{ return  m_flmaxTraceLength; }
 	FORCEINLINE void					 SetMaxShootDistance(float fldistance)				{ m_flmaxTraceLength = fldistance; }
-	FORCEINLINE FName					 GetSocketName() const								{ return SocketName; }
-	FORCEINLINE void					 SetSocetName(FName newName)						{ SocketName = newName; }
+	FORCEINLINE FName					 GetSocketName() const								{ return fSocketName; }
+	FORCEINLINE void					 SetSocetName(FName newName)						{ fSocketName = newName; }
 	FORCEINLINE FVector					 GetShotForwardVector() const;														// Shot Direction Player or npc
 	FORCEINLINE int32					 GetMaxAmmo() const									{ return imaxAmmo; }
 	FORCEINLINE void					 SetMaxAmmo(int32 iAmmo) 							{ imaxAmmo = iAmmo; }
@@ -68,13 +66,15 @@ public:
 	FORCEINLINE void					 SetInvAmmo(int32 i_invammo)						{ imaxInventoryAmmo = i_invammo; }	
 	FORCEINLINE float					 GetReloadTime() const								{ return m_flReloadTime; }
 	FORCEINLINE void					 SetReloadTime(float flnew_time)					{ m_flReloadTime =  flnew_time; }				 
-    	
-	FORCEINLINE void					 LoadSkeletalMesh(const FString& Path)  const; // Load Weapon Mesh
+	FORCEINLINE	void					 LoadSkeletalMesh(const FString& Path)  const; // Load Weapon Mesh
+	FORCEINLINE FVector					 CalculateBulletSpread(const FVector& ShotDirection) const;			
+	FORCEINLINE float                    GetBulletSpread() const							{ return m_flBulletSpread; }
+	FORCEINLINE void                     SetBulletSpread(float flspread)					{ m_flBulletSpread = flspread; }
 	
 	virtual void Fire();	
 	virtual void Reload();
 	virtual void FinishReload();
-	virtual void Debug() const;
+	void Debug() const;
 
 	void ConsumeAmmo(int32 iAmmo);
 	
@@ -82,19 +82,18 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AMyCharacter> Player;
-	UPROPERTY()
-	TObjectPtr<AActor> WeaponOwner;
 
 	FTimerHandle ReloadTimer;
+	FTimerHandle FireTimerHundle;
 	
 	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
 	int32	 imaxInventoryAmmo;
 	float	 m_flmaxTraceLength;
-	FName	 SocketName;			// Socket for shoot 
+	FName	 fSocketName;			// Socket for shoot 
 	float    m_flReloadTime;
-
-	bool    blsReload;
+	float    m_flBulletSpread;
+	bool     blsReload;
 	
 
 };

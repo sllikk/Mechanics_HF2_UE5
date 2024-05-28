@@ -19,6 +19,7 @@ ABaseWeapon::ABaseWeapon()
 	RootComponent = WeaponSkeletalMeshComponent;
 
 	imaxAmmo = 30;
+	m_flBulletSpread = 0.5;
 	icurrentAmmo = imaxAmmo;
 	imaxInventoryAmmo = 100;
 	m_flReloadTime = 2.0f;
@@ -45,8 +46,9 @@ void ABaseWeapon::Tick(float DeltaTime)
 
 void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	Super::EndPlay(EndPlayReason);
 
+	Super::EndPlay(EndPlayReason);
+/*
 	// Set up action bindings
 	if (const APlayerController* PlayerController = Cast<const APlayerController>(Player->GetController()))
 	{
@@ -55,7 +57,7 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 			Subsystem->RemoveMappingContext(WeaponMappingContext);
 		}
 	}
-
+*/
 }
 
 
@@ -110,7 +112,16 @@ void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
 }
 
 
-void ABaseWeapon::AttachWeapon(AMyCharacter* Character)
+FVector ABaseWeapon::CalculateBulletSpread(const FVector& ShotDirection) const
+{
+	float HalfConeAngleRand = FMath::DegreesToRadians(m_flBulletSpread / 2.0f);
+	FVector SpreadDirection = FMath::VRandCone(ShotDirection, HalfConeAngleRand);
+	
+	return SpreadDirection;
+}
+
+
+void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 {
 	Player = Character;
 
@@ -121,14 +132,14 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character)
 	
 	// Attach the weapon to the First Person Character
 	const FAttachmentTransformRules AttachmentRules(EAttachmentRule::SnapToTarget, true);
-	AttachToComponent(Player->GetMesh1P(), AttachmentRules, FName(TEXT("ShotGun")));
+	AttachToComponent(Player->GetMesh1P(), AttachmentRules, SocketName);
 	
 	// switch bHasRifle so the animation blueprint can switch to another animation set
-	Player->SetHasRifle(true);
+	Character->SetHasRifle(true);
 	Debug();
 	
 	// Set up action bindings
-	if (const APlayerController* PlayerController = Cast<const APlayerController>(Player->GetController()))
+	if (const APlayerController* PlayerController = Cast<const APlayerController>(Character->GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -161,7 +172,8 @@ void ABaseWeapon::Fire()
 	FHitResult HitResult;
 	const FVector& Start = GetSkeletalMeshComponent()->GetSocketLocation(GetSocketName());
 	const FVector& ForwardVector = GetShotForwardVector();
-	const FVector& End =  Start + (ForwardVector * GetMaxShootDistance());
+	const FVector& Sphread = CalculateBulletSpread(ForwardVector);
+	const FVector& End =  Start + (Sphread * GetMaxShootDistance());
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
 	{
@@ -180,6 +192,7 @@ void ABaseWeapon::Fire()
 	}
 	
 }
+
 
 
 void ABaseWeapon::Reload()
@@ -204,10 +217,12 @@ void ABaseWeapon::FinishReload()
 	SetInvAmmo(GetInvAmmo() - AmmoToAdd);
 	icurrentAmmo += AmmoToAdd;
 	blsReload = false;
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
+	
 }
 
 
-void ABaseWeapon::Debug() const
+void ABaseWeapon::Debug() const					// only editor
 {
 	if (GEngine != nullptr)
 	{
@@ -218,10 +233,10 @@ void ABaseWeapon::Debug() const
 
 }
 
+
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 {
-	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	
-
+	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	\
 }
 
 
