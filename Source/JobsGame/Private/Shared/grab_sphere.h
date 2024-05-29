@@ -31,5 +31,6 @@ public:
 
 	UPROPERTY(EditAnywhere, Category="OnPickUp", BlueprintAssignable)
 	FPicUp PicUp;
-
+	UPROPERTY()
+	ABaseWeapon* Weapon;
 };

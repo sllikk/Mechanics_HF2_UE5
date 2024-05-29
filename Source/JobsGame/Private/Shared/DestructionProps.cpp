@@ -161,8 +161,4 @@ void ADestructionProps::LoadFieldComponent(const FString& Path)
 
 /*--------------------------------------------------------------------------------------------------------------------------------------*/
 
-void ADestructionProps::Debug()
-{
-// mb use 
-}
 

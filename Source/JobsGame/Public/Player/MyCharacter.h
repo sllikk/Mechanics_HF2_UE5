@@ -17,11 +17,20 @@ class UFlashLightComponent;
 class UPhysicsHandleComponent;
 class UHealthComponent;
 class UCostumeComponent;
+class ABaseWeapon;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacterResouce, Log, All)
 
+
+enum class EWeaponType // SwitchWeapon
+{
+	SMG1		 UMETA(DisplayName = "Smg1"),
+	SHOTGUN	     UMETA(DisplayName = "Smg1"),
+	GRAVITYGUN	 UMETA(DisplayName = "Smg1"),
+
+};
 
 UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
@@ -81,6 +90,16 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> TrowAction;	
 
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Switch1Action;	
+
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Switch2Action;	
+
+	UPROPERTY(EditDefaultsOnly, Category = Input, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> Switch3Action;	
+
+	
 	#pragma endregion
 
 
@@ -111,9 +130,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
 	bool					m_HasRifle;
 	UFUNCTION(BlueprintCallable, Category=Weapon)
-	bool									GetHasRifle()					{ return m_HasRifle; }
+	FORCEINLINE bool									GetHasRifle()					{ return m_HasRifle; }
 	UFUNCTION(BlueprintCallable, Category=Weapon)
-	void									SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
+    FORCEINLINE	void									SetHasRifle(bool bhasRifle)		{ m_HasRifle = bhasRifle; }
 	          
 	FORCEINLINE	TObjectPtr<USkeletalMeshComponent>		GetMesh1P() const								 { return Mesh1P; }
 	FORCEINLINE	TObjectPtr<UCameraComponent>			GetFirstPersonCamera() const					 { return FirstPersonCamera; }
@@ -157,6 +176,9 @@ public:
 	void Flashlight();
 	void ToggleGrab();
 	void TrowObject();
+	void SwitchWeapon1();
+	void SwitchWeapon2();
+	void SwitchWeapon3();
 	
 	#pragma endregion
 
@@ -164,7 +186,11 @@ public:
 	void ReleaseComponent() const;
 	void DontInteract() const;
 	void SoundResourceLoad();
-	
+	void AddWeaponToInventory(ABaseWeapon* Weapon);
+	void RemoveWeapon(ABaseWeapon* Weapon);
+	void SwitchWeapon(int32 Index);
+	void SwitchWeaponType(EWeaponType WeaponType);
+
 private:
 
 	#pragma region Default_Character_Settings
@@ -182,15 +208,16 @@ private:
 	float	m_MaxGrabMassObject = 80;	
 	float	m_TrowImpulse = 250;
 	bool    m_blsGrabProduct;
-
+	int32   m_icurrent_weapon_index;
+	
 	#pragma endregion
 	
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> CharacterSound;
+	UPROPERTY(VisibleAnywhere, Category = "Inventory")
+	TArray<ABaseWeapon*> Weapons;
 	
-	
-
 
 };
 

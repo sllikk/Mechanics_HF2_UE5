@@ -10,13 +10,14 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
+#include "NPC_WEAPON/BaseWeapon.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
 #include "Shared/Resourse.h"
 
-
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
+
 
 
 // Constructor character: initialization of all components and default settings of the character and its components for the game world
@@ -49,6 +50,9 @@ AMyCharacter::AMyCharacter()
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
 	//RayCastCapsule 
 	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
+
+	// WeaponIndex
+	m_icurrent_weapon_index = -1;
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -119,6 +123,10 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(FlashLightAction, ETriggerEvent::Started, this, &AMyCharacter::Flashlight);
 			EnhancedInput->BindAction(GrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrab);
 			EnhancedInput->BindAction(TrowAction, ETriggerEvent::Started, this, &AMyCharacter::TrowObject);
+			EnhancedInput->BindAction(Switch1Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon1);
+			EnhancedInput->BindAction(Switch2Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon2);
+			EnhancedInput->BindAction(Switch3Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon3);
+		
 		}		
 	}	
 	else
@@ -153,6 +161,8 @@ void AMyCharacter::SoundResourceLoad()
 		}
 	}
 }
+
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 //          Base Function character movement
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -248,8 +258,7 @@ void AMyCharacter::Interact()
 				{
 					DrawDebugSphere(GetWorld(), HitResult.Location, 20, 20, FColor::Green);
 
-					Iinteract* InteractableActor = Cast<Iinteract>(HitActor);
-					if (InteractableActor)
+					if (Iinteract* InteractableActor = Cast<Iinteract>(HitActor))
 					{
 						InteractableActor->Interact(this);
 					}
@@ -397,9 +406,69 @@ void AMyCharacter::TrowObject()
 
 }
 
+void AMyCharacter::SwitchWeapon1()
+{
+	SwitchWeaponType(EWeaponType::SMG1);
+
+}
+
+void AMyCharacter::SwitchWeapon2()
+{
+	SwitchWeaponType(EWeaponType::SHOTGUN);
+}
+
+void AMyCharacter::SwitchWeapon3()
+{
+	SwitchWeaponType(EWeaponType::GRAVITYGUN);
+}
+
+
+void AMyCharacter::AddWeaponToInventory(ABaseWeapon* Weapon)
+{
+	if (Weapon && !Weapons.Contains(Weapon))
+	{
+		Weapons.Add(Weapon);
+
+		if (m_icurrent_weapon_index == -1)
+		{
+			m_icurrent_weapon_index = 0;
+		}
+	}
+}
+
+
+void AMyCharacter::RemoveWeapon(ABaseWeapon* Weapon)
+{
+	Weapons.Remove(Weapon);
+	if (Weapons.Num() == 0)
+	{
+		m_icurrent_weapon_index = -1;
+	}
 	
+}
 
 
+void AMyCharacter::SwitchWeapon(int32 Index)
+{
+	if (Index >= 0 && Index <= Weapons.Num())
+	{
+		m_icurrent_weapon_index = Index;
+		
+		for(int32 i = 0; i < Weapons.Num(); ++i)
+		{
+			Weapons[i]->SetActorHiddenInGame(i != m_icurrent_weapon_index);
+		}
+	}
+	
+	
+}
+
+void AMyCharacter::SwitchWeaponType(EWeaponType WeaponType)
+{
+	int32 Index = static_cast<int32>(WeaponType);
+	SwitchWeapon(Index);
+	
+}
 
 
 

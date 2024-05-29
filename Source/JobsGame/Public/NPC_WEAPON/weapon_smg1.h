@@ -23,8 +23,12 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaSeconds) override;
-	virtual void Fire() override;
-//	virtual void StartFire() override;
+	virtual void PrimaryAttack() override;
+	virtual void Interact(AActor* Actor) override;
+	virtual void ApplyDamage(float Damage, FVector HitLocation) override;
+	virtual void PhysicsTraceLogic(const FHitResult& HitResult) override;
+
+	//	virtual void StartFire() override;
 //	virtual void StopFire() override;
 
 public:

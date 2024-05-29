@@ -38,8 +38,6 @@ protected:
 	// Interface Apply Damage for Destruction
 	virtual void    ApplyDamage(float Damage, FVector HitLocation) override;
 
-	virtual void	Debug() override;
-	
 public:	
 	
 	#pragma region GETTER_SETTER

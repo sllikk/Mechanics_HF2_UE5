@@ -3,6 +3,8 @@
 
 #include "grab_sphere.h"
 
+#include "NPC_WEAPON/BaseWeapon.h"
+
 
 // Sets default values for this component's properties
 Ugrab_sphere::Ugrab_sphere()
@@ -39,7 +41,6 @@ void Ugrab_sphere::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent
 	if (OtherActor)
 	{
 		AMyCharacter* Character = Cast<AMyCharacter>(OtherActor);
-
 		if (Character != nullptr)
 		{
 			PicUp.Broadcast(Character);

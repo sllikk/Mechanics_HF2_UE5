@@ -20,10 +20,16 @@ ABaseWeapon::ABaseWeapon()
 
 	imaxAmmo = 30;
 	m_flBulletSpread = 0.5;
+	fSocketName = TEXT("Muzzle");
 	icurrentAmmo = imaxAmmo;
 	imaxInventoryAmmo = 100;
 	m_flReloadTime = 2.0f;
 	blsReload = false;
+	m_flmaxTraceLength = 10000.0f;
+
+	FireSound = nullptr;
+	ReloadSound = nullptr;
+	MuzzleFlash = nullptr;
 }
 
 
@@ -40,7 +46,7 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Debug();
+//	Debug();
 
 }
 
@@ -136,7 +142,6 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 	
 	// switch bHasRifle so the animation blueprint can switch to another animation set
 	Character->SetHasRifle(true);
-	Debug();
 	
 	// Set up action bindings
 	if (const APlayerController* PlayerController = Cast<const APlayerController>(Character->GetController()))
@@ -148,20 +153,19 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 
 		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EIC->BindAction(FireAction, ETriggerEvent::Started, this, &ABaseWeapon::Fire);
+			EIC->BindAction(FireAction, ETriggerEvent::Started, this, &ABaseWeapon::PrimaryAttack);
 			EIC->BindAction(ReloadAction, ETriggerEvent::Started, this, &ABaseWeapon::Reload);
-		
 		}
 	}
 }
 
 
 
-void ABaseWeapon::Fire()
+void ABaseWeapon::PrimaryAttack()
 {
 	if (Player == nullptr) return;
 
-	if (GetCurrentAmmo() <= 0 && blsReload)
+	if (GetCurrentAmmo() <= 0 || blsReload)
 	{
 		UE_LOG(LogWeapon, Warning, TEXT("No Ammo!!!!!!!!!"));	
 		return;
@@ -170,17 +174,17 @@ void ABaseWeapon::Fire()
 	UE_LOG(LogWeapon, Warning, TEXT("Fire"));	
 
 	FHitResult HitResult;
-	const FVector& Start = GetSkeletalMeshComponent()->GetSocketLocation(GetSocketName());
+	const FVector& Start = GetWeaponMeshComponent()->GetSocketLocation(GetSocketName());
 	const FVector& ForwardVector = GetShotForwardVector();
-	const FVector& Sphread = CalculateBulletSpread(ForwardVector);
-	const FVector& End =  Start + (Sphread * GetMaxShootDistance());
+	const FVector& Spread = CalculateBulletSpread(ForwardVector);
+	const FVector& End =  Start + (Spread * GetMaxShootDistance());
 
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
 	{
 		ConsumeAmmo(1);
 		
 		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
-			DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);
+		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);
 
 			if (UPrimitiveComponent* Component = HitResult.GetComponent())
 			{
@@ -201,13 +205,16 @@ void ABaseWeapon::Reload()
 	{
 		return;
 	}
+
 	if (GetCurrentAmmo() == GetMaxAmmo() || GetInvAmmo() == 0)
 	{
 		UE_LOG(LogWeapon, Warning, TEXT("Cannot reload: ammo is full or no ammo in inventory"));
 		return;
 	}
+
 	blsReload = true;		
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,  this, &ABaseWeapon::FinishReload, GetReloadTime(), false);   
+
 }
 
 
@@ -221,22 +228,54 @@ void ABaseWeapon::FinishReload()
 	
 }
 
+void ABaseWeapon::Interact(AActor* Actor)
+{
+	if (Actor && Actor->IsA(AMyCharacter::StaticClass()))
+	{
+		TObjectPtr<AMyCharacter> PlayerCharacter = Cast<AMyCharacter>(Actor);
+		if (PlayerCharacter != nullptr)
+		{
+			PlayerCharacter->AddWeaponToInventory(this);
+			AttachWeapon(PlayerCharacter, "Smg");
+		}
+	}
+}
 
+
+void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)
+{
+
+}
+
+
+void ABaseWeapon::ApplyDamage(float Damage, FVector HitLocation)
+{
+
+}
+
+void ABaseWeapon::SpawnEmitter() const
+{
+}
+
+void ABaseWeapon::SpawnTraceDecals() const
+{
+}
+
+/*
 void ABaseWeapon::Debug() const					// only editor
 {
 	if (GEngine != nullptr)
 	{
 		const FString& Ammo = FString::Printf(TEXT("Ammo: %d, MaxAmmo: %d"), GetCurrentAmmo(), GetInvAmmo());
-		 GEngine->AddOnScreenDebugMessage(3, -1, FColor::Yellow, Ammo);
+		GEngine->AddOnScreenDebugMessage(3, -1, FColor::Yellow, Ammo);
 
 	}
-
 }
-
+*/
 
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 {
-	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	\
+	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	
 }
 
 

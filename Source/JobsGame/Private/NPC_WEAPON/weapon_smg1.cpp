@@ -44,11 +44,30 @@ void Aweapon_smg1::Tick(float DeltaSeconds)
 }
 
 
-void Aweapon_smg1::Fire()
+void Aweapon_smg1::PrimaryAttack()
 {
+	Super::PrimaryAttack();
 
-		Super::Fire();
 }
+
+
+void Aweapon_smg1::Interact(AActor* Actor)
+{
+	Super::Interact(Actor);
+}
+
+void Aweapon_smg1::ApplyDamage(float Damage, FVector HitLocation)
+{
+	Super::ApplyDamage(Damage, HitLocation);
+
+
+}
+
+void Aweapon_smg1::PhysicsTraceLogic(const FHitResult& HitResult)
+{
+	Super::PhysicsTraceLogic(HitResult);
+}
+
 
 
 	
