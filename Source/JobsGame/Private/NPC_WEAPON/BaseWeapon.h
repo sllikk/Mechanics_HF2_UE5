@@ -39,25 +39,24 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	// Called End Play
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-	
-	
+
 public:
 	// Methods for getting values
 	UFUNCTION(BlueprintCallable, Category = "mesh")
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const  { return WeaponSkeletalMeshComponent; }
-	FORCEINLINE float	GetMaxShootDistance() const						{ return m_flmaxTraceLength; }
 	FORCEINLINE FName	GetSocketName() const							{ return fSocketName; }
 	FORCEINLINE int32	GetMaxAmmo() const								{ return imaxAmmo; }
 	FORCEINLINE int32	GetCurrentAmmo() const							{ return icurrentAmmo; }
 	FORCEINLINE int32	GetInvAmmo() const								{ return imaxInventoryAmmo; }
 	FORCEINLINE float	GetReloadTime() const							{ return m_flReloadTime; }
 	FORCEINLINE float	GetBulletSpread() const							{ return m_flBulletSpread; }
-	FORCEINLINE	FVector GetShotForwardVector() const;	
+	FORCEINLINE float	GetMaxShootDistance() const						{ return m_flmaxTraceLength; }
+	FORCEINLINE float	GetImpactImpulse() const						{ return m_flImpulse; }
+	FORCEINLINE	FVector GetShotForwardVector() const;	              // Return forward vector .cpp
 	FORCEINLINE FVector CalculateBulletSpread(const FVector& ShotDirection) const;
 	
 	// Methods for setting values
@@ -69,16 +68,16 @@ public:
 	FORCEINLINE void	SetInvAmmo(int32 i_invammo)						 { imaxInventoryAmmo = i_invammo; }
 	FORCEINLINE void	SetReloadTime(float flnew_time)					 { m_flReloadTime = flnew_time; }
 	FORCEINLINE void	SetBulletSpread(float flspread)					 { m_flBulletSpread = flspread; }
+  	FORCEINLINE void    SetImpulseImpact(float fl_impulse)				 { m_flImpulse = fl_impulse; }
 
 	// Sound effects and load
-	FORCEINLINE void SetFireSound(USoundBase* NewSound)			 { FireSound = NewSound; }
-	FORCEINLINE void SetReloadSound(USoundBase* NewSound)		 { ReloadSound = NewSound; }
-	FORCEINLINE void SetMuzzleFlash(UParticleSystem* NewEffect)  { MuzzleFlash = NewEffect; }
-	FORCEINLINE void LoadSkeletalMesh(const FString& Path) const; 
+	FORCEINLINE void	SetFireSound(USoundBase* NewSound)				{ FireSound = NewSound; }
+	FORCEINLINE void	SetReloadSound(USoundBase* NewSound)			{ ReloadSound = NewSound; }
+	FORCEINLINE void	SetMuzzleFlash(UParticleSystem* NewEffect)		{ MuzzleFlash = NewEffect; }
+	FORCEINLINE void	LoadSkeletalMesh(const FString& Path) const; 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE	void AttachWeapon(AMyCharacter* Character, const FName& SocketName);
-	
-	
+	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
+
 	virtual void	PrimaryAttack();	
 	//virtual void SecondaryAttack();
 	virtual void	Reload();
@@ -88,8 +87,7 @@ public:
 	virtual void	ApplyDamage(float Damage, FVector HitLocation) override;
 			void	SpawnEmitter() const;
 			void	SpawnTraceDecals() const;
-	
-	void ConsumeAmmo(int32 iAmmo);
+			void	ConsumeAmmo(int32 iAmmo);
 
 private:
 
@@ -104,14 +102,18 @@ private:
 	
 	FTimerHandle ReloadTimer;
 	FTimerHandle FireTimerHundle;
+
 	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
 	int32	 imaxInventoryAmmo;
-	float	 m_flmaxTraceLength;
 	FName	 fSocketName;			// Socket for shoot 
-	float    m_flReloadTime;
-	float    m_flBulletSpread;
-	bool     blsReload;
-	
 
+	float    m_flImpulse;	
+	float	 m_flmaxTraceLength;
+	float    m_flBulletSpread;
+	float    m_flReloadTime;
+
+	bool     blsReload;
+
+	
 };

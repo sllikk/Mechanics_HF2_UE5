@@ -36,7 +36,7 @@ public:
 
 private:
 
-	float FireRate;
-	FTimerHandle FireTimerHandle;
-	uint8 iWeaponCallFlag;
+	float			FireRate;
+	FTimerHandle	FireTimerHandle;
+	uint8			iWeaponCallFlag;
 };

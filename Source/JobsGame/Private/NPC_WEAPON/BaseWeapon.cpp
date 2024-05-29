@@ -5,6 +5,7 @@
 #include "AIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogWeapon);
 
@@ -179,21 +180,16 @@ void ABaseWeapon::PrimaryAttack()
 	const FVector& Spread = CalculateBulletSpread(ForwardVector);
 	const FVector& End =  Start + (Spread * GetMaxShootDistance());
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility))
-	{
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4);
+	
 		ConsumeAmmo(1);
 		
 		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
 		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);
 
-			if (UPrimitiveComponent* Component = HitResult.GetComponent())
-			{
-				if (Component)
-				{
-					UE_LOG(LogWeapon, Warning, TEXT("BAMMM"));
-				}
-			}
-	}
+		PhysicsTraceLogic(HitResult);
+		SpawnEmitter();
+	
 	
 }
 
@@ -222,8 +218,10 @@ void ABaseWeapon::FinishReload()
 {
 	int32 AmmoToAdd = FMath::Min(GetInvAmmo(), imaxAmmo - GetCurrentAmmo());
 	SetInvAmmo(GetInvAmmo() - AmmoToAdd);
+
 	icurrentAmmo += AmmoToAdd;
 	blsReload = false;
+
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 	
 }
@@ -244,7 +242,14 @@ void ABaseWeapon::Interact(AActor* Actor)
 
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)
 {
+	TObjectPtr<UPrimitiveComponent> PhysicsComponent = HitResult.GetComponent();
 
+	if (PhysicsComponent != nullptr)
+	{
+		const FVector& ImpulseDirection = HitResult.ImpactPoint; 
+		PhysicsComponent->AddForce(ImpulseDirection *- GetImpactImpulse());		
+	}
+	
 }
 
 
@@ -253,25 +258,28 @@ void ABaseWeapon::ApplyDamage(float Damage, FVector HitLocation)
 
 }
 
+
 void ABaseWeapon::SpawnEmitter() const
 {
-}
-
-void ABaseWeapon::SpawnTraceDecals() const
-{
-}
-
-/*
-void ABaseWeapon::Debug() const					// only editor
-{
-	if (GEngine != nullptr)
+	if (FireSound)    // Sound Fire
 	{
-		const FString& Ammo = FString::Printf(TEXT("Ammo: %d, MaxAmmo: %d"), GetCurrentAmmo(), GetInvAmmo());
-		GEngine->AddOnScreenDebugMessage(3, -1, FColor::Yellow, Ammo);
-
+		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
+		
 	}
+
+	if (MuzzleFlash)    // MuzzleFlash 
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
+	}
+
 }
-*/
+
+
+void ABaseWeapon::SpawnTraceDecals() const	     
+{
+
+}
+
 
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 {

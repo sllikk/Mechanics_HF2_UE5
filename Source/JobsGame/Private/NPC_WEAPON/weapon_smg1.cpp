@@ -17,6 +17,7 @@ Aweapon_smg1::Aweapon_smg1()
 	RootComponent = smg1_mesh;
 	smg1_mesh->SetCollisionProfileName("Weapons");
 	smg1_mesh->SetWorldRotation(FRotator(0, 80, 0));
+
 	SetSkeletalMesh(smg1_mesh);
 	LoadSkeletalMesh("/Game/Weapon/Smg/Smg1");
 	SetBulletSpread(5.0f);
@@ -25,9 +26,7 @@ Aweapon_smg1::Aweapon_smg1()
 	SetMaxAmmo(45);
 	SetInvAmmo(225);
 	SetReloadTime(1.0f);
-
-	iWeaponCallFlag |= State::AUTO_FIRE;
-
+	SetImpulseImpact(1000);
 	FireRate = 0.1f;
 }
 
@@ -35,6 +34,9 @@ Aweapon_smg1::Aweapon_smg1()
 void Aweapon_smg1::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	SetFireSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_fire_Cue")));
+	//SetReloadSound()
 }
 
 
