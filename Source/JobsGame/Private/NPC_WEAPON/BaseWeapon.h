@@ -15,6 +15,14 @@ class UInputAction;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
+UENUM(BlueprintType)
+enum class EFireMode : uint8
+{
+	SINGLE		UMETA(DisplayName = "Single"),
+	AUTOMATIC	UMETA(DisplayName = "Automatic"),
+	ALT         UMETA(DisplayName = "AltFire"),
+};
+
 UCLASS()
 class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public IPropsDamage
 {
@@ -27,8 +35,11 @@ class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public IPropsD
 	TObjectPtr<UInputMappingContext> WeaponMappingContext;
 
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> FireAction;
+	TObjectPtr<UInputAction> PrimaryAttackAction;
 
+	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SecondaryAttackAction;
+	
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
 	
@@ -56,7 +67,8 @@ public:
 	FORCEINLINE float	GetBulletSpread() const							{ return m_flBulletSpread; }
 	FORCEINLINE float	GetMaxShootDistance() const						{ return m_flmaxTraceLength; }
 	FORCEINLINE float	GetImpactImpulse() const						{ return m_flImpulse; }
-	FORCEINLINE	FVector GetShotForwardVector() const;	              // Return forward vector .cpp
+	FORCEINLINE float   GetAttackRate() const							 { return m_flAttackRate; }
+	FORCEINLINE	FVector GetShotForwardVector() const;												// Return forward vector .cpp
 	FORCEINLINE FVector CalculateBulletSpread(const FVector& ShotDirection) const;
 	
 	// Methods for setting values
@@ -67,6 +79,7 @@ public:
 	FORCEINLINE void	SetCurrentAmmo(int32 iAmmo)						 { icurrentAmmo = iAmmo; }
 	FORCEINLINE void	SetInvAmmo(int32 i_invammo)						 { imaxInventoryAmmo = i_invammo; }
 	FORCEINLINE void	SetReloadTime(float flnew_time)					 { m_flReloadTime = flnew_time; }
+	FORCEINLINE void    SetAttackRate(float fl_rateattack)				 { m_flAttackRate = fl_rateattack; }
 	FORCEINLINE void	SetBulletSpread(float flspread)					 { m_flBulletSpread = flspread; }
   	FORCEINLINE void    SetImpulseImpact(float fl_impulse)				 { m_flImpulse = fl_impulse; }
 
@@ -76,7 +89,7 @@ public:
 	FORCEINLINE void	SetMuzzleFlash(UParticleSystem* NewEffect)		{ MuzzleFlash = NewEffect; }
 	FORCEINLINE void	LoadSkeletalMesh(const FString& Path) const; 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
+	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName&  SocketName);
 
 	virtual void	PrimaryAttack();	
 	//virtual void SecondaryAttack();
@@ -85,10 +98,15 @@ public:
 	virtual void	Interact(AActor* Actor) override;
 	virtual void	PhysicsTraceLogic(const FHitResult& HitResult);
 	virtual void	ApplyDamage(float Damage, FVector HitLocation) override;
+	virtual void	StartAttack();
+	virtual void	StopAttack();
 			void	SpawnEmitter() const;
 			void	SpawnTraceDecals() const;
 			void	ConsumeAmmo(int32 iAmmo);
+	
+	EFireMode CurrentFireMode;	
 
+	
 private:
 
 	UPROPERTY()
@@ -99,9 +117,11 @@ private:
 	TObjectPtr<USoundBase> ReloadSound;
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> MuzzleFlash;
+	UPROPERTY(EditAnywhere, Category="Anim")
+	TObjectPtr<UAnimMontage> aminPrimaryAttack;
 	
 	FTimerHandle ReloadTimer;
-	FTimerHandle FireTimerHundle;
+	FTimerHandle PrimaryAttackTimer;
 
 	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
@@ -112,8 +132,9 @@ private:
 	float	 m_flmaxTraceLength;
 	float    m_flBulletSpread;
 	float    m_flReloadTime;
-
+	float    m_flAttackRate;
+	
 	bool     blsReload;
-
+	bool     blsPrimaryAttack;
 	
 };

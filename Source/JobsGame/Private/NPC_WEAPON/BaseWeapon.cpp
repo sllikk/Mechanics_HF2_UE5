@@ -25,12 +25,14 @@ ABaseWeapon::ABaseWeapon()
 	icurrentAmmo = imaxAmmo;
 	imaxInventoryAmmo = 100;
 	m_flReloadTime = 2.0f;
-	blsReload = false;
 	m_flmaxTraceLength = 10000.0f;
 
 	FireSound = nullptr;
 	ReloadSound = nullptr;
 	MuzzleFlash = nullptr;
+
+	blsReload = false;
+	blsPrimaryAttack = false;
 }
 
 
@@ -71,14 +73,14 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 FVector ABaseWeapon::GetShotForwardVector() const
 {
 	// Get Controller Player
-	TObjectPtr<AController> Controller = Player->GetController();
+	const TObjectPtr<AController> Controller = Player->GetController();
 
 	if (Controller != nullptr)
 	{
 		// check this player controller
 		if (Controller->IsA(APlayerController::StaticClass()))
 		{
-			TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller);
+			const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller);
 			if (PlayerController != nullptr && PlayerController->PlayerCameraManager != nullptr)
 			{
 				// Get Direction Camera Player 
@@ -154,7 +156,8 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 
 		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
-			EIC->BindAction(FireAction, ETriggerEvent::Started, this, &ABaseWeapon::PrimaryAttack);
+			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ABaseWeapon::StartAttack);
+			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, this, &ABaseWeapon::StopAttack);
 			EIC->BindAction(ReloadAction, ETriggerEvent::Started, this, &ABaseWeapon::Reload);
 		}
 	}
@@ -162,18 +165,27 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 
 
 
+void ABaseWeapon::StartAttack()
+{
+	GetWorld()->GetTimerManager().SetTimer(PrimaryAttackTimer, this,  &ABaseWeapon::PrimaryAttack, GetAttackRate(), true);
+	PrimaryAttack();
+
+}
+
+void ABaseWeapon::StopAttack()
+{
+	GetWorld()->GetTimerManager().ClearTimer(PrimaryAttackTimer);
+}
+
+
 void ABaseWeapon::PrimaryAttack()
 {
 	if (Player == nullptr) return;
-
 	if (GetCurrentAmmo() <= 0 || blsReload)
 	{
-		UE_LOG(LogWeapon, Warning, TEXT("No Ammo!!!!!!!!!"));	
 		return;
 	}
-
-	UE_LOG(LogWeapon, Warning, TEXT("Fire"));	
-
+	
 	FHitResult HitResult;
 	const FVector& Start = GetWeaponMeshComponent()->GetSocketLocation(GetSocketName());
 	const FVector& ForwardVector = GetShotForwardVector();
@@ -189,8 +201,6 @@ void ABaseWeapon::PrimaryAttack()
 
 		PhysicsTraceLogic(HitResult);
 		SpawnEmitter();
-	
-	
 }
 
 
@@ -226,28 +236,33 @@ void ABaseWeapon::FinishReload()
 	
 }
 
-void ABaseWeapon::Interact(AActor* Actor)
+
+void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 {
 	if (Actor && Actor->IsA(AMyCharacter::StaticClass()))
 	{
-		TObjectPtr<AMyCharacter> PlayerCharacter = Cast<AMyCharacter>(Actor);
+		const TObjectPtr<AMyCharacter> PlayerCharacter = Cast<AMyCharacter>(Actor);
 		if (PlayerCharacter != nullptr)
 		{
-			PlayerCharacter->AddWeaponToInventory(this);
+			PlayerCharacter->AddWeaponToInventory(this); // Add Character inventory
 			AttachWeapon(PlayerCharacter, "Smg");
 		}
 	}
 }
 
 
-void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)
+void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
 {
-	TObjectPtr<UPrimitiveComponent> PhysicsComponent = HitResult.GetComponent();
+	const TObjectPtr<UPrimitiveComponent> PhysicsComponent = HitResult.GetComponent();
 
 	if (PhysicsComponent != nullptr)
 	{
-		const FVector& ImpulseDirection = HitResult.ImpactPoint; 
-		PhysicsComponent->AddForce(ImpulseDirection *- GetImpactImpulse());		
+		if (PhysicsComponent->IsSimulatingPhysics())
+		{
+			const FVector& ImpulseDirection = HitResult.ImpactPoint; 
+			PhysicsComponent->AddVelocityChangeImpulseAtLocation(ImpulseDirection * GetImpactImpulse(), PhysicsComponent->GetComponentLocation(), NAME_None);		
+		}
+			
 	}
 	
 }
@@ -264,14 +279,23 @@ void ABaseWeapon::SpawnEmitter() const
 	if (FireSound)    // Sound Fire
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
-		
+		if ( MuzzleFlash)
+		{
+			UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
+		}
 	}
-
-	if (MuzzleFlash)    // MuzzleFlash 
+	
+	// try and play a firing animation if specified
+	if (aminPrimaryAttack != nullptr)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
+		// Get the animation object for the arms mesh
+		const TObjectPtr<UAnimInstance> AnimInstance = Player->GetMesh1P()->GetAnimInstance();
+		if (AnimInstance != nullptr)
+		{
+			AnimInstance->Montage_Play(aminPrimaryAttack, 0.9f);
+		}
 	}
-
+	
 }
 
 

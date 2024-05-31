@@ -6,6 +6,7 @@
 #include "NPC_WEAPON/BaseWeapon.h"
 #include "weapon_smg1.generated.h"
 class USkeletalMeshComponent;
+class AShell;
 
 UCLASS()
 class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
@@ -14,6 +15,9 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 
 	UPROPERTY(EditAnywhere, Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> smg1_mesh;
+
+	UPROPERTY(EditAnywhere, Category="Shell", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<AShell> shelldrops;
 	
 public:
 
@@ -27,13 +31,13 @@ protected:
 	virtual void Interact(AActor* Actor) override;
 	virtual void ApplyDamage(float Damage, FVector HitLocation) override;
 	virtual void PhysicsTraceLogic(const FHitResult& HitResult) override;
-
-	//	virtual void StartFire() override;
-//	virtual void StopFire() override;
+	virtual void StartAttack() override;
+	virtual void StopAttack() override;
 
 public:
 
-
+	void SpawnShell() const;
+	
 private:
 
 	float			FireRate;
