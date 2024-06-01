@@ -7,6 +7,7 @@
 #include "weapon_smg1.generated.h"
 class USkeletalMeshComponent;
 class AShell;
+class UArrowComponent;
 
 UCLASS()
 class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
@@ -18,6 +19,9 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 
 	UPROPERTY(EditAnywhere, Category="Shell", meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<AShell> shelldrops;
+
+	UPROPERTY(EditAnywhere, Category="Arrow", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<UArrowComponent> SpawnShellArrow;
 	
 public:
 

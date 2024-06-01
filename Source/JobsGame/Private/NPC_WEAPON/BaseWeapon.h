@@ -13,6 +13,7 @@ class USoundBase;
 class UInputMappingContext;
 class UInputAction;
 
+
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
 UENUM(BlueprintType)

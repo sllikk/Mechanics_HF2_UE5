@@ -27,7 +27,7 @@ AShell::AShell()
 		ShellMesh->SetStaticMesh(LoadMesh);
 	}
 	
-	ShellMesh->SetWorldScale3D(FVector(0.1, 0.1, 0.1));
+	ShellMesh->SetWorldScale3D(FVector(0.09, 0.09, 0.09));
 
 }
 

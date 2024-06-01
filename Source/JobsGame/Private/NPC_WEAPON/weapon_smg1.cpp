@@ -3,6 +3,7 @@
 
 #include "NPC_WEAPON/weapon_smg1.h"
 
+#include "Components/ArrowComponent.h"
 #include "Shared/Shell.h"
 
 enum State
@@ -21,7 +22,9 @@ Aweapon_smg1::Aweapon_smg1()
 	smg1_mesh->SetCollisionProfileName("Weapons");
 	smg1_mesh->SetWorldRotation(FRotator(0, 80, 0));
 
-
+	SpawnShellArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
+	SpawnShellArrow->SetupAttachment(smg1_mesh);
+	
 	SetSkeletalMesh(smg1_mesh);
 	LoadSkeletalMesh("/Game/Weapon/Smg/Smg1");
 	SetBulletSpread(5.0f);
@@ -91,15 +94,15 @@ void Aweapon_smg1::StopAttack()
 void Aweapon_smg1::SpawnShell() const
 {
 	FActorSpawnParameters ActorSpawnParameters;
-	FTransform Transform = smg1_mesh->GetSocketTransform("ShellSpawn", RTS_World);
-	FVector LocationSpawn = Transform.GetLocation();
-	FRotator SpawnRotation = Transform.GetRotation().Rotator();
-	
-	TObjectPtr<AShell> Shell = GetWorld()->SpawnActor<AShell>(shelldrops, Transform.GetLocation(), FRotator::ZeroRotator, ActorSpawnParameters);
-	if (Shell)
+	FVector LocationSpawn = SpawnShellArrow->GetComponentLocation();
+
+	TObjectPtr<AShell> Shell = GetWorld()->SpawnActor<AShell>(shelldrops,  LocationSpawn, FRotator::ZeroRotator , ActorSpawnParameters);
+	if (Shell != nullptr)
 	{
-		//FVector ForwardVector = LocationSpawn.ForwardVector;
-		//Shell->GetMeshBullet()->AddImpulse(ForwardVector* 200);
+		 FVector ForwardVector = SpawnShellArrow->GetForwardVector();
+
+		Shell->GetMeshBullet()->AddImpulse(ForwardVector* 500, NAME_Actor, true);
+
 	}
 }
 
