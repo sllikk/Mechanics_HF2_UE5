@@ -22,6 +22,9 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 
 	UPROPERTY(EditAnywhere, Category="Arrow", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> SpawnShellArrow;
+
+	//UPROPERTY(EditAnywhere, Category="Pooling", meta=(AllowPrivateAccess = "true"))
+	
 	
 public:
 
@@ -47,4 +50,6 @@ private:
 	float			FireRate;
 	FTimerHandle	FireTimerHandle;
 	uint8			iWeaponCallFlag;
+
+	
 };
