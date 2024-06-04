@@ -8,6 +8,7 @@
 class USkeletalMeshComponent;
 class AShell;
 class UArrowComponent;
+class Aobject_pool;
 
 UCLASS()
 class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
@@ -23,8 +24,11 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 	UPROPERTY(EditAnywhere, Category="Arrow", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> SpawnShellArrow;
 
-	//UPROPERTY(EditAnywhere, Category="Pooling", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, Category = "Pooling")
+	TSubclassOf<Aobject_pool> PoolClass; // Класс пула объектов
 	
+	UPROPERTY(EditAnywhere	)
+	Aobject_pool* Object_Pool;
 	
 public:
 
@@ -43,13 +47,15 @@ protected:
 
 public:
 
-	void SpawnShell() const;
+	FORCEINLINE void SpawnShell();
+	FORCEINLINE void ReturnShellToPool();
 	
 private:
 
 	float			FireRate;
 	FTimerHandle	FireTimerHandle;
 	uint8			iWeaponCallFlag;
-
+	UPROPERTY()
+	TArray<AActor*> Array;
 	
 };

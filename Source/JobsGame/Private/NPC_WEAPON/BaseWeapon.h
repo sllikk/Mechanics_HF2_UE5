@@ -25,7 +25,7 @@ enum class EFireMode : uint8
 };
 
 UCLASS()
-class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public IPropsDamage
+class JOBSGAME_API ABaseWeapon : public AActor
 {
 	GENERATED_BODY()
 
@@ -96,18 +96,16 @@ public:
 	//virtual void SecondaryAttack();
 	virtual void	Reload();
 	virtual void	FinishReload();
-	virtual void	Interact(AActor* Actor) override;
 	virtual void	PhysicsTraceLogic(const FHitResult& HitResult);
-	virtual void	ApplyDamage(float Damage, FVector HitLocation) override;
 	virtual void	StartAttack();
 	virtual void	StopAttack();
 			void	SpawnEmitter() const;
 			void	SpawnTraceDecals() const;
 			void	ConsumeAmmo(int32 iAmmo);
-	
-	EFireMode CurrentFireMode;	
-
-	
+			void    EmmiterAINoise() const;
+			void    SpawnDecals();
+			void    ShellDrop();
+			void    ShellRelease();	
 private:
 
 	UPROPERTY()
@@ -137,5 +135,7 @@ private:
 	
 	bool     blsReload;
 	bool     blsPrimaryAttack;
+	
+	
 	
 };

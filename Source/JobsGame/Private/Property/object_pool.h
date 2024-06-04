@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "object_pool.generated.h"
 
-UCLASS(MinimalAPI)
+UCLASS()
 class Aobject_pool : public AActor
 {
 	GENERATED_BODY()
@@ -21,11 +21,11 @@ protected:
 
 public:	
 
-	UFUNCTION(BlueprintCallable, Category="ObjectPool")
+	UFUNCTION(CallInEditor, Category="ObjectPool")
 	AActor* GetObject(); 
 
-	UFUNCTION(BlueprintCallable, Category = "Object Pool")
-	void ReleaseObject(AActor* Obect);
+	UFUNCTION(CallInEditor, Category = "Object Pool")
+	void ReleaseObject(AActor* Object);
 
 	void InitializePool(TSubclassOf<AActor> Object, int32 SizePool);
 
@@ -37,8 +37,8 @@ private:
 	UPROPERTY()
 	int32 PoolSize; // Size Pool
 
-	UPROPERTY()
-	TArray<AActor*> Pool; // Array Object Pool
+	//UPROPERTY()
+	//TArray<AActor*> Pool; // Array Object Pool
 
 	UPROPERTY()
 	TArray<AActor*> AvailableObjects; // Array available Object Pool 

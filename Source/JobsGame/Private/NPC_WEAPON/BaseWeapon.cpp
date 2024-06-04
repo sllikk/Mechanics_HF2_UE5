@@ -310,4 +310,20 @@ void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	
 }
 
+void ABaseWeapon::EmmiterAINoise() const
+{
+}
+
+void ABaseWeapon::SpawnDecals()
+{
+}
+
+void ABaseWeapon::ShellDrop()
+{
+}
+
+void ABaseWeapon::ShellRelease()
+{
+}
+
 

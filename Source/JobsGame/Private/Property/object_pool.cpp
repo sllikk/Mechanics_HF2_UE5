@@ -9,7 +9,9 @@ Aobject_pool::Aobject_pool()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
 
-	PoolSize = 10;
+	PoolSize = 15;
+//	Pool.Reserve(PoolSize);
+	AvailableObjects.Reserve(PoolSize);
 }
 
 // Called when the game starts or when spawned
@@ -28,15 +30,16 @@ AActor* Aobject_pool::GetObject()
 		Object->SetActorHiddenInGame(false);
 		return Object;
 	}
+
 	return nullptr;
 }
 
-void Aobject_pool::ReleaseObject(AActor* Obect)
+void Aobject_pool::ReleaseObject(AActor* Object)
 {
-	if (Obect != nullptr)
+	if (Object != nullptr)
 	{
-		Obect->SetActorHiddenInGame(true);	
-		AvailableObjects.Add(Obect);
+		Object->SetActorHiddenInGame(true);	
+		AvailableObjects.Add(Object);
 		
 	}
 }
@@ -45,8 +48,7 @@ void Aobject_pool::InitializePool(TSubclassOf<AActor> Object, int32 SizePool)
 {
 	PoolSize = SizePool;
 	PooledObjectClass = Object;
-
-
+	
 	if (PooledObjectClass != nullptr)
 	{
 		for (int32 i = 0; i < PoolSize; ++i)
@@ -55,7 +57,7 @@ void Aobject_pool::InitializePool(TSubclassOf<AActor> Object, int32 SizePool)
 			if (NewObject != nullptr)
 			{
 				NewObject->SetActorHiddenInGame(true);
-				Pool.Add(NewObject);
+				//Pool.Add(NewObject);
 				AvailableObjects.Add(NewObject);
 				UE_LOG(LogTemp, Warning, TEXT("Object added to pool: %s"), *NewObject->GetName());
 			}
