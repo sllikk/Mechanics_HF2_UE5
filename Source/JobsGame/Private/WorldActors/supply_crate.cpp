@@ -18,8 +18,7 @@ Asupply_crate::Asupply_crate()
 	LoadGeometry("/Game/GC/GC_SupplyCrate");
 	
 	LoadFieldComponent("/Game/GC/Impact");
-	
-
+	// Обновление навигационных данных
 }
 
 

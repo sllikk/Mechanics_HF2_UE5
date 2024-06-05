@@ -27,7 +27,6 @@ Aweapon_smg1::Aweapon_smg1()
 	SpawnShellArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("ArrowComponent"));
 	SpawnShellArrow->SetupAttachment(smg1_mesh);
 
-	Object_Pool = CreateDefaultSubobject<Aobject_pool>(TEXT("ObjectPool"));
 	
 	SetSkeletalMesh(smg1_mesh);
 	LoadSkeletalMesh("/Game/Weapon/Smg/Smg1");
@@ -37,7 +36,7 @@ Aweapon_smg1::Aweapon_smg1()
 	SetMaxAmmo(45);
 	SetInvAmmo(225);
 	SetReloadTime(1.0f);
-	SetImpulseImpact(1000);
+	SetPhysicsImpulse(350.0f);
 	SetAttackRate(0.1);
 
 
@@ -51,19 +50,6 @@ void Aweapon_smg1::BeginPlay()
 
 	SetFireSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_fire_Cue")));
 
-	if (PoolClass != nullptr)
-	{
-		Object_Pool = GetWorld()->SpawnActor<Aobject_pool>(PoolClass);
-		if (Object_Pool != nullptr )
-		{
-			Object_Pool->InitializePool(AShell::StaticClass(), 70);
-			UE_LOG(LogTemp, Log, TEXT("ObjectPool initialized with class: %s"), *AShell::StaticClass()->GetName());	
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("ObjectPool is not initialized."));
-	}
 }
 
 
@@ -75,22 +61,13 @@ void Aweapon_smg1::Tick(float DeltaSeconds)
 
 void Aweapon_smg1::PrimaryAttack()
 {
-	Super::PrimaryAttack();
-	
-	SpawnShell();
-
+		Super::PrimaryAttack();
 }
 
 
 void Aweapon_smg1::Interact(AActor* Actor)
 {
 	Super::Interact(Actor);
-}
-
-void Aweapon_smg1::ApplyDamage(float Damage, FVector HitLocation)
-{
-	Super::ApplyDamage(Damage, HitLocation);
-	
 }
 
 void Aweapon_smg1::PhysicsTraceLogic(const FHitResult& HitResult)
@@ -110,41 +87,46 @@ void Aweapon_smg1::StopAttack()
 	Super::StopAttack();
 }
 
-void Aweapon_smg1::SpawnShell()
+void Aweapon_smg1::ShellDrop()
 {
-	if (Object_Pool)
+	Super::ShellDrop();
+
+	if (GetShellPool() != nullptr)
 	{
-		AShell* ShellSpawn = Cast<AShell>(Object_Pool->GetObject());
+		TObjectPtr<AShell> SpawnShell = Cast<AShell>(GetShellPool()->GetObject());
 
-		if (ShellSpawn != nullptr)
+		if (SpawnShell != nullptr)
 		{
-			const FVector LocationSpawn = SpawnShellArrow->GetComponentLocation();
-			FVector ForwardVector = SpawnShellArrow->GetForwardVector();
+			SpawnShell->SetActorLocation(SpawnShellArrow->GetComponentLocation());	
+			SpawnShell->SetActorRotation(FRotator::ZeroRotator);
+			PoolArray.Add(SpawnShell);
 
-			ShellSpawn->SetActorLocation(LocationSpawn);
-			ShellSpawn->SetActorRotation(FRotator::ZeroRotator);
-			ShellSpawn->SetActorHiddenInGame(false);
-			ShellSpawn->GetMeshBullet()->AddImpulse(ForwardVector * 500, NAME_None, true);
-			Array.Add(ShellSpawn);
-
-			GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &Aweapon_smg1::ReturnShellToPool, 1.5, false);
+			if (SpawnShellArrow != nullptr)
+			{
+				const FVector& ForwardVector = SpawnShellArrow->GetForwardVector();
+				SpawnShell->GetMeshBullet()->AddImpulse(ForwardVector * 500, NAME_None, true);
+			}
 		}
-	}	
-}
-
-void Aweapon_smg1::ReturnShellToPool()
-{
-	if(Array.Num() > 0)
-	{
-		for (int16 i = 0; i < Array.Num(); ++i)
-		{
-			Object_Pool->ReleaseObject(Array[i]);
-		}
-		
 	}
-
-
+	
 }
+
+void Aweapon_smg1::ObjectPoolRelease()
+{
+	Super::ObjectPoolRelease();
+
+		if (PoolArray.Num() > 0)
+		{
+			for (int32 i = 0; i < PoolArray.Num(); ++i)
+			{
+				GetShellPool()->ReleaseObject(PoolArray[i]);
+			}
+		}	
+}
+
+
+
+
 
 
 	

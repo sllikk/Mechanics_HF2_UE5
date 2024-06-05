@@ -5,27 +5,20 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Player/MyCharacter.h"
+#include "Property/shell_pool.h"
 #include "Shared/interact.h"
-#include "Shared/PropsDamage.h"
 #include "BaseWeapon.generated.h"
 class USkeletalMeshComponent;
 class USoundBase;
 class UInputMappingContext;
 class UInputAction;
-
+class Ashell_pool;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
-UENUM(BlueprintType)
-enum class EFireMode : uint8
-{
-	SINGLE		UMETA(DisplayName = "Single"),
-	AUTOMATIC	UMETA(DisplayName = "Automatic"),
-	ALT         UMETA(DisplayName = "AltFire"),
-};
 
 UCLASS()
-class JOBSGAME_API ABaseWeapon : public AActor
+class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
 {
 	GENERATED_BODY()
 
@@ -43,6 +36,12 @@ class JOBSGAME_API ABaseWeapon : public AActor
 	
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
+
+	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
+	TSubclassOf<Ashell_pool> ShellPoolClass;
+	
+	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
+	TObjectPtr<Ashell_pool> pool_shell;
 	
 public:
 	// Sets default values for this actor's properties
@@ -60,6 +59,7 @@ public:
 	// Methods for getting values
 	UFUNCTION(BlueprintCallable, Category = "mesh")
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const  { return WeaponSkeletalMeshComponent; }
+	FORCEINLINE Ashell_pool*            GetShellPool()			 const	{ return pool_shell; }		
 	FORCEINLINE FName	GetSocketName() const							{ return fSocketName; }
 	FORCEINLINE int32	GetMaxAmmo() const								{ return imaxAmmo; }
 	FORCEINLINE int32	GetCurrentAmmo() const							{ return icurrentAmmo; }
@@ -67,8 +67,8 @@ public:
 	FORCEINLINE float	GetReloadTime() const							{ return m_flReloadTime; }
 	FORCEINLINE float	GetBulletSpread() const							{ return m_flBulletSpread; }
 	FORCEINLINE float	GetMaxShootDistance() const						{ return m_flmaxTraceLength; }
-	FORCEINLINE float	GetImpactImpulse() const						{ return m_flImpulse; }
-	FORCEINLINE float   GetAttackRate() const							 { return m_flAttackRate; }
+	FORCEINLINE float   GetAttackRate() const							{ return m_flAttackRate; }
+	FORCEINLINE float   GetMaxPhysicsImpulse() const					{ return m_flMaxPhysicsImpulse; }
 	FORCEINLINE	FVector GetShotForwardVector() const;												// Return forward vector .cpp
 	FORCEINLINE FVector CalculateBulletSpread(const FVector& ShotDirection) const;
 	
@@ -82,7 +82,7 @@ public:
 	FORCEINLINE void	SetReloadTime(float flnew_time)					 { m_flReloadTime = flnew_time; }
 	FORCEINLINE void    SetAttackRate(float fl_rateattack)				 { m_flAttackRate = fl_rateattack; }
 	FORCEINLINE void	SetBulletSpread(float flspread)					 { m_flBulletSpread = flspread; }
-  	FORCEINLINE void    SetImpulseImpact(float fl_impulse)				 { m_flImpulse = fl_impulse; }
+  	FORCEINLINE void    SetPhysicsImpulse(float fl_impulse)				 { m_flMaxPhysicsImpulse = fl_impulse; }
 
 	// Sound effects and load
 	FORCEINLINE void	SetFireSound(USoundBase* NewSound)				{ FireSound = NewSound; }
@@ -90,22 +90,24 @@ public:
 	FORCEINLINE void	SetMuzzleFlash(UParticleSystem* NewEffect)		{ MuzzleFlash = NewEffect; }
 	FORCEINLINE void	LoadSkeletalMesh(const FString& Path) const; 
 	UFUNCTION(BlueprintCallable)
-	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName&  SocketName);
-
-	virtual void	PrimaryAttack();	
+	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
+	
+	virtual void		PrimaryAttack();	
 	//virtual void SecondaryAttack();
-	virtual void	Reload();
-	virtual void	FinishReload();
-	virtual void	PhysicsTraceLogic(const FHitResult& HitResult);
-	virtual void	StartAttack();
-	virtual void	StopAttack();
-			void	SpawnEmitter() const;
-			void	SpawnTraceDecals() const;
-			void	ConsumeAmmo(int32 iAmmo);
-			void    EmmiterAINoise() const;
-			void    SpawnDecals();
-			void    ShellDrop();
-			void    ShellRelease();	
+	virtual void		Reload();
+	virtual void		FinishReload();
+	virtual void		PhysicsTraceLogic(const FHitResult& HitResult);
+	virtual void		Interact(AActor* Actor) override;
+	virtual void		StartAttack();
+	virtual void		StopAttack();
+	virtual void		ShellDrop();
+			void		SpawnEmitter() const;
+	static  void		SpawnTraceDecals();
+			void		ConsumeAmmo(int32 iAmmo);
+	static  void		EmmiterAINoise();
+	static  void		SpawnDecals(); 
+	virtual void		ObjectPoolRelease();	
+		
 private:
 
 	UPROPERTY()
@@ -121,20 +123,23 @@ private:
 	
 	FTimerHandle ReloadTimer;
 	FTimerHandle PrimaryAttackTimer;
-
+	FTimerHandle TimePoolObject;
+	
+	
 	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
 	int32	 imaxInventoryAmmo;
 	FName	 fSocketName;			// Socket for shoot 
 
-	float    m_flImpulse;	
 	float	 m_flmaxTraceLength;
-	float    m_flBulletSpread;
+	float    m_flBulletSpread; 
 	float    m_flReloadTime;
 	float    m_flAttackRate;
+	float    m_flMaxPhysicsImpulse;
 	
 	bool     blsReload;
 	bool     blsPrimaryAttack;
+
 	
 	
 	

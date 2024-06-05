@@ -23,12 +23,7 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 
 	UPROPERTY(EditAnywhere, Category="Arrow", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> SpawnShellArrow;
-
-	UPROPERTY(EditAnywhere, Category = "Pooling")
-	TSubclassOf<Aobject_pool> PoolClass; // Класс пула объектов
 	
-	UPROPERTY(EditAnywhere	)
-	Aobject_pool* Object_Pool;
 	
 public:
 
@@ -36,26 +31,22 @@ public:
 	
 protected:
 
-	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
-	virtual void PrimaryAttack() override;
-	virtual void Interact(AActor* Actor) override;
-	virtual void ApplyDamage(float Damage, FVector HitLocation) override;
-	virtual void PhysicsTraceLogic(const FHitResult& HitResult) override;
-	virtual void StartAttack() override;
-	virtual void StopAttack() override;
-
+	virtual void	BeginPlay() override;
+	virtual void	Tick(float DeltaSeconds) override;
+	virtual void	PrimaryAttack() override;
+	virtual void	Interact(AActor* Actor) override;
+	virtual void	PhysicsTraceLogic(const FHitResult& HitResult) override;
+	virtual void	StartAttack() override;
+	virtual void	StopAttack() override;
+	virtual void    ShellDrop() override;
+	virtual void    ObjectPoolRelease() override;
+	
 public:
 
-	FORCEINLINE void SpawnShell();
-	FORCEINLINE void ReturnShellToPool();
 	
 private:
 
-	float			FireRate;
-	FTimerHandle	FireTimerHandle;
-	uint8			iWeaponCallFlag;
 	UPROPERTY()
-	TArray<AActor*> Array;
+	TArray<AActor*> PoolArray;
 	
 };

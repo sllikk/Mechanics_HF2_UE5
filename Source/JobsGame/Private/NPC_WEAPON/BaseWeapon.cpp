@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BaseWeapon.h"
-
+#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "AIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -26,13 +26,17 @@ ABaseWeapon::ABaseWeapon()
 	imaxInventoryAmmo = 100;
 	m_flReloadTime = 2.0f;
 	m_flmaxTraceLength = 10000.0f;
-
+	m_flMaxPhysicsImpulse = 150.0f;
+	
 	FireSound = nullptr;
 	ReloadSound = nullptr;
 	MuzzleFlash = nullptr;
 
 	blsReload = false;
 	blsPrimaryAttack = false;
+
+	pool_shell = CreateDefaultSubobject<Ashell_pool>(TEXT("pool"));            // PoolObj for drop shell
+
 }
 
 
@@ -40,6 +44,15 @@ ABaseWeapon::ABaseWeapon()
 void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (pool_shell != nullptr)
+	{
+		pool_shell = GetWorld()->SpawnActor<Ashell_pool>(ShellPoolClass);
+		if (pool_shell)
+		{
+			UE_LOG(LogWeapon, Warning, TEXT("Spawn pool"));
+		}
+	}
 	
 }
 
@@ -57,7 +70,8 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
 	Super::EndPlay(EndPlayReason);
-/*
+
+	/*
 	// Set up action bindings
 	if (const APlayerController* PlayerController = Cast<const APlayerController>(Player->GetController()))
 	{
@@ -67,10 +81,10 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		}
 	}
 */
+
 }
 
-
-FVector ABaseWeapon::GetShotForwardVector() const
+FVector ABaseWeapon::GetShotForwardVector() const                               // Shoot Base Class 
 {
 	// Get Controller Player
 	const TObjectPtr<AController> Controller = Player->GetController();
@@ -180,9 +194,9 @@ void ABaseWeapon::StopAttack()
 
 void ABaseWeapon::PrimaryAttack()
 {
-	if (Player == nullptr) return;
 	if (GetCurrentAmmo() <= 0 || blsReload)
 	{
+		Reload();
 		return;
 	}
 	
@@ -195,12 +209,15 @@ void ABaseWeapon::PrimaryAttack()
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4);
 	
 		ConsumeAmmo(1);
-		
+		blsPrimaryAttack = true;
+
+
 		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
-		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);
+		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);	
 
 		PhysicsTraceLogic(HitResult);
 		SpawnEmitter();
+		ShellDrop();
 }
 
 
@@ -214,7 +231,6 @@ void ABaseWeapon::Reload()
 
 	if (GetCurrentAmmo() == GetMaxAmmo() || GetInvAmmo() == 0)
 	{
-		UE_LOG(LogWeapon, Warning, TEXT("Cannot reload: ammo is full or no ammo in inventory"));
 		return;
 	}
 
@@ -253,24 +269,16 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
 {
-	const TObjectPtr<UPrimitiveComponent> PhysicsComponent = HitResult.GetComponent();
+	UPrimitiveComponent* PhysicsComponent = HitResult.GetComponent();
 
 	if (PhysicsComponent != nullptr)
 	{
 		if (PhysicsComponent->IsSimulatingPhysics())
 		{
-			const FVector& ImpulseDirection = HitResult.ImpactPoint; 
-			PhysicsComponent->AddVelocityChangeImpulseAtLocation(ImpulseDirection * GetImpactImpulse(), PhysicsComponent->GetComponentLocation(), NAME_None);		
+			const FVector ImpulseDirection = (HitResult.ImpactPoint - HitResult.TraceStart).GetSafeNormal();
+			PhysicsComponent->AddImpulse(ImpulseDirection * m_flMaxPhysicsImpulse, NAME_None, true);		
 		}
-			
 	}
-	
-}
-
-
-void ABaseWeapon::ApplyDamage(float Damage, FVector HitLocation)
-{
-
 }
 
 
@@ -299,7 +307,7 @@ void ABaseWeapon::SpawnEmitter() const
 }
 
 
-void ABaseWeapon::SpawnTraceDecals() const	     
+void ABaseWeapon::SpawnTraceDecals()
 {
 
 }
@@ -310,20 +318,30 @@ void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	
 }
 
-void ABaseWeapon::EmmiterAINoise() const
+
+void ABaseWeapon::EmmiterAINoise()
 {
+
 }
+
 
 void ABaseWeapon::SpawnDecals()
 {
+
 }
+
 
 void ABaseWeapon::ShellDrop()
 {
+	GetWorld()->GetTimerManager().SetTimer(TimePoolObject, this, &ABaseWeapon::ObjectPoolRelease, 1.2, true);
+
 }
 
-void ABaseWeapon::ShellRelease()
+
+void ABaseWeapon::ObjectPoolRelease()
 {
+	GetWorld()->GetTimerManager().ClearTimer(TimePoolObject);
+
 }
 
 
