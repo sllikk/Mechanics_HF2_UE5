@@ -105,9 +105,10 @@ public:
 	static  void		SpawnTraceDecals();
 			void		ConsumeAmmo(int32 iAmmo);
 	static  void		EmmiterAINoise();
-	static  void		SpawnDecals(); 
+	static  void		SpawnDecals(FVector SpawnDecalLocation); 
 	virtual void		ObjectPoolRelease();	
-		
+			void        Debug();
+			
 private:
 
 	UPROPERTY()	
@@ -115,9 +116,10 @@ private:
 	UPROPERTY()	
 	TObjectPtr<USoundBase> ReloadSound;
 	UPROPERTY()
-	TObjectPtr<UParticleSystem> MuzzleFlash;
-	UPROPERTY()
 	TObjectPtr<USoundBase> SwitchSound;
+	
+	UPROPERTY()
+	TObjectPtr<UParticleSystem> MuzzleFlash;
 	
 	UPROPERTY(EditAnywhere, Category="Anim")
 	TObjectPtr<UAnimMontage> aminPrimaryAttack;
@@ -128,6 +130,7 @@ private:
 	FTimerHandle ReloadTimer;
 	FTimerHandle PrimaryAttackTimer;
 	FTimerHandle TimePoolObject;
+	
 	
 	
 	int32	 imaxAmmo;

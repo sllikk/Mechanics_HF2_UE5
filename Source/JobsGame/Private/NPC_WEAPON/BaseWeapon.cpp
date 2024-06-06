@@ -34,8 +34,9 @@ ABaseWeapon::ABaseWeapon()
 	blsReload = false;
 	blsPrimaryAttack = false;
 
-	//pool_shell = CreateDefaultSubobject<Ashell_pool>(TEXT("pool"));            // PoolObj for drop shell
+	SwitchSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/switch_burst_Cue"));   // Shared sound 
 
+	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -61,7 +62,7 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-//	Debug();
+	Debug();
 
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -198,7 +199,9 @@ void ABaseWeapon::StartAttack()
 
 void ABaseWeapon::StopAttack()
 {
+
 	GetWorld()->GetTimerManager().ClearTimer(PrimaryAttackTimer);
+
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -210,7 +213,6 @@ void ABaseWeapon::PrimaryAttack()
 	if (GetCurrentAmmo() <= 0 || blsReload)
 	{
 		Reload();
-
 		return;
 	}
 	
@@ -241,7 +243,6 @@ void ABaseWeapon::Reload()
 	{
 		return;
 	}
-
 	blsReload = true;		
 
 	if (ReloadSound != nullptr)                /* Reload Sound specific for weapon */
@@ -249,8 +250,7 @@ void ABaseWeapon::Reload()
 		UGameplayStatics::SpawnSoundAtLocation(this, ReloadSound, GetActorLocation());
 	}
 
-	
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,  this, &ABaseWeapon::FinishReload, GetReloadTime(), false);   
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,  this, &ABaseWeapon::FinishReload, GetReloadTime(), false);   // Reload Timer
 
 }
 
@@ -296,6 +296,10 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 			const FVector ImpulseDirection = (HitResult.ImpactPoint - HitResult.TraceStart).GetSafeNormal();
 			PhysicsComponent->AddImpulse(ImpulseDirection * m_flMaxPhysicsImpulse, NAME_None, true);		
 		}
+		else
+		{
+			SpawnDecals(HitResult.Location);
+		}
 	}
 }
 
@@ -327,7 +331,6 @@ void ABaseWeapon::SpawnEmitter() const
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-
 void ABaseWeapon::SpawnTraceDecals()
 {
 
@@ -348,7 +351,7 @@ void ABaseWeapon::EmmiterAINoise()
 }
 
 
-void ABaseWeapon::SpawnDecals()
+void ABaseWeapon::SpawnDecals(FVector SpawnDecalLocation)
 {
 
 }
@@ -368,6 +371,16 @@ void ABaseWeapon::ShellDrop()
 void ABaseWeapon::ObjectPoolRelease()
 {
 	GetWorld()->GetTimerManager().ClearTimer(TimePoolObject);
+
+}
+
+void ABaseWeapon::Debug()
+{
+	if (GEngine != nullptr)
+	{
+		FString Debugs = FString::Printf(TEXT("Clip: %d, Max: %d"), icurrentAmmo, imaxInventoryAmmo);	
+		GEngine->AddOnScreenDebugMessage(3, -1, FColor::Yellow, Debugs);
+	}
 
 }
 
