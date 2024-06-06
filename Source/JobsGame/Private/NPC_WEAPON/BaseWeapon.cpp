@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BaseWeapon.h"
-#include "GeometryCollection/GeometryCollectionComponent.h"
 #include "AIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -35,10 +34,10 @@ ABaseWeapon::ABaseWeapon()
 	blsReload = false;
 	blsPrimaryAttack = false;
 
-	pool_shell = CreateDefaultSubobject<Ashell_pool>(TEXT("pool"));            // PoolObj for drop shell
+	//pool_shell = CreateDefaultSubobject<Ashell_pool>(TEXT("pool"));            // PoolObj for drop shell
 
 }
-
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Called when the game starts or when spawned
 void ABaseWeapon::BeginPlay()
@@ -55,7 +54,7 @@ void ABaseWeapon::BeginPlay()
 	}
 	
 }
-
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 // Called every frame
 void ABaseWeapon::Tick(float DeltaTime)
@@ -65,15 +64,17 @@ void ABaseWeapon::Tick(float DeltaTime)
 //	Debug();
 
 }
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 
 	Super::EndPlay(EndPlayReason);
 
+
 	/*
 	// Set up action bindings
-	if (const APlayerController* PlayerController = Cast<const APlayerController>(Player->GetController()))
+	if (const APlayerController* PlayerController = Cast<const APlayerController>(Player->GetController()))                                                         // this dont work call error 
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
@@ -83,6 +84,10 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 */
 
 }
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*here we get a vector for the line trace
+ *depending on whether it is a person or a bot*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 FVector ABaseWeapon::GetShotForwardVector() const                               // Shoot Base Class 
 {
@@ -113,7 +118,7 @@ FVector ABaseWeapon::GetShotForwardVector() const                               
 	return FVector::ZeroVector;
 
 }
-
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
 {
@@ -134,6 +139,11 @@ void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
 	}
 }
 
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+/*this function returns the direction of weapon
+spread - m_flBulletSpread this is the variable with which we adjust the spread */
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+
 
 FVector ABaseWeapon::CalculateBulletSpread(const FVector& ShotDirection) const
 {
@@ -142,8 +152,9 @@ FVector ABaseWeapon::CalculateBulletSpread(const FVector& ShotDirection) const
 	
 	return SpreadDirection;
 }
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-
+/* this only func for player  */
 void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 {
 	Player = Character;
@@ -168,7 +179,7 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 			Subsystem->AddMappingContext(WeaponMappingContext, 1);
 		}
 
-		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
+		if (UEnhancedInputComponent* EIC = Cast<UEnhancedInputComponent>(PlayerController->InputComponent)) // Input Enhanced System 
 		{
 			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ABaseWeapon::StartAttack);
 			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, this, &ABaseWeapon::StopAttack);
@@ -177,8 +188,7 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 	}
 }
 
-
-
+// Start and stop this fun for auto or single fire 
 void ABaseWeapon::StartAttack()
 {
 	GetWorld()->GetTimerManager().SetTimer(PrimaryAttackTimer, this,  &ABaseWeapon::PrimaryAttack, GetAttackRate(), true);
@@ -191,12 +201,16 @@ void ABaseWeapon::StopAttack()
 	GetWorld()->GetTimerManager().ClearTimer(PrimaryAttackTimer);
 }
 
-
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+  /* this is the primary attack of our weapon and its general logic of settings such as spread,
+		range, sounds, physical impact, and so on are universally found in the successor classes */
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 void ABaseWeapon::PrimaryAttack()
 {
 	if (GetCurrentAmmo() <= 0 || blsReload)
 	{
 		Reload();
+
 		return;
 	}
 	
@@ -220,25 +234,27 @@ void ABaseWeapon::PrimaryAttack()
 		ShellDrop();
 }
 
-
-
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 void ABaseWeapon::Reload()
 {
-	if (blsReload)
-	{
-		return;
-	}
-
-	if (GetCurrentAmmo() == GetMaxAmmo() || GetInvAmmo() == 0)
+	if ( blsReload || GetCurrentAmmo() == GetMaxAmmo() || GetInvAmmo() == 0)
 	{
 		return;
 	}
 
 	blsReload = true;		
+
+	if (ReloadSound != nullptr)                /* Reload Sound specific for weapon */
+	{
+		UGameplayStatics::SpawnSoundAtLocation(this, ReloadSound, GetActorLocation());
+	}
+
+	
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,  this, &ABaseWeapon::FinishReload, GetReloadTime(), false);   
 
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::FinishReload()
 {
@@ -252,6 +268,7 @@ void ABaseWeapon::FinishReload()
 	
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 {
@@ -266,6 +283,7 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 	}
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
 {
@@ -281,13 +299,15 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 	}
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::SpawnEmitter() const
 {
 	if (FireSound)    // Sound Fire
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
-		if ( MuzzleFlash)
+
+		if ( MuzzleFlash)    
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
 		}
@@ -305,6 +325,7 @@ void ABaseWeapon::SpawnEmitter() const
 	}
 	
 }
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 
 void ABaseWeapon::SpawnTraceDecals()
@@ -315,8 +336,10 @@ void ABaseWeapon::SpawnTraceDecals()
 
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 {
-	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);	
+	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);
+	
 }
+
 
 
 void ABaseWeapon::EmmiterAINoise()
@@ -330,8 +353,12 @@ void ABaseWeapon::SpawnDecals()
 
 }
 
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+	/* this is a virtual function that spawns cartridges, sets a timer for their return to the pool,
+	    the implementation itself is located in classes that are descendants of this class */
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void ABaseWeapon::ShellDrop()
+void ABaseWeapon::ShellDrop() 
 {
 	GetWorld()->GetTimerManager().SetTimer(TimePoolObject, this, &ABaseWeapon::ObjectPoolRelease, 1.2, true);
 

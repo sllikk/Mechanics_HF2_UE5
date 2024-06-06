@@ -35,7 +35,7 @@ Aweapon_smg1::Aweapon_smg1()
 	SetMaxShootDistance(6000);
 	SetMaxAmmo(45);
 	SetInvAmmo(225);
-	SetReloadTime(1.0f);
+	SetReloadTime(1.2f);
 	SetPhysicsImpulse(350.0f);
 	SetAttackRate(0.1);
 
@@ -49,7 +49,8 @@ void Aweapon_smg1::BeginPlay()
 	Super::BeginPlay();
 
 	SetFireSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_fire_Cue")));
-
+	SetReloadSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_reload_Cue")));
+	
 }
 
 

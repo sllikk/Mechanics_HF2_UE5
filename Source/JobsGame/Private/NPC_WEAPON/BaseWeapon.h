@@ -110,16 +110,20 @@ public:
 		
 private:
 
-	UPROPERTY()
-	TObjectPtr<AMyCharacter> Player; 
 	UPROPERTY()	
 	TObjectPtr<USoundBase> FireSound;
 	UPROPERTY()	
 	TObjectPtr<USoundBase> ReloadSound;
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> MuzzleFlash;
+	UPROPERTY()
+	TObjectPtr<USoundBase> SwitchSound;
+	
 	UPROPERTY(EditAnywhere, Category="Anim")
 	TObjectPtr<UAnimMontage> aminPrimaryAttack;
+
+	UPROPERTY()
+	TObjectPtr<AMyCharacter> Player;             // Player class for weapon
 	
 	FTimerHandle ReloadTimer;
 	FTimerHandle PrimaryAttackTimer;
