@@ -102,10 +102,9 @@ public:
 	virtual void		StopAttack();
 	virtual void		ShellDrop();
 			void		SpawnEmitter() const;
-	static  void		SpawnTraceDecals();
 			void		ConsumeAmmo(int32 iAmmo);
 	static  void		EmmiterAINoise();
-	static  void		SpawnDecals(FVector SpawnDecalLocation); 
+	static  void		SpawnDecals(const FHitResult& TraceResult); 
 	virtual void		ObjectPoolRelease();	
 			void        Debug();
 			

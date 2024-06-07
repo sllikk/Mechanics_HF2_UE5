@@ -122,6 +122,7 @@ void Aweapon_smg1::ObjectPoolRelease()
 			{
 				GetShellPool()->ReleaseObject(PoolArray[i]);
 			}
+			PoolArray.Empty();
 		}	
 }
 

@@ -51,6 +51,19 @@ void AShell::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActo
 	
 }
 
+//----------------------------------------------------------------------------------------------------
+		// Only for object pool func
+//----------------------------------------------------------------------------------------------------
+void AShell::Activate()
+{
+	this->SetActorHiddenInGame(false);
+}
+
+void AShell::Deactivate()
+{
+	this->SetActorHiddenInGame(true);
+}
+
 
 
 

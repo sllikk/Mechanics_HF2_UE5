@@ -4,25 +4,22 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "interact.generated.h"
+#include "Poolable.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI, Blueprintable)
-class Uinteract : public UInterface
+class UPoolable : public UInterface
 {
 	GENERATED_BODY()
 };
 
-/**
- * 
- */
-class JOBSGAME_API Iinteract
+class JOBSGAME_API IPoolable
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
-
-	virtual void Interact(AActor* Actor) = 0;
+	
+	virtual void Activate() = 0;
+	virtual void Deactivate() = 0;
 	
 };

@@ -3,6 +3,8 @@
 
 #include "Property/object_pool.h"
 
+#include "Property/Poolable.h"
+
 // Sets default values
 Aobject_pool::Aobject_pool()
 {
@@ -26,8 +28,11 @@ AActor* Aobject_pool::GetObject()
 {
 	if (AvailableObjects.Num() > 0)
 	{
-		AActor* Object = AvailableObjects.Pop();		
-		Object->SetActorHiddenInGame(false);
+		AActor* Object = AvailableObjects.Pop();
+		if (IPoolable* PoolableObject = Cast<IPoolable>(Object))
+		{
+			PoolableObject->Activate();
+		}
 		return Object;
 	}
 
@@ -38,9 +43,11 @@ void Aobject_pool::ReleaseObject(AActor* Object)
 {
 	if (Object != nullptr)
 	{
-		Object->SetActorHiddenInGame(true);	
+		if (IPoolable* PoolableObject = Cast<IPoolable>(Object))
+		{
+			PoolableObject->Deactivate();
+		}
 		AvailableObjects.Add(Object);
-		
 	}
 }
 

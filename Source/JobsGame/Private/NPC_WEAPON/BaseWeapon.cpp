@@ -45,15 +45,12 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (pool_shell != nullptr)
-	{
 		pool_shell = GetWorld()->SpawnActor<Ashell_pool>(ShellPoolClass);
-		if (pool_shell)
-		{
-			UE_LOG(LogWeapon, Warning, TEXT("Spawn pool"));
-		}
+
+	if (pool_shell)
+	{
+		UE_LOG(LogWeapon, Warning, TEXT("Spawn pool"));
 	}
-	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -192,7 +189,13 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 // Start and stop this fun for auto or single fire 
 void ABaseWeapon::StartAttack()
 {
+	if (GetCurrentAmmo() <= 0 && SwitchSound != nullptr)
+	{
+		UGameplayStatics::SpawnSoundAtLocation(this, SwitchSound, GetActorLocation());	
+	}
+	
 	GetWorld()->GetTimerManager().SetTimer(PrimaryAttackTimer, this,  &ABaseWeapon::PrimaryAttack, GetAttackRate(), true);
+	
 	PrimaryAttack();
 
 }
@@ -296,10 +299,6 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 			const FVector ImpulseDirection = (HitResult.ImpactPoint - HitResult.TraceStart).GetSafeNormal();
 			PhysicsComponent->AddImpulse(ImpulseDirection * m_flMaxPhysicsImpulse, NAME_None, true);		
 		}
-		else
-		{
-			SpawnDecals(HitResult.Location);
-		}
 	}
 }
 
@@ -331,10 +330,6 @@ void ABaseWeapon::SpawnEmitter() const
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void ABaseWeapon::SpawnTraceDecals()
-{
-
-}
 
 
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
@@ -351,9 +346,10 @@ void ABaseWeapon::EmmiterAINoise()
 }
 
 
-void ABaseWeapon::SpawnDecals(FVector SpawnDecalLocation)
+void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 {
-
+	//UGameplayStatics::SpawnDecalAtLocation(this, )
+	
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
