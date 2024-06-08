@@ -44,7 +44,7 @@ private:
 };
 
 template <typename T>
-T* Aobject_pool::GetObject()
+T* Aobject_pool::GetObject()  
 {
 	
 	if (AvailableObjects.Num() > 0)
