@@ -92,24 +92,26 @@ void Aweapon_smg1::ShellDrop()
 {
 	Super::ShellDrop();
 
-	if (GetShellPool() != nullptr)
+	//if (GetShellPool() != nullptr)
 	{
-		TObjectPtr<AShell> SpawnShell = Cast<AShell>(GetShellPool()->GetObject());
-
-		if (SpawnShell != nullptr)
-		{
-			SpawnShell->SetActorLocation(SpawnShellArrow->GetComponentLocation());	
-			SpawnShell->SetActorRotation(FRotator::ZeroRotator);
-			PoolArray.Add(SpawnShell);
-
-			if (SpawnShellArrow != nullptr)
+		/*
+			TObjectPtr<AShell> SpawnShell = Cast<AShell>(GetShellPool()->GetObject());
+	
+			if (SpawnShell != nullptr)
 			{
-				const FVector& ForwardVector = SpawnShellArrow->GetForwardVector();
-				SpawnShell->GetMeshBullet()->AddImpulse(ForwardVector * 500, NAME_None, true);
+				SpawnShell->SetActorLocation(SpawnShellArrow->GetComponentLocation());	
+				SpawnShell->SetActorRotation(FRotator::ZeroRotator);
+				PoolArray.Add(SpawnShell);
+	
+				if (SpawnShellArrow != nullptr)
+				{
+					const FVector& ForwardVector = SpawnShellArrow->GetForwardVector();
+					SpawnShell->GetMeshBullet()->AddImpulse(ForwardVector * 500, NAME_None, true);
+				}
 			}
 		}
+		*/
 	}
-	
 }
 
 void Aweapon_smg1::ObjectPoolRelease()
@@ -120,7 +122,7 @@ void Aweapon_smg1::ObjectPoolRelease()
 		{
 			for (int32 i = 0; i < PoolArray.Num(); ++i)
 			{
-				GetShellPool()->ReleaseObject(PoolArray[i]);
+			//	GetShellPool()->ReleaseObject(PoolArray[i]);
 			}
 			PoolArray.Empty();
 		}	

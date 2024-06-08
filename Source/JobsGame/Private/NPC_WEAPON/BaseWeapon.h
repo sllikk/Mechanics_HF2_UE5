@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Player/MyCharacter.h"
-#include "Property/shell_pool.h"
+#include "Property/object_pool.h"
 #include "Shared/interact.h"
 #include "BaseWeapon.generated.h"
 class USkeletalMeshComponent;
 class USoundBase;
 class UInputMappingContext;
 class UInputAction;
-class Ashell_pool;
+class Aobject_pool;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
@@ -38,10 +38,10 @@ class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
 	TObjectPtr<UInputAction> ReloadAction;
 
 	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
-	TSubclassOf<Ashell_pool> ShellPoolClass;
+	TSubclassOf<Aobject_pool> ShellPoolClass;
 	
 	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
-	TObjectPtr<Ashell_pool> pool_shell;
+	TObjectPtr<Aobject_pool> pool_shell;
 	
 public:
 	// Sets default values for this actor's properties
@@ -59,7 +59,7 @@ public:
 	// Methods for getting values
 	UFUNCTION(BlueprintCallable, Category = "mesh")
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const  { return WeaponSkeletalMeshComponent; }
-	FORCEINLINE Ashell_pool*            GetShellPool()			 const	{ return pool_shell; }		
+	//FORCEINLINE Ashell_pool*            GetShellPool()			 const	{ return ; }		
 	FORCEINLINE FName	GetSocketName() const							{ return fSocketName; }
 	FORCEINLINE int32	GetMaxAmmo() const								{ return imaxAmmo; }
 	FORCEINLINE int32	GetCurrentAmmo() const							{ return icurrentAmmo; }
@@ -106,7 +106,7 @@ public:
 	static  void		EmmiterAINoise();
 	static  void		SpawnDecals(const FHitResult& TraceResult); 
 	virtual void		ObjectPoolRelease();	
-			void        Debug();
+			void        Debug() const;
 			
 private:
 

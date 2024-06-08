@@ -59,6 +59,7 @@ void AShell::Activate()
 	this->SetActorHiddenInGame(false);
 }
 
+
 void AShell::Deactivate()
 {
 	this->SetActorHiddenInGame(true);

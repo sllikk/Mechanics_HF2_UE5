@@ -5,6 +5,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Property/object_pool.h"
 
 DEFINE_LOG_CATEGORY(LogWeapon);
 
@@ -45,7 +46,7 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-		pool_shell = GetWorld()->SpawnActor<Ashell_pool>(ShellPoolClass);
+		//pool_shell = GetWorld()->SpawnActor<Aobject_pool>(ShellPoolClass);
 
 	if (pool_shell)
 	{
@@ -360,7 +361,6 @@ void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 void ABaseWeapon::ShellDrop() 
 {
 	GetWorld()->GetTimerManager().SetTimer(TimePoolObject, this, &ABaseWeapon::ObjectPoolRelease, 1.2, true);
-
 }
 
 
@@ -370,7 +370,7 @@ void ABaseWeapon::ObjectPoolRelease()
 
 }
 
-void ABaseWeapon::Debug()
+void ABaseWeapon::Debug() const
 {
 	if (GEngine != nullptr)
 	{

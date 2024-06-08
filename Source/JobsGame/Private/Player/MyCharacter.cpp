@@ -337,13 +337,14 @@ void AMyCharacter::GrabComponent()
 		FVector const& End = Start + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace); 
 	
 		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
-		{
+		{	
+			
 			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
 			DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
 			DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
-			
 			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-			
+		
+				
 			if (!ComponentToGrab && !ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
 			{
 				DontInteract();

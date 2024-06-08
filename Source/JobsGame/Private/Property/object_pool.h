@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Property/Poolable.h"
 #include "object_pool.generated.h"
 
 UCLASS()
@@ -21,12 +22,12 @@ protected:
 
 public:	
 
-	UFUNCTION(CallInEditor, Category="ObjectPool")
-	AActor* GetObject(); 
+	template<typename T>
+	FORCEINLINE T* GetObject(); 
 
 	UFUNCTION(CallInEditor, Category = "Object Pool")
 	void ReleaseObject(AActor* Object);
-
+	UFUNCTION()
 	void InitializePool(TSubclassOf<AActor> Object, int32 SizePool);
 
 private:
@@ -37,10 +38,26 @@ private:
 	UPROPERTY()
 	int32 PoolSize; // Size Pool
 
-	//UPROPERTY()
-	//TArray<AActor*> Pool; // Array Object Pool
-
 	UPROPERTY()
 	TArray<AActor*> AvailableObjects; // Array available Object Pool 
 	
 };
+
+template <typename T>
+T* Aobject_pool::GetObject()
+{
+	
+	if (AvailableObjects.Num() > 0)
+	{
+		AActor* Object = AvailableObjects.Pop();
+
+		if (IPoolable* PoolableObject = Cast<IPoolable>(Object))
+		{
+			PoolableObject->Activate();
+		}
+
+		return Cast<T>(Object);
+	}
+
+	return nullptr;
+}

@@ -1,8 +1,6 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Property/object_pool.h"
-
 #include "Property/Poolable.h"
 
 // Sets default values
@@ -21,22 +19,6 @@ void Aobject_pool::BeginPlay()
 {
 	Super::BeginPlay();
 
-}
-
-
-AActor* Aobject_pool::GetObject()
-{
-	if (AvailableObjects.Num() > 0)
-	{
-		AActor* Object = AvailableObjects.Pop();
-		if (IPoolable* PoolableObject = Cast<IPoolable>(Object))
-		{
-			PoolableObject->Activate();
-		}
-		return Object;
-	}
-
-	return nullptr;
 }
 
 void Aobject_pool::ReleaseObject(AActor* Object)
