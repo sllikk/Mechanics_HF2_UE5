@@ -29,3 +29,4 @@ private:
 	FORCEINLINE void SpawnInteractObject(const FString& ObjectName) const;
 	
 };
+

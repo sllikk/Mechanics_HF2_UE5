@@ -6,6 +6,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
 #include "Property/object_pool.h"
+#include "Shared/bullet_decal.h"
+#include "Shared/Shell.h"
 
 DEFINE_LOG_CATEGORY(LogWeapon);
 
@@ -46,12 +48,17 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-		//pool_shell = GetWorld()->SpawnActor<Aobject_pool>(ShellPoolClass);
-
-	if (pool_shell)
+	pool_object = GetWorld()->SpawnActor<Aobject_pool>(Aobject_pool::StaticClass()); // spawn pool
+	pool_object_decal = GetWorld()->SpawnActor<Aobject_pool>(Aobject_pool::StaticClass()); // spawn pool
+	
+	if (pool_object && pool_object_decal)
 	{
-		UE_LOG(LogWeapon, Warning, TEXT("Spawn pool"));
+		pool_object->InitializePool(AShell::StaticClass(), 50);  
+
+		pool_object_decal->InitializePool(Abullet_decal::StaticClass(), 100);
 	}
+	
+	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -187,6 +194,7 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 	}
 }
 
+
 // Start and stop this fun for auto or single fire 
 void ABaseWeapon::StartAttack()
 {
@@ -231,10 +239,12 @@ void ABaseWeapon::PrimaryAttack()
 		ConsumeAmmo(1);
 		blsPrimaryAttack = true;
 
-
+ #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
 		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
 		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);	
 
+	#endif
+	
 		PhysicsTraceLogic(HitResult);
 		SpawnEmitter();
 		ShellDrop();
@@ -300,6 +310,10 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 			const FVector ImpulseDirection = (HitResult.ImpactPoint - HitResult.TraceStart).GetSafeNormal();
 			PhysicsComponent->AddImpulse(ImpulseDirection * m_flMaxPhysicsImpulse, NAME_None, true);		
 		}
+		else
+		{
+			SpawnDecals(HitResult);
+		}
 	}
 }
 
@@ -344,13 +358,37 @@ void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 void ABaseWeapon::EmmiterAINoise()
 {
 
+	
 }
 
 
 void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 {
-	//UGameplayStatics::SpawnDecalAtLocation(this, )
+	if (pool_object_decal != nullptr)
+	{
+		TObjectPtr<Abullet_decal> spawndecal_bullet = pool_object_decal->GetObject<Abullet_decal>();
+
+		if (spawndecal_bullet != nullptr)
+		{
+			spawndecal_bullet->SetActorLocation(TraceResult.Location);
+			spawndecal_bullet->SetActorRotation(TraceResult.ImpactNormal.Rotation());
+			ArrayActors.Add(spawndecal_bullet);
+			GetWorld()->GetTimerManager().SetTimer(TimePoolObject_Decals, this, &ABaseWeapon::PoolRelease_Decals, 5.0f, true);
+		}
+	}
 	
+}
+
+void ABaseWeapon::PoolRelease_Decals()
+{
+	if (ArrayActors.Num() > 0)
+	{
+		for (int32 i = 0; i < ArrayActors.Num(); i++)
+		{
+			pool_object_decal->ReleaseObject(ArrayActors[i]);
+		}	
+		 ArrayActors.Empty();
+	}
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -379,5 +417,6 @@ void ABaseWeapon::Debug() const
 	}
 
 }
+
 
 

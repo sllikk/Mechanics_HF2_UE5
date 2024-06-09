@@ -92,10 +92,9 @@ void Aweapon_smg1::ShellDrop()
 {
 	Super::ShellDrop();
 
-	//if (GetShellPool() != nullptr)
+	if (GetShellPool() != nullptr)
 	{
-		/*
-			TObjectPtr<AShell> SpawnShell = Cast<AShell>(GetShellPool()->GetObject());
+			TObjectPtr<AShell> SpawnShell = GetShellPool()->GetObject<AShell>();
 	
 			if (SpawnShell != nullptr)
 			{
@@ -110,9 +109,7 @@ void Aweapon_smg1::ShellDrop()
 				}
 			}
 		}
-		*/
 	}
-}
 
 void Aweapon_smg1::ObjectPoolRelease()
 {
@@ -122,7 +119,7 @@ void Aweapon_smg1::ObjectPoolRelease()
 		{
 			for (int32 i = 0; i < PoolArray.Num(); ++i)
 			{
-			//	GetShellPool()->ReleaseObject(PoolArray[i]);
+				GetShellPool()->ReleaseObject(PoolArray[i]);
 			}
 			PoolArray.Empty();
 		}	

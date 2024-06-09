@@ -7,6 +7,8 @@
 #include "WorldActors/HealthKit.h"
 #include "WorldActors/supply_crate.h"
 
+#if PLATFORM_WINDOWS
+
 struct FSpawnCheat
 {
 	TMap<const FString, const TSubclassOf<AActor>> SPAWNNER; 
@@ -71,4 +73,4 @@ void UTestCheats::spawn_npc(const FString& SpawnerClass) const
 }
 
 
-
+#endif

@@ -12,7 +12,7 @@ DEFINE_LOG_CATEGORY(LogDestructionProps)
 ADestructionProps::ADestructionProps()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false; 
+	PrimaryActorTick.bCanEverTick = true; 
 	
 	GeometryCollectionComponent = CreateDefaultSubobject<UGeometryCollectionComponent>(TEXT("GeometryCollectionComponent"));
 	RootComponent = GeometryCollectionComponent;
@@ -38,6 +38,7 @@ void ADestructionProps::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Debug();
 }
 /*--------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -158,6 +159,18 @@ void ADestructionProps::LoadFieldComponent(const FString& Path)
 		SpawnFieldDestruction = ClassFinder.Class;
 	}
 }
+
+
+#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
+void ADestructionProps::Debug() const
+{	
+	const FString& HEALTH_DEBUG = FString::Printf(TEXT("Health: %2.f"), m_flHealth);
+	const FVector& LOCATION = GetGeometryCollectionComponent()->GetComponentLocation();
+	const FColor& DebugColor = FColor::Silver;
+	
+	DrawDebugString(GetWorld(), LOCATION, HEALTH_DEBUG, nullptr, DebugColor, -1);
+}
+#endif
 
 /*--------------------------------------------------------------------------------------------------------------------------------------*/
 

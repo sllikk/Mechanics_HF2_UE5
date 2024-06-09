@@ -70,6 +70,11 @@ public:
 	FORCEINLINE void	LoadGeometry(const FString& Path) const;
  	FORCEINLINE	void	LoadFieldComponent(const FString& Path);
 
+	#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
+	void    Debug() const;			
+
+	#endif		
+
 private:	
 	
 	float	m_flHealth;

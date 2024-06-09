@@ -36,12 +36,12 @@ class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
 	
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
-
-	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
-	TSubclassOf<Aobject_pool> ShellPoolClass;
 	
-	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess))
-	TObjectPtr<Aobject_pool> pool_shell;
+	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<Aobject_pool> pool_object;
+
+	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<Aobject_pool> pool_object_decal;
 	
 public:
 	// Sets default values for this actor's properties
@@ -59,7 +59,7 @@ public:
 	// Methods for getting values
 	UFUNCTION(BlueprintCallable, Category = "mesh")
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const  { return WeaponSkeletalMeshComponent; }
-	//FORCEINLINE Ashell_pool*            GetShellPool()			 const	{ return ; }		
+	FORCEINLINE Aobject_pool*            GetShellPool()			 const	{ return pool_object; }		
 	FORCEINLINE FName	GetSocketName() const							{ return fSocketName; }
 	FORCEINLINE int32	GetMaxAmmo() const								{ return imaxAmmo; }
 	FORCEINLINE int32	GetCurrentAmmo() const							{ return icurrentAmmo; }
@@ -104,10 +104,10 @@ public:
 			void		SpawnEmitter() const;
 			void		ConsumeAmmo(int32 iAmmo);
 	static  void		EmmiterAINoise();
-	static  void		SpawnDecals(const FHitResult& TraceResult); 
+			void		SpawnDecals(const FHitResult& TraceResult); 
 	virtual void		ObjectPoolRelease();	
 			void        Debug() const;
-			
+			void        PoolRelease_Decals();	
 private:
 
 	UPROPERTY()	
@@ -116,20 +116,17 @@ private:
 	TObjectPtr<USoundBase> ReloadSound;
 	UPROPERTY()
 	TObjectPtr<USoundBase> SwitchSound;
-	
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> MuzzleFlash;
-	
 	UPROPERTY(EditAnywhere, Category="Anim")
 	TObjectPtr<UAnimMontage> aminPrimaryAttack;
-
 	UPROPERTY()
 	TObjectPtr<AMyCharacter> Player;             // Player class for weapon
 	
 	FTimerHandle ReloadTimer;
 	FTimerHandle PrimaryAttackTimer;
 	FTimerHandle TimePoolObject;
-	
+	FTimerHandle TimePoolObject_Decals;
 	
 	
 	int32	 imaxAmmo;
@@ -146,7 +143,7 @@ private:
 	bool     blsReload;
 	bool     blsPrimaryAttack;
 
-	
-	
+	UPROPERTY()
+	TArray<AActor*> ArrayActors;
 	
 };
