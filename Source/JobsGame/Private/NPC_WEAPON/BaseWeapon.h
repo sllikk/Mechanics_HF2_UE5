@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "GameFramework/Actor.h"
 #include "Player/MyCharacter.h"
+#include "Property/damageable.h"
 #include "Property/object_pool.h"
 #include "Shared/interact.h"
 #include "BaseWeapon.generated.h"
@@ -18,7 +19,7 @@ class Aobject_pool;
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 
 UCLASS()
-class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
+class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public Idamageable
 {
 	GENERATED_BODY()
 
@@ -100,10 +101,11 @@ public:
 	virtual void		FinishReload();
 	virtual void		PhysicsTraceLogic(const FHitResult& HitResult);
 	virtual void		Interact(AActor* Actor) override;
+	virtual void        HandleDamage(float fldamage_amounth, EDamageType DamageType) override;
 	virtual void		StartAttack();
 	virtual void		StopAttack();
 	virtual void		ShellDrop();
-			void		SpawnEmitter() const;
+			void		SpawnEmitter();
 			void		ConsumeAmmo(int32 iAmmo);
 	static  void		EmmiterAINoise();
 			void		SpawnDecals(const FHitResult& TraceResult); 

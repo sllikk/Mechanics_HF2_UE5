@@ -198,7 +198,7 @@ void ABaseWeapon::PrimaryAttack()
 	
 		PhysicsTraceLogic(HitResult);
 		SpawnEmitter();
-		ShellDrop();
+		
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -248,6 +248,10 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 	}
 }
 
+void ABaseWeapon::HandleDamage(float fldamage_amounth, EDamageType DamageType)
+{
+
+}
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
@@ -270,13 +274,13 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
-void ABaseWeapon::SpawnEmitter() const
+void ABaseWeapon::SpawnEmitter()   
 {
-	if (FireSound)    // Sound Fire
+	if (FireSound != nullptr)    // Sound Fire
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
 
-		if ( MuzzleFlash)    
+		if ( MuzzleFlash != nullptr)    
 		{
 			UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
 		}
@@ -291,19 +295,18 @@ void ABaseWeapon::SpawnEmitter() const
 		{
 			AnimInstance->Montage_Play(aminPrimaryAttack, 0.9f);
 		}
+			
 	}
+	ShellDrop(); // shell dropping spawn
 	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
 
 void ABaseWeapon::ConsumeAmmo(int32 iAmmo)
 {
 	icurrentAmmo = FMath::Clamp(icurrentAmmo - iAmmo, 0.0f, imaxAmmo);
 	
 }
-
 
 
 void ABaseWeapon::EmmiterAINoise()
