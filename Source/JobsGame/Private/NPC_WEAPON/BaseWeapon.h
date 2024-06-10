@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIController.h"
 #include "GameFramework/Actor.h"
 #include "Player/MyCharacter.h"
 #include "Property/object_pool.h"
@@ -15,7 +16,6 @@ class UInputAction;
 class Aobject_pool;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
-
 
 UCLASS()
 class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
@@ -56,38 +56,40 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 public:
+
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent()
+	const { return WeaponSkeletalMeshComponent; };
+	
 	// Methods for getting values
-	UFUNCTION(BlueprintCallable, Category = "mesh")
-	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent() const  { return WeaponSkeletalMeshComponent; }
-	FORCEINLINE Aobject_pool*            GetShellPool()			 const	{ return pool_object; }		
-	FORCEINLINE FName	GetSocketName() const							{ return fSocketName; }
-	FORCEINLINE int32	GetMaxAmmo() const								{ return imaxAmmo; }
-	FORCEINLINE int32	GetCurrentAmmo() const							{ return icurrentAmmo; }
-	FORCEINLINE int32	GetInvAmmo() const								{ return imaxInventoryAmmo; }
-	FORCEINLINE float	GetReloadTime() const							{ return m_flReloadTime; }
-	FORCEINLINE float	GetBulletSpread() const							{ return m_flBulletSpread; }
-	FORCEINLINE float	GetMaxShootDistance() const						{ return m_flmaxTraceLength; }
-	FORCEINLINE float   GetAttackRate() const							{ return m_flAttackRate; }
-	FORCEINLINE float   GetMaxPhysicsImpulse() const					{ return m_flMaxPhysicsImpulse; }
-	FORCEINLINE	FVector GetShotForwardVector() const;												// Return forward vector .cpp
-	FORCEINLINE FVector CalculateBulletSpread(const FVector& ShotDirection) const;
+	Aobject_pool* GetShellPool() const;		
+	FName GetSocketName() const;
+	int32 GetMaxAmmo() const;
+	int32 GetCurrentAmmo() const;
+	int32 GetInvAmmo() const;
+	float GetReloadTime() const;
+	float GetBulletSpread() const;
+	float GetMaxShootDistance() const;
+	float GetAttackRate() const;
+	float GetMaxPhysicsImpulse() const;
+	FVector GetShotForwardVector() const;												// Return forward vector .cpp
+	FVector CalculateBulletSpread(const FVector& ShotDirection) const;
 	
 	// Methods for setting values
-	FORCEINLINE	void	SetSkeletalMesh(USkeletalMeshComponent* NewMesh) { WeaponSkeletalMeshComponent = NewMesh; }
-	FORCEINLINE void	SetMaxShootDistance(float fldistance)			 { m_flmaxTraceLength = fldistance; }
-	FORCEINLINE void	SetSocetName(FName newName)					     { fSocketName = newName; }
-	FORCEINLINE void	SetMaxAmmo(int32 iAmmo)							 { imaxAmmo = iAmmo; }
-	FORCEINLINE void	SetCurrentAmmo(int32 iAmmo)						 { icurrentAmmo = iAmmo; }
-	FORCEINLINE void	SetInvAmmo(int32 i_invammo)						 { imaxInventoryAmmo = i_invammo; }
-	FORCEINLINE void	SetReloadTime(float flnew_time)					 { m_flReloadTime = flnew_time; }
-	FORCEINLINE void    SetAttackRate(float fl_rateattack)				 { m_flAttackRate = fl_rateattack; }
-	FORCEINLINE void	SetBulletSpread(float flspread)					 { m_flBulletSpread = flspread; }
-  	FORCEINLINE void    SetPhysicsImpulse(float fl_impulse)				 { m_flMaxPhysicsImpulse = fl_impulse; }
+	void SetSkeletalMesh(USkeletalMeshComponent* NewMesh);
+	void SetMaxShootDistance(float fldistance);
+	void SetSocetName(FName newName);
+	void SetMaxAmmo(int32 iAmmo);
+	void SetCurrentAmmo(int32 iAmmo);
+	void SetInvAmmo(int32 i_invammo);
+	void SetReloadTime(float flnew_time);
+	void SetAttackRate(float fl_rateattack);
+	void SetBulletSpread(float flspread);
+	void SetPhysicsImpulse(float fl_impulse);
 
 	// Sound effects and load
-	FORCEINLINE void	SetFireSound(USoundBase* NewSound)				{ FireSound = NewSound; }
-	FORCEINLINE void	SetReloadSound(USoundBase* NewSound)			{ ReloadSound = NewSound; }
-	FORCEINLINE void	SetMuzzleFlash(UParticleSystem* NewEffect)		{ MuzzleFlash = NewEffect; }
+	 void	SetFireSound(USoundBase* NewSound);				
+	 void	SetReloadSound(USoundBase* NewSound);			
+	 void	SetMuzzleFlash(UParticleSystem* NewEffect);		
 	FORCEINLINE void	LoadSkeletalMesh(const FString& Path) const; 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
@@ -118,7 +120,7 @@ private:
 	TObjectPtr<USoundBase> SwitchSound;
 	UPROPERTY()
 	TObjectPtr<UParticleSystem> MuzzleFlash;
-	UPROPERTY(EditAnywhere, Category="Anim")
+	UPROPERTY(EditAnywhere, Category="Animation")
 	TObjectPtr<UAnimMontage> aminPrimaryAttack;
 	UPROPERTY()
 	TObjectPtr<AMyCharacter> Player;             // Player class for weapon
@@ -127,7 +129,6 @@ private:
 	FTimerHandle PrimaryAttackTimer;
 	FTimerHandle TimePoolObject;
 	FTimerHandle TimePoolObject_Decals;
-	
 	
 	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
@@ -147,3 +148,189 @@ private:
 	TArray<AActor*> ArrayActors;
 	
 };
+
+
+FORCEINLINE Aobject_pool* ABaseWeapon::GetShellPool() const
+{
+	return pool_object;
+}
+
+
+FORCEINLINE FName ABaseWeapon::GetSocketName() const 
+{
+	return fSocketName;
+}
+
+
+FORCEINLINE int32 ABaseWeapon::GetMaxAmmo() const 
+{
+	return imaxAmmo;
+}
+
+
+FORCEINLINE int32 ABaseWeapon::GetCurrentAmmo() const 
+{
+	return icurrentAmmo;
+}
+
+
+FORCEINLINE int32 ABaseWeapon::GetInvAmmo() const 
+{
+	return imaxInventoryAmmo;
+}
+
+
+FORCEINLINE float ABaseWeapon::GetReloadTime() const 
+{
+	return m_flReloadTime;
+}
+
+
+FORCEINLINE float ABaseWeapon::GetBulletSpread() const 
+{
+	return m_flBulletSpread;
+}
+
+
+FORCEINLINE float ABaseWeapon::GetMaxShootDistance() const 
+{
+	return m_flmaxTraceLength;
+}
+
+
+FORCEINLINE float ABaseWeapon::GetAttackRate() const 
+{
+	return m_flAttackRate;
+}
+
+
+FORCEINLINE float ABaseWeapon::GetMaxPhysicsImpulse() const 
+{
+	return m_flMaxPhysicsImpulse;
+}
+
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+/*here we get a vector for the line trace
+ *depending on whether it is a person or a bot*/
+/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+FORCEINLINE FVector ABaseWeapon::GetShotForwardVector() const 
+{
+	// Get Controller Player
+	const TObjectPtr<AController> Controller = Player->GetController();
+
+	if (Controller != nullptr)
+	{
+		// check this player controller
+		if (Controller->IsA(APlayerController::StaticClass()))
+		{
+			const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller);
+			if (PlayerController != nullptr && PlayerController->PlayerCameraManager != nullptr)
+			{
+				// Get Direction Camera Player 
+				return  PlayerController->PlayerCameraManager->GetActorForwardVector();
+			}
+		}
+		// check, valid this npc controller 
+		else if (Controller->IsA(AAIController::StaticClass()))
+		{
+			// Get direction npc
+			return  Player->GetActorForwardVector();
+		}
+	}
+
+	// return zero vector if error
+	return FVector::ZeroVector;
+}
+
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+/*this function returns the direction of weapon
+spread - m_flBulletSpread this is the variable with which we adjust the spread */
+/*---------------------------------------------------------------------------------------------------------------------------------------------*/
+FORCEINLINE FVector ABaseWeapon::CalculateBulletSpread(const FVector& ShotDirection) const 
+{
+	float HalfConeAngleRand = FMath::DegreesToRadians(m_flBulletSpread / 2.0f);
+	FVector SpreadDirection = FMath::VRandCone(ShotDirection, HalfConeAngleRand);
+	
+	return SpreadDirection;
+}
+
+// Methods for setting values
+FORCEINLINE void ABaseWeapon::SetSkeletalMesh(USkeletalMeshComponent* NewMesh)
+{
+	WeaponSkeletalMeshComponent = NewMesh;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetMaxShootDistance(float fldistance) 
+{
+	m_flmaxTraceLength = fldistance;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetSocetName(FName newName) 
+{
+	fSocketName = newName;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetMaxAmmo(int32 iAmmo) 
+{
+	imaxAmmo = iAmmo;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetCurrentAmmo(int32 iAmmo) 
+{
+	icurrentAmmo = iAmmo;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetInvAmmo(int32 i_invammo) 
+{
+	imaxInventoryAmmo = i_invammo;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetReloadTime(float flnew_time) 
+{
+	m_flReloadTime = flnew_time;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetAttackRate(float fl_rateattack) 
+{
+	m_flAttackRate = fl_rateattack;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetBulletSpread(float flspread) 
+{
+	m_flBulletSpread = flspread;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetPhysicsImpulse(float fl_impulse) 
+{
+	m_flMaxPhysicsImpulse = fl_impulse;
+}
+
+
+// Sound effects and load
+FORCEINLINE void ABaseWeapon::SetFireSound(USoundBase* NewSound)
+{
+	FireSound = NewSound;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetReloadSound(USoundBase* NewSound)
+{
+	ReloadSound = NewSound;
+}
+
+
+FORCEINLINE void ABaseWeapon::SetMuzzleFlash(UParticleSystem* NewEffect)
+{
+	MuzzleFlash = NewEffect;
+}
+
+

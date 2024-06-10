@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "BaseWeapon.h"
-#include "AIController.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
@@ -58,7 +57,6 @@ void ABaseWeapon::BeginPlay()
 		pool_object_decal->InitializePool(Abullet_decal::StaticClass(), 100);
 	}
 	
-	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -91,40 +89,6 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-/*here we get a vector for the line trace
- *depending on whether it is a person or a bot*/
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-FVector ABaseWeapon::GetShotForwardVector() const                               // Shoot Base Class 
-{
-	// Get Controller Player
-	const TObjectPtr<AController> Controller = Player->GetController();
-
-	if (Controller != nullptr)
-	{
-		// check this player controller
-		if (Controller->IsA(APlayerController::StaticClass()))
-		{
-			const TObjectPtr<APlayerController> PlayerController = Cast<APlayerController>(Controller);
-			if (PlayerController != nullptr && PlayerController->PlayerCameraManager != nullptr)
-			{
-				// Get Direction Camera Player 
-				return  PlayerController->PlayerCameraManager->GetActorForwardVector();
-			}
-		}
-		// check, valid this npc controller 
-		else if (Controller->IsA(AAIController::StaticClass()))
-		{
-			// Get direction npc
-			return  Player->GetActorForwardVector();
-		}
-	}
-
-	// return zero vector if error
-	return FVector::ZeroVector;
-
-}
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
 {
@@ -144,21 +108,8 @@ void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
 		UE_LOG(LogWeapon, Warning, TEXT("Error Load: %s"), *FindSkeletalMesh.ToString())
 	}
 }
-
-/*---------------------------------------------------------------------------------------------------------------------------------------------*/
-/*this function returns the direction of weapon
-spread - m_flBulletSpread this is the variable with which we adjust the spread */
-/*---------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
-FVector ABaseWeapon::CalculateBulletSpread(const FVector& ShotDirection) const
-{
-	float HalfConeAngleRand = FMath::DegreesToRadians(m_flBulletSpread / 2.0f);
-	FVector SpreadDirection = FMath::VRandCone(ShotDirection, HalfConeAngleRand);
-	
-	return SpreadDirection;
-}
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 
 /* this only func for player  */
 void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
@@ -372,7 +323,7 @@ void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 		{
 			spawndecal_bullet->SetActorLocation(TraceResult.Location);
 			spawndecal_bullet->SetActorRotation(TraceResult.ImpactNormal.Rotation());
-			ArrayActors.Add(spawndecal_bullet);
+			ArrayActors.Emplace(spawndecal_bullet);
 			GetWorld()->GetTimerManager().SetTimer(TimePoolObject_Decals, this, &ABaseWeapon::PoolRelease_Decals, 5.0f, true);
 		}
 	}
