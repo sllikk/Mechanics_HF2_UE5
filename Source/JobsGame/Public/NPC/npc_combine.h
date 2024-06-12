@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "GameFramework/Character.h"
-#include "Shared/damage.h"
+#include "Property/damageable.h"
 #include "npc_combine.generated.h"
 class USkeletalMeshComponent;
 class UBehaviorTree;
@@ -14,7 +14,7 @@ class UDecalComponent;
 DECLARE_LOG_CATEGORY_EXTERN(LogCombineClass, Log, All);
 
 UCLASS()
-class JOBSGAME_API Anpc_combine : public ACharacter
+class JOBSGAME_API Anpc_combine : public ACharacter, public Idamageable
 {
 	GENERATED_BODY()
 
@@ -36,6 +36,7 @@ protected:
 	// Called Hit Land
 	virtual void Landed(const FHitResult& Hit) override;
 
+	virtual void HandleDamage(float fldamage_amounth, EDamageType DamageType) override;	
 public:
 	// Behavior Tree this npc
 	UPROPERTY(Transient, EditAnywhere, Category="AI")
@@ -85,9 +86,10 @@ public:
 	void	CombineDead();
 	void	CombineDebug() const;
 	void	RagDoll() const;
-	void	Falling() override;
+	virtual  void	Falling() override;
 	void	OnHitMesh(float Impact);
 	void    SpawnDecals();
+	
 	
 	protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Dead")	

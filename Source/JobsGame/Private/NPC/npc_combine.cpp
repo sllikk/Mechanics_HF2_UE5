@@ -95,6 +95,23 @@ void Anpc_combine::Landed(const FHitResult& Hit)
 
 }
 
+void Anpc_combine::HandleDamage(float fldamage_amounth, EDamageType DamageType)
+{
+	switch (DamageType)
+	{
+	case EDamageType::DMG_BULLET :
+		UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), fldamage_amounth);
+		break;
+	case EDamageType::DMG_GENERIC :
+		UE_LOG(LogTemp, Warning, TEXT("Generic: %f"), fldamage_amounth);
+		break;
+	case EDamageType::DMG_EXPLODE:
+		UE_LOG(LogTemp, Warning, TEXT("Explode: %f"), fldamage_amounth);
+		break;
+		default:;
+	}
+}
+
 
 void Anpc_combine::SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName)
 {
