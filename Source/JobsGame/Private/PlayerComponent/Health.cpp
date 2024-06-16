@@ -8,31 +8,31 @@ DEFINE_LOG_CATEGORY(LogHeathComponent);
 DEFINE_LOG_CATEGORY(LogHeathResource);
 
 UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
-: Super(ObjectInitializer)
+	: Super(ObjectInitializer), m_blsDead(false)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
 	// Default Property
 	m_flMaxHealth = 100;
 	m_flHealth = m_flMaxHealth;
-	
+
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/deactivated_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/heat_damage_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/major_fracture_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/minor_fracture_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/morphine_shot_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/near_death_Cue"),nullptr},	
-	FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/no_pulce_Cue"),nullptr},	
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/deactivated_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/heat_damage_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/major_fracture_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/minor_fracture_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/morphine_shot_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/near_death_Cue"), nullptr},
+		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/no_pulce_Cue"), nullptr},
 	};
 	for (FResourceLoad& Resource : ResourceToLoad)
 	{
 		Resource.LoadedResource = LoadObject<UObject>(nullptr, *Resource.ResourcePath);
 		if (!Resource.LoadedResource)
 		{
-			UE_LOG(LogHeathResource, Warning, TEXT("Error Load: %s"), *Resource.ResourcePath)	
+			UE_LOG(LogHeathResource, Warning, TEXT("Error Load: %s"), *Resource.ResourcePath)
 		}
 	}
 	for (const FResourceLoad& Resource : ResourceToLoad)
@@ -42,7 +42,7 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 		if (LoadSound != nullptr)
 		{
 			HealthSound.Add(LoadSound);
-		}	
+		}
 	}
 }
 

@@ -7,7 +7,7 @@
 
 /** All available damage types. */
 UENUM(BlueprintType, meta=(ScriptName = "EDamageType"))
-enum class EDamageType
+enum class EDamageType : uint8
 {
 
 	DMG_GENERIC							UMETA(DisplayName = "GenericDamage"),												/**< Non-specific damage. */
@@ -34,7 +34,7 @@ enum class EDamageType
 
 /* damage multiplay for character */
 UENUM(BlueprintType, meta=(ScriptName = "EBodyType"))
-enum class EBodyPart
+enum class EBodyPart : uint8
 {
 	DEFAULT				UMETA(DisplayName = "Default"),
 	HEAD				UMETA(DisplayName = "Head"), 

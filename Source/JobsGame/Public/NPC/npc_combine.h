@@ -36,7 +36,8 @@ protected:
 	// Called Hit Land
 	virtual void Landed(const FHitResult& Hit) override;
 
-	virtual void HandleDamage(float fldamage_amounth, EDamageType DamageType) override;	
+	virtual void HandleDamage(int32 damage_amounth, EDamageType DamageType) override;	
+
 public:
 	// Behavior Tree this npc
 	UPROPERTY(Transient, EditAnywhere, Category="AI")
