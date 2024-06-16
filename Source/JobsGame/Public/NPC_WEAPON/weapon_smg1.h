@@ -24,7 +24,6 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 	UPROPERTY(EditAnywhere, Category="Arrow", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> SpawnShellArrow;
 	
-	
 public:
 
 	Aweapon_smg1();
@@ -34,19 +33,14 @@ protected:
 	virtual void	BeginPlay() override;
 	virtual void	Tick(float DeltaSeconds) override;
 	virtual void	PrimaryAttack() override;
-	virtual void	Interact(AActor* Actor) override;
-	virtual void	PhysicsTraceLogic(const FHitResult& HitResult) override;
 	virtual void	StartAttack() override;
 	virtual void	StopAttack() override;
-	virtual void    ShellDrop() override;
-	virtual void    ObjectPoolRelease() override;
-	
-public:
-
 	
 private:
 
 	UPROPERTY()
 	TArray<AActor*> PoolArray;
+
+ 	//void Debug() const;
 	
 };

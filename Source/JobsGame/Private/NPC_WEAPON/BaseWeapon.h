@@ -67,11 +67,14 @@ public:
 	int32 GetMaxAmmo() const;
 	int32 GetCurrentAmmo() const;
 	int32 GetInvAmmo() const;
-	float GetReloadTime() const;
-	float GetBulletSpread() const;
-	float GetMaxShootDistance() const;
-	float GetAttackRate() const;
-	float GetMaxPhysicsImpulse() const;
+	int32 GetDamageAmounth() const;
+
+		float GetReloadTime() const;
+		float GetBulletSpread() const;
+		float GetMaxShootDistance() const;
+		float GetAttackRate() const;
+		float GetMaxPhysicsImpulse() const;
+
 	FVector GetShotForwardVector() const;												// Return forward vector .cpp
 	FVector CalculateBulletSpread(const FVector& ShotDirection) const;
 	
@@ -82,6 +85,7 @@ public:
 	void SetMaxAmmo(int32 iAmmo);
 	void SetCurrentAmmo(int32 iAmmo);
 	void SetInvAmmo(int32 i_invammo);
+	void SetDamageAmounth(int32 iamounth);
 	void SetReloadTime(float flnew_time);
 	void SetAttackRate(float fl_rateattack);
 	void SetBulletSpread(float flspread);
@@ -91,17 +95,17 @@ public:
 	 void	SetFireSound(USoundBase* NewSound);				
 	 void	SetReloadSound(USoundBase* NewSound);			
 	 void	SetMuzzleFlash(UParticleSystem* NewEffect);		
-	FORCEINLINE void	LoadSkeletalMesh(const FString& Path) const; 
+
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
 	
 	virtual void		PrimaryAttack();	
 	//virtual void SecondaryAttack();
 	virtual void		Reload();
-	virtual void		FinishReload();
-	virtual void		PhysicsTraceLogic(const FHitResult& HitResult);
+			void		FinishReload();
+			void		PhysicsTraceLogic(const FHitResult& HitResult);
 	virtual void		Interact(AActor* Actor) override;
-	virtual void        HandleDamage(float fldamage_amounth, EDamageType DamageType) override;
+	virtual void        HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
 	virtual void		StartAttack();
 	virtual void		StopAttack();
 	virtual void		ShellDrop();
@@ -110,7 +114,6 @@ public:
 	static  void		EmmiterAINoise();
 			void		SpawnDecals(const FHitResult& TraceResult); 
 	virtual void		ObjectPoolRelease();	
-			void        Debug() const;
 			void        PoolRelease_Decals();	
 private:
 
@@ -132,9 +135,10 @@ private:
 	FTimerHandle TimePoolObject;
 	FTimerHandle TimePoolObject_Decals;
 	
-	int32	 imaxAmmo;
 	int32	 icurrentAmmo;
+	int32	 imaxAmmo;
 	int32	 imaxInventoryAmmo;
+	int32    idamage;
 	FName	 fSocketName;			// Socket for shoot 
 
 	float	 m_flmaxTraceLength;
@@ -179,6 +183,11 @@ FORCEINLINE int32 ABaseWeapon::GetCurrentAmmo() const
 FORCEINLINE int32 ABaseWeapon::GetInvAmmo() const 
 {
 	return imaxInventoryAmmo;
+}
+
+FORCEINLINE int32 ABaseWeapon::GetDamageAmounth() const
+{
+	return idamage;
 }
 
 
@@ -290,6 +299,13 @@ FORCEINLINE void ABaseWeapon::SetCurrentAmmo(int32 iAmmo)
 FORCEINLINE void ABaseWeapon::SetInvAmmo(int32 i_invammo) 
 {
 	imaxInventoryAmmo = i_invammo;
+}
+
+
+
+FORCEINLINE void ABaseWeapon::SetDamageAmounth(int32 iamounth)
+{
+	idamage = iamounth;
 }
 
 

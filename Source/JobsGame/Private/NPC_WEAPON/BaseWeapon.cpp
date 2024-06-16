@@ -65,7 +65,6 @@ void ABaseWeapon::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Debug();
 
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -89,28 +88,6 @@ void ABaseWeapon::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-void ABaseWeapon::LoadSkeletalMesh(const FString& Path) const
-{
-	const FSoftObjectPath FindSkeletalMesh(*Path);
-	static TObjectPtr<USkeletalMesh> LoadMesh = nullptr;
-
-	if (FindSkeletalMesh.IsValid())
-	{
-		LoadMesh = Cast<USkeletalMesh>(FindSkeletalMesh.TryLoad());
-	}
-	if (LoadMesh != nullptr)
-	{
-		WeaponSkeletalMeshComponent->SetSkeletalMesh(LoadMesh);
-	}
-	else
-	{
-		UE_LOG(LogWeapon, Warning, TEXT("Error Load: %s"), *FindSkeletalMesh.ToString())
-	}
-}
-/*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
-
 /* this only func for player  */
 void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 {
@@ -248,7 +225,7 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 	}
 }
 
-void ABaseWeapon::HandleDamage(float fldamage_amounth, EDamageType DamageType)
+void ABaseWeapon::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 {
 
 }
@@ -361,16 +338,5 @@ void ABaseWeapon::ObjectPoolRelease()
 	GetWorld()->GetTimerManager().ClearTimer(TimePoolObject);
 
 }
-
-void ABaseWeapon::Debug() const
-{
-	if (GEngine != nullptr)
-	{
-		FString Debugs = FString::Printf(TEXT("Clip: %d, Max: %d"), icurrentAmmo, imaxInventoryAmmo);	
-		GEngine->AddOnScreenDebugMessage(3, -1, FColor::Yellow, Debugs);
-	}
-
-}
-
 
 

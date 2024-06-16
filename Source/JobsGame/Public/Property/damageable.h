@@ -24,6 +24,6 @@ class JOBSGAME_API Idamageable
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	virtual void HandleDamage(float fldamage_amounth, EDamageType DamageType) = 0;
+	virtual void HandleDamage(int32 damage_amounth, EDamageType DamageType) = 0;
 	
 };

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "damage.generated.h"
 
-
 /** All available damage types. */
 UENUM(BlueprintType, meta=(ScriptName = "EDamageType"))
 enum class EDamageType
@@ -32,6 +31,19 @@ enum class EDamageType
     DMG_SKIP_ARMOR						UMETA(DisplayName = "Damage will skip armor "),											/**< This damage will skip armor checks entirely. */
     DMG_SKIP_RAGDOLL					UMETA(DisplayName = "Damage will not affect ragdolls")									    	/**< This damage will not affect ragdolls. */
 };
+
+/* damage multiplay for character */
+UENUM(BlueprintType, meta=(ScriptName = "EBodyType"))
+enum class EBodyPart
+{
+	DEFAULT				UMETA(DisplayName = "Default"),
+	HEAD				UMETA(DisplayName = "Head"), 
+	BODY				UMETA(DisplayName = "Body"),
+	LEG					UMETA(DisplayName = "Leg"),
+	HAND				UMETA(DisplayName = "Hand"),
+};
+
+
 
 
 UCLASS(Config=Game, meta=(ScriptName = "CustomDamageType"))
