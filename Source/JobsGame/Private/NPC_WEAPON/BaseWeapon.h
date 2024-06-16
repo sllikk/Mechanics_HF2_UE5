@@ -153,6 +153,9 @@ private:
 	UPROPERTY()
 	TArray<AActor*> ArrayActors;
 	
+	UPROPERTY()
+	TArray<FString> hit_physics_material;
+	
 };
 
 

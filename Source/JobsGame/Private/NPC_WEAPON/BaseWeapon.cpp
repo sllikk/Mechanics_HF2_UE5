@@ -38,6 +38,8 @@ ABaseWeapon::ABaseWeapon()
 
 	SwitchSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/switch_burst_Cue"));   // Shared sound 
 
+	hit_physics_material =  {"", "", "", ""};
+	
 	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -165,16 +167,19 @@ void ABaseWeapon::PrimaryAttack()
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4);
 	
 		ConsumeAmmo(1);
-		blsPrimaryAttack = true;
+		SpawnEmitter();
+
+	blsPrimaryAttack = true;
 
  #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
-		DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
+
+	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
 		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);	
 
 	#endif
 	
 		PhysicsTraceLogic(HitResult);
-		SpawnEmitter();
+		
 		
 }
 
@@ -274,6 +279,7 @@ void ABaseWeapon::SpawnEmitter()
 		}
 			
 	}
+
 	ShellDrop(); // shell dropping spawn
 	
 }
