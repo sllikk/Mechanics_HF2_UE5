@@ -29,29 +29,13 @@ struct FSurfaceImpactEffects
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<USoundBase> ImpactSound;
+	TArray<USoundBase*> ImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UParticleSystem> ImpactEffect;
+	TArray<UParticleSystem*> ImpactEffect;
 
 };
 
-
-// Surface type
-UENUM(BlueprintType, meta=(ScriptName = "CustomSurfaceType"))
-enum class EPhysicalSurfaceType : uint8
-{
-	DEFAULT				UMETA(DisplayName = "default surface"),
-	CONCRETE			UMETA(DisplayName = "concrete surface"),
-	WOOD				UMETA(DisplayName = "wood surface"),
-	METAL				UMETA(DisplayName = "metal surface"),
-	GLASS				UMETA(DisplayName = "glass surface"),
-	PAPER				UMETA(DisplayName = "paper surface"),
-	ASPHALT				UMETA(DisplayName = "asphalt surface"),
-	GROUND				UMETA(DisplayName = "ground surface"),
-	PLASTIC				UMETA(DisplayName = "plastic surface"),
-	SAND				UMETA(DisplayName = "sand surface"),
-};
 
 
 /*

@@ -15,7 +15,7 @@ class JOBSGAME_API Aweapon_smg1 : public ABaseWeapon
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> smg1_mesh;
 
 	UPROPERTY(EditAnywhere, Category="Shell", meta=(AllowPrivateAccess = "true"))

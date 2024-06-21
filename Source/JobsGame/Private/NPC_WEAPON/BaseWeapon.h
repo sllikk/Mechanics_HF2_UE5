@@ -15,15 +15,17 @@ class USoundBase;
 class UInputMappingContext;
 class UInputAction;
 class Aobject_pool;
+class AImpactEffectHandler;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitSurface, const FHitResult&, HitResult);
 
-UCLASS()
+UCLASS(Blueprintable)
 class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public Idamageable
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite ,Category="SkeletalMesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> WeaponSkeletalMeshComponent;
 
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
@@ -56,10 +58,13 @@ protected:
 	// Called End Play
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+	void	SpawnEmitter();
+
 public:
 
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMeshComponent()
 	const { return WeaponSkeletalMeshComponent; };
+
 	
 	// Methods for getting values
 	Aobject_pool* GetShellPool() const;		
@@ -98,23 +103,23 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
-	
+
 	virtual void		PrimaryAttack();	
 	//virtual void SecondaryAttack();
 	virtual void		Reload();
-			void		FinishReload();
-			void		PhysicsTraceLogic(const FHitResult& HitResult);
 	virtual void		Interact(AActor* Actor) override;
 	virtual void        HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
 	virtual void		StartAttack();
 	virtual void		StopAttack();
 	virtual void		ShellDrop();
-			void		SpawnEmitter();
+	virtual void		ObjectPoolRelease();	
 			void		ConsumeAmmo(int32 iAmmo);
 	static  void		EmmiterAINoise();
 			void		SpawnDecals(const FHitResult& TraceResult); 
-	virtual void		ObjectPoolRelease();	
 			void        PoolRelease_Decals();	
+			void		FinishReload();
+			void		PhysicsTraceLogic(const FHitResult& HitResult);
+	
 private:
 
 	UPROPERTY()	
@@ -155,7 +160,9 @@ private:
 	
 	UPROPERTY()
 	TArray<FString> hit_physics_material;
-	
+
+	UPROPERTY(EditAnywhere, Category="Pool")
+	TArray<USoundBase*> SoundBase;
 };
 
 

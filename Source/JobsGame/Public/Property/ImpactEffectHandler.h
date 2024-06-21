@@ -7,9 +7,9 @@
 #include "Shared/Resourse.h"
 #include "ImpactEffectHandler.generated.h"
 class USoundBase;
-class UParticleSystemComponent;
+class UParticleSystem;
 
-UCLASS(BlueprintType)
+UCLASS()
 class JOBSGAME_API AImpactEffectHandler : public AActor
 {
 	GENERATED_BODY()
@@ -21,20 +21,17 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	TMap<EPhysicalSurfaceType, FSurfaceImpactEffects> SurfaceImpactEffects;
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	TArray<USoundBase*> LoadSound;
-
-	UPROPERTY(EditAnywhere, Category = "Effects")
-	TArray<UParticleSystemComponent*> LoadParticles;
 	
-	
-public:	
+public:
 
-	void PlayImpactEffects(EPhysicalSurfaceType SurfaceType, const FVector& ImpactPoint, const FVector& ImpactNormal);
+	void EffectForSurface(const FHitResult& HitResult);
 	
+private:
+
+	UPROPERTY(EditAnywhere, Category="Sound")
+	TObjectPtr<USoundBase> Concrete;
+
+	UPROPERTY(EditAnywhere, Category="Sound")
+	TObjectPtr<USoundBase> Metal;
 	
 };

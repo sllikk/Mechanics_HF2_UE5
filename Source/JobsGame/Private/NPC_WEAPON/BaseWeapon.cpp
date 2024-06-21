@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "Kismet/GameplayStatics.h"
+#include "Property/ImpactEffectHandler.h"
 #include "Property/object_pool.h"
 #include "Shared/bullet_decal.h"
 #include "Shared/Shell.h"
@@ -38,7 +39,7 @@ ABaseWeapon::ABaseWeapon()
 
 	SwitchSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/switch_burst_Cue"));   // Shared sound 
 
-	hit_physics_material =  {"", "", "", ""};
+	//hit_physics_material =  {"", "", "", ""};
 	
 	
 }
@@ -157,30 +158,37 @@ void ABaseWeapon::PrimaryAttack()
 		Reload();
 		return;
 	}
-	
+
 	FHitResult HitResult;
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+	QueryParams.bReturnPhysicalMaterial = true;
 	const FVector& Start = GetWeaponMeshComponent()->GetSocketLocation(GetSocketName());
 	const FVector& ForwardVector = GetShotForwardVector();
 	const FVector& Spread = CalculateBulletSpread(ForwardVector);
 	const FVector& End =  Start + (Spread * GetMaxShootDistance());
 
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4);
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4, QueryParams);
 	
-		ConsumeAmmo(1);
-		SpawnEmitter();
-
 	blsPrimaryAttack = true;
 
- #if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
+		ConsumeAmmo(1);
+		SpawnEmitter();
+		PhysicsTraceLogic(HitResult);
+
+	#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
 
 	DrawDebugLine(GetWorld(), Start, End, FColor::Blue, false, 2);
-		DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);	
+	DrawDebugPoint(GetWorld(), HitResult.ImpactPoint, 10, FColor::Black, false, 2);	
 
 	#endif
+
+	if (AActor* Actor = HitResult.GetActor())
+	{
+		auto Effect = Cast<AImpactEffectHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), AImpactEffectHandler::StaticClass()));
+		Effect->EffectForSurface(HitResult);
+	}
 	
-		PhysicsTraceLogic(HitResult);
-		
-		
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -239,9 +247,10 @@ void ABaseWeapon::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
 {
 	UPrimitiveComponent* PhysicsComponent = HitResult.GetComponent();
-
+	
 	if (PhysicsComponent != nullptr)
 	{
+
 		if (PhysicsComponent->IsSimulatingPhysics())
 		{
 			const FVector ImpulseDirection = (HitResult.ImpactPoint - HitResult.TraceStart).GetSafeNormal();
@@ -250,7 +259,7 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 		else
 		{
 			SpawnDecals(HitResult);
-		}
+		}		
 	}
 }
 
@@ -261,11 +270,6 @@ void ABaseWeapon::SpawnEmitter()
 	if (FireSound != nullptr)    // Sound Fire
 	{
 		UGameplayStatics::SpawnSoundAtLocation(this, FireSound, GetActorLocation());
-
-		if ( MuzzleFlash != nullptr)    
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(this, MuzzleFlash, GetWeaponMeshComponent()->GetSocketLocation(GetSocketName()));
-		}
 	}
 	
 	// try and play a firing animation if specified
@@ -281,7 +285,6 @@ void ABaseWeapon::SpawnEmitter()
 	}
 
 	ShellDrop(); // shell dropping spawn
-	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -327,6 +330,7 @@ void ABaseWeapon::PoolRelease_Decals()
 		 ArrayActors.Empty();
 	}
 }
+
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 	/* this is a virtual function that spawns cartridges, sets a timer for their return to the pool,
