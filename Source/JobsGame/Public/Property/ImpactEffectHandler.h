@@ -25,13 +25,15 @@ protected:
 public:
 
 	void EffectForSurface(const FHitResult& HitResult);
+	void surface(EPhysicalSurface surface, const FHitResult& HitResult);
 	
 private:
 
-	UPROPERTY(EditAnywhere, Category="Sound")
-	TObjectPtr<USoundBase> Concrete;
+	UPROPERTY(EditAnywhere, Category="effect")
+	TArray<USoundBase*> SoundBases ;
 
-	UPROPERTY(EditAnywhere, Category="Sound")
-	TObjectPtr<USoundBase> Metal;
-	
+	UPROPERTY(EditAnywhere, Category="Effect")
+	TArray<UParticleSystem*> ParticleSystems;	
+
+
 };

@@ -50,16 +50,6 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	pool_object = GetWorld()->SpawnActor<Aobject_pool>(Aobject_pool::StaticClass()); // spawn pool
-	pool_object_decal = GetWorld()->SpawnActor<Aobject_pool>(Aobject_pool::StaticClass()); // spawn pool
-	
-	if (pool_object && pool_object_decal)
-	{
-		pool_object->InitializePool(AShell::StaticClass(), 50);  
-
-		pool_object_decal->InitializePool(Abullet_decal::StaticClass(), 100);
-	}
-	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -190,8 +180,8 @@ void ABaseWeapon::PrimaryAttack()
 	}
 	
 }
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
 void ABaseWeapon::Reload()
 {
 	if ( blsReload || GetCurrentAmmo() == GetMaxAmmo() || GetInvAmmo() == 0)
@@ -208,7 +198,6 @@ void ABaseWeapon::Reload()
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimer,  this, &ABaseWeapon::FinishReload, GetReloadTime(), false);   // Reload Timer
 
 }
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::FinishReload()
@@ -222,7 +211,6 @@ void ABaseWeapon::FinishReload()
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 	
 }
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
@@ -304,6 +292,7 @@ void ABaseWeapon::EmmiterAINoise()
 
 void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 {
+/*
 	if (pool_object_decal != nullptr)
 	{
 		TObjectPtr<Abullet_decal> spawndecal_bullet = pool_object_decal->GetObject<Abullet_decal>();
@@ -316,22 +305,23 @@ void ABaseWeapon::SpawnDecals(const FHitResult& TraceResult)
 			GetWorld()->GetTimerManager().SetTimer(TimePoolObject_Decals, this, &ABaseWeapon::PoolRelease_Decals, 5.0f, true);
 		}
 	}
-	
+	*/	
 }
 
 void ABaseWeapon::PoolRelease_Decals()
 {
-	if (ArrayActors.Num() > 0)
-	{
-		for (int32 i = 0; i < ArrayActors.Num(); i++)
+	/*
+		if (ArrayActors.Num() > 0)
 		{
-			pool_object_decal->ReleaseObject(ArrayActors[i]);
-		}	
-		 ArrayActors.Empty();
-	}
+			for (int32 i = 0; i < ArrayActors.Num(); i++)
+			{
+				pool_object_decal->ReleaseObject(ArrayActors[i]);
+			}	
+			 ArrayActors.Empty();
+		}
+	
+		*/
 }
-
-
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 	/* this is a virtual function that spawns cartridges, sets a timer for their return to the pool,
 	    the implementation itself is located in classes that are descendants of this class */

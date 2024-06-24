@@ -29,10 +29,10 @@ struct FSurfaceImpactEffects
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<USoundBase*> ImpactSound;
+	USoundBase* ImpactSound;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<UParticleSystem*> ImpactEffect;
+	UParticleSystem* ImpactEffect;
 
 };
 

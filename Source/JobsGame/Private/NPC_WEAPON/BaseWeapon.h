@@ -40,12 +40,6 @@ class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public Idamage
 	UPROPERTY(EditAnywhere, Category="Input", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ReloadAction;
 	
-	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<Aobject_pool> pool_object;
-
-	UPROPERTY(EditAnywhere, Category="PoolObject", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<Aobject_pool> pool_object_decal;
-	
 public:
 	// Sets default values for this actor's properties
 	ABaseWeapon();
@@ -67,7 +61,7 @@ public:
 
 	
 	// Methods for getting values
-	Aobject_pool* GetShellPool() const;		
+	//Aobject_pool* GetShellPool() const;		
 	FName GetSocketName() const;
 	int32 GetMaxAmmo() const;
 	int32 GetCurrentAmmo() const;
@@ -166,10 +160,10 @@ private:
 };
 
 
-FORCEINLINE Aobject_pool* ABaseWeapon::GetShellPool() const
-{
-	return pool_object;
-}
+//FORCEINLINE Aobject_pool* ABaseWeapon::GetShellPool() const
+//{
+//	return pool_object;
+//}
 
 
 FORCEINLINE FName ABaseWeapon::GetSocketName() const 
