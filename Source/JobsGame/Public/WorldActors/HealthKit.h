@@ -44,8 +44,9 @@ public:
 
 private:
 
+	UPROPERTY()
 	TObjectPtr<UHealthComponent> HealthComponent;
 
-	float m_Amounth;
+	int16 m_Amounth;
 
 };

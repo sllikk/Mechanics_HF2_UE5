@@ -124,7 +124,7 @@ void AHealth_Charger::RestoreCharge(AActor* Actor)
 	{
 		m_flCharger = FMath::Clamp(m_flCharger -  m_flInteractCharacter, 0.0f, GetMaxCharger());
 
-		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
+		if (HealthComponent->GetPlayerHealth() < HealthComponent->GetPlayerMaxHealth())
 		{
 			HealthComponent->RestoreHealth(m_flInteractCharacter);
 		}

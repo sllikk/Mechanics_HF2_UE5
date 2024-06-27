@@ -6,7 +6,7 @@
 #include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
 #include "PlayerComponent/FlashLightComponent.h"
-#include "GenericTeamAgentInterface.h"
+#include "GameHud/BaseGameUI.h"
 #include "MyCharacter.generated.h"
 class UInputAction;
 class UInputMappingContext;
@@ -36,9 +36,6 @@ UCLASS(Config = Game)
 class JOBSGAME_API AMyCharacter : public ACharacter
 {
 	GENERATED_BODY()
-
-	#pragma region SubObject
-
 	
 	UPROPERTY(EditAnywhere, Category = PhysicsHandleComponent, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPhysicsHandleComponent> PhysicsHandle;
@@ -46,7 +43,7 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, Category = FlashLight, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UFlashLightComponent> FlashLightComponent;
 	
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RayCast, meta = (AllowPrivateAccess = "true"))
@@ -54,8 +51,7 @@ class JOBSGAME_API AMyCharacter : public ACharacter
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
-	
-	#pragma endregion 
+
 
 	
 	#pragma region INPUT
@@ -215,9 +211,12 @@ private:
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
 	TArray<USoundBase*> CharacterSound;
+
 	UPROPERTY(VisibleAnywhere, Category = "Inventory")
 	TArray<ABaseWeapon*> Weapons;
+
 	
+
 
 };
 

@@ -15,7 +15,7 @@ AHealthKit::AHealthKit()
 
 	PrimaryActorTick.bCanEverTick = false;
 
-	m_Amounth = 25.0f;
+	m_Amounth = 25;
 
 	// Load Mesh in Health Kit
 	FSoftObjectPath MeshAssets(TEXT("/Game/WorldActors/RestoreKits/HealthKit/health_kit"));	
@@ -43,7 +43,7 @@ AHealthKit::AHealthKit()
 	}
 
 	// Load PickUp Sound
-	FSoftObjectPath SoundFinder(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Health_Cue"));
+	const FSoftObjectPath SoundFinder(TEXT("/Game/Sound/ActorSound/Cue/Pickup_Health_Cue"));
 	USoundBase* SoundBase = nullptr;
 
 	if (SoundFinder.IsValid())
@@ -78,9 +78,9 @@ void AHealthKit::NotifyActorBeginOverlap(AActor* OtherActor)
 
 	if (HealthComponent != nullptr)
 	{
-		if (HealthComponent->GetHealth() < HealthComponent->GetMaxHealth())
+		if (HealthComponent->GetPlayerHealth() < HealthComponent->GetPlayerMaxHealth())
 		{
-		HealthComponent->RestoreHealth(m_Amounth);
+			HealthComponent->RestoreHealth(m_Amounth);
 			
 			if (SoundPickup != nullptr)
 			{

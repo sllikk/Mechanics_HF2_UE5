@@ -12,10 +12,6 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 {
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// Default Property
-	m_flMaxHealth = 100;
-	m_flHealth = m_flMaxHealth;
-
 	// Load Resource sound for health
 	TArray<FResourceLoad> ResourceToLoad = {
 		FResourceLoad{TEXT("/Game/Sound/ActorSound/Cue/Dead-Sound_Cue"), nullptr},
@@ -35,6 +31,7 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 			UE_LOG(LogHeathResource, Warning, TEXT("Error Load: %s"), *Resource.ResourcePath)
 		}
 	}
+
 	for (const FResourceLoad& Resource : ResourceToLoad)
 	{
 		USoundBase* LoadSound = Cast<USoundBase>(Resource.LoadedResource);
@@ -44,6 +41,10 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 			HealthSound.Add(LoadSound);
 		}
 	}
+
+	imaxhealth = 100;
+	icurrent_health = imaxhealth;
+	
 }
 
 
@@ -51,7 +52,6 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UHealthComponent::TakeDamage);
 	
 }
 
@@ -60,52 +60,17 @@ void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	if (GEngine != nullptr)
-	{
-		FString strHealth = FString::Printf(TEXT("Health: %2.f"), GetHealth());
-		GEngine->AddOnScreenDebugMessage(1, 120, FColor::White, strHealth);
-	}
 	
 }
 
 
-void UHealthComponent::TakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatedBy, AActor* DamageCauser)
+
+bool UHealthComponent::RestoreHealth(int32 HealthAmount)
 {
-	if (GetMaxHealth() < 0 || m_blsDead)
-	{
-		return;
-	}
-	// Custom Damage	
-	const UCustomDamage* CustomDamage = Cast<const UCustomDamage>(DamageType);
-	if ( CustomDamage != nullptr )
-	{
-		const EDamageType& DamageData =	CustomDamage->GetCurrentDamageType();
-		const FDamageTypeData& DamageTypeData = CustomDamage->GetDamageTypeData();
-		static float ModeferDamage = Damage * DamageTypeData.DamageMultiplayer;
+	icurrent_health += HealthAmount;
+	icurrent_health = FMath::Min(icurrent_health, imaxhealth);
 
-		m_flHealth = FMath::Clamp(GetHealth() - ModeferDamage, 0.0f, GetMaxHealth());
-
-		UE_LOG(LogActor, Warning, TEXT("Damage: %2.f, TYPE: %s"), ModeferDamage,  *UEnum::GetValueAsString(DamageData))
-		
-		if (GetHealth() <= 0)
-		{
-		
-		}
-	}
-	else
-	{
-		UE_LOG(LogActor, Warning, TEXT("Error"))
-	}
-}
-
-
-bool UHealthComponent::RestoreHealth(float HealthAmount)
-{
-	m_flHealth += HealthAmount;
-	m_flHealth = FMath::Min(m_flHealth, m_flMaxHealth);
-
-	return GetHealth() <= GetMaxHealth();
+	return GetPlayerHealth() <= GetPlayerMaxHealth();
 	
 }
 

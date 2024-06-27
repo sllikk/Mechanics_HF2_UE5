@@ -14,6 +14,8 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
 #include "Shared/Resourse.h"
+#include "GameHud/BaseGameUI.h"
+#include "Player/BasePlayerController.h"
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
@@ -53,6 +55,8 @@ AMyCharacter::AMyCharacter()
 
 	// WeaponIndex
 	m_icurrent_weapon_index = -1;
+
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -89,7 +93,7 @@ void AMyCharacter::BeginPlay()
 		}
 	}
 
-	FActorSpawnParameters SpawnParameters;
+
 	
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
