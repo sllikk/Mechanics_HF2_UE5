@@ -31,11 +31,5 @@ protected:
 
 public:
 
-	void Spawn() const;  
-	void SpawnObjectPool();	
-
-private:	
-	
-
 	
 };

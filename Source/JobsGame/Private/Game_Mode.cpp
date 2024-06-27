@@ -35,12 +35,6 @@ void AGame_Mode::Tick(float DeltaSeconds)
 }
 
 
-void AGame_Mode::Spawn() const
-{
-}
 
-void AGame_Mode::SpawnObjectPool()
-{
 
-}
 
