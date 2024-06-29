@@ -25,8 +25,9 @@ Anpc_combine::Anpc_combine()
 	m_flAirControl = 0.5f;
 	m_flMaxSpeedWalk = 300.0f;
 	m_flMaxSpeedRun = 0.0f;
-	m_flMaxHealth = 50.0f;
+	m_flMaxHealth = 60;
 	m_flCurrentHealth = m_flMaxHealth;
+	blsIsDead = false;
 	
 	// Load SkeletalMesh
 	combine_mesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMeshComponent"));
@@ -70,7 +71,7 @@ void Anpc_combine::BeginPlay()
 	GetCapsuleComponent()->SetMassOverrideInKg(NAME_All, 75.0f, true);
 	GetCharacterMovement()->Mass = GetMassCharacter();
 	
-	OnTakeAnyDamage.AddDynamic(this, &Anpc_combine::Damage);
+
 	combine_mesh->OnComponentHit.AddDynamic(this, &Anpc_combine::OnHit);
 	
 }
@@ -97,19 +98,34 @@ void Anpc_combine::Landed(const FHitResult& Hit)
 
 void Anpc_combine::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 {
+
+	if (blsIsDead || GetCurrentHealth() <= 0)
+	{
+		return;
+	}
+
 	switch (DamageType)
 	{
-	case EDamageType::DMG_BULLET :
-		UE_LOG(LogTemp, Warning, TEXT("Damage: %d"), damage_amounth);
+	case EDamageType::DMG_BULLET:
 		break;
-	case EDamageType::DMG_GENERIC :
-		UE_LOG(LogTemp, Warning, TEXT("Generic: %d"), damage_amounth);
+	case EDamageType::DMG_GENERIC:
 		break;
 	case EDamageType::DMG_EXPLODE:
-		UE_LOG(LogTemp, Warning, TEXT("Explode: %d"), damage_amounth);
 		break;
+
 		default:;
 	}
+
+
+	m_flCurrentHealth = FMath::Clamp(m_flCurrentHealth - damage_amounth, 0, m_flMaxHealth);
+
+	if (GetCurrentHealth() <= 0)
+	{
+		CombineDead();
+	}
+
+
+
 }
 
 
@@ -125,8 +141,7 @@ void Anpc_combine::SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName)
 
 void Anpc_combine::CombineDebug() const
 {
-	const FString& strHealth = FString::Printf(TEXT("charger: %2.f"), GetCurrentHealth());	
-	const FString& strMass = FString::Printf(TEXT("Mass: %2.f"), GetCharacterMovement()->Velocity.Z);
+	const FString& strHealth = FString::Printf(TEXT("charger: %d"), GetCurrentHealth());	
 	const FColor& Color = FColor::White;
 
 	FVector vecHealthDebug = GetActorLocation();
@@ -161,24 +176,6 @@ void Anpc_combine::Falling()
 
 }
 
-
-void Anpc_combine::Damage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-                          AController* InstigatedBy, AActor* DamageCauser)
-{
-
-	if (GetMaxHealth() < 0 || blsIsDead)
-	{
-		return;
-	}
-
-	m_flCurrentHealth = FMath::Clamp(GetCurrentHealth() - Damage, 0.0f, GetMaxHealth());
-	
-	if ( GetCurrentHealth() <= 0 )
-	{
-			CombineDead();
-	}
-	
-}
 
 void Anpc_combine::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	FVector NormalImpulse, const FHitResult& Hit)

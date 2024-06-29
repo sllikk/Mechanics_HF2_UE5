@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Player/MyCharacter.h"
 #include "Property/CustomDamage.h"
+#include "Property/damageable.h"
 
 // Sets default values
 ATestDamage::ATestDamage()
@@ -18,6 +19,8 @@ ATestDamage::ATestDamage()
 	
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	Collision->SetupAttachment(StaticMeshComponent);
+
+	damage = 10;
 }
 
 // Called when the game starts or when spawned
@@ -38,17 +41,13 @@ void ATestDamage::Tick(float DeltaTime)
 void ATestDamage::Damaged(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor != nullptr)
+	if (OtherActor && (OtherActor != this) && OtherComp)
 	{
-		const AMyCharacter* Character = Cast<AMyCharacter>(OtherActor);
-		if (Character != nullptr)
+		if (OtherActor->GetClass()->ImplementsInterface(Udamageable::StaticClass()))
 		{
-			UCustomDamage* CustomDamage = NewObject<UCustomDamage>();
-			if ( CustomDamage != nullptr )
+			if (Idamageable* DamageableActor = Cast<Idamageable>(OtherActor))
 			{
-				CustomDamage->SetCurrentDamageType( EDamageType::DMG_BURN );	
-				CustomDamage->SetDamage( 12 );
-				UGameplayStatics::ApplyDamage(OtherActor, CustomDamage->GetDamage(), nullptr, this, CustomDamage->StaticClass());
+				DamageableActor->HandleDamage(damage, Damage);
 			}
 		}
 	}

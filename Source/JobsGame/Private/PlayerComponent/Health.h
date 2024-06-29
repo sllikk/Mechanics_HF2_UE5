@@ -5,27 +5,25 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Logging/LogMacros.h"
-#include "GameHud/BaseGameUI.h"
+#include "Property/damageable.h"
 #include "Health.generated.h"
 class USoundBase;
 class AMyCharacter;
-class UBaseGameUI;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathComponent, Log, All);
 DECLARE_LOG_CATEGORY_EXTERN(LogHeathResource, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHealthUpdate, int32, newhealth);
 
 UCLASS(Config=Game, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
-class UHealthComponent : public UActorComponent
+class UHealthComponent : public UActorComponent, public Idamageable
 {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	TArray<USoundBase*> HealthSound;       
 
-	UPROPERTY(EditAnywhere, Category="Hud", meta=(AllowPrivateAccess  = "true"))
-	TObjectPtr<UBaseGameUI> BaseGameUI;
-	
+
 public:	
 	
 	UHealthComponent(const FObjectInitializer& ObjectInitializer);
@@ -38,14 +36,13 @@ protected:
 
 public:
 
-	int32  GetPlayerHealth() const;
-	int32  GetPlayerMaxHealth() const;
-	bool   ISDead() const;
-	bool RestoreHealth(int32 HealthAmounth);
-	
-	void SetMaxPlayerHealth(int32 maxplayer_health);
-	
-	
+			int32  GetPlayerHealth() const;
+			int32  GetPlayerMaxHealth() const;
+			bool   ISDead() const;
+			bool   RestoreHealth(int32 HealthAmounth);
+			void   SetMaxPlayerHealth(int32 maxplayer_health);
+	virtual void   HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
+			void   Dead();
 private:
 
 	bool		m_blsDead;

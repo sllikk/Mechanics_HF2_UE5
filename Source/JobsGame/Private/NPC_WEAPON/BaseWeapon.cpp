@@ -29,6 +29,7 @@ ABaseWeapon::ABaseWeapon()
 	m_flReloadTime = 2.0f;
 	m_flmaxTraceLength = 10000.0f;
 	m_flMaxPhysicsImpulse = 150.0f;
+	idamage = 4;
 	
 	FireSound = nullptr;
 	ReloadSound = nullptr;
@@ -161,7 +162,8 @@ void ABaseWeapon::PrimaryAttack()
 	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4, QueryParams);
 	
 	blsPrimaryAttack = true;
-
+	EDamageType DamageType = EDamageType::DMG_BULLET;  
+	
 		ConsumeAmmo(1);
 		SpawnEmitter();
 		PhysicsTraceLogic(HitResult);
@@ -177,6 +179,8 @@ void ABaseWeapon::PrimaryAttack()
 	{
 		auto Effect = Cast<AImpactEffectHandler>(UGameplayStatics::GetActorOfClass(GetWorld(), AImpactEffectHandler::StaticClass()));
 		Effect->EffectForSurface(HitResult);
+
+		ApplyDamageHitActor(Actor, GetDamageAmounth(), DamageType);
 	}
 	
 }
@@ -226,10 +230,7 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 	}
 }
 
-void ABaseWeapon::HandleDamage(int32 damage_amounth, EDamageType DamageType)
-{
 
-}
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics logic on shoot
@@ -249,6 +250,18 @@ void ABaseWeapon::PhysicsTraceLogic(const FHitResult& HitResult)   // physics lo
 			SpawnDecals(HitResult);
 		}		
 	}
+}
+
+void ABaseWeapon::ApplyDamageHitActor(AActor* Actor, int32 damage, EDamageType Damage)
+{
+	if (Actor != nullptr)
+	{
+		if (Idamageable* IdamageableActor = Cast<Idamageable>(Actor))
+		{
+			IdamageableActor->HandleDamage(damage, Damage);
+		}
+	}
+	
 }
 
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/

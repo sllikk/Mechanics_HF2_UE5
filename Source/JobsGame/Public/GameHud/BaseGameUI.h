@@ -4,8 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "PlayerComponent/Health.h"
 #include "BaseGameUI.generated.h"
 class UTextBlock;
+class UHealthComponent;
 
 UCLASS(Abstract)
 class JOBSGAME_API UBaseGameUI : public UUserWidget
@@ -22,9 +24,15 @@ public:
 	
 	virtual void NativeConstruct() override;
 	
-protected:
+public:
 
-	void UpdateHealthHud(int32 update_health) const;
+	UFUNCTION()
+	void UpdateHealthHud(int32 update_health);
+	UFUNCTION()
 	void UpdateSuitHud(int32 update_suit) const;
 
+
+private:
+	UPROPERTY()
+	UHealthComponent* PlayerHealthComponent;
 };

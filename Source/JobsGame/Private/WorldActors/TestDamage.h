@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Shared/damage.h"
 #include "TestDamage.generated.h"
 class UStaticMeshComponent; 
 class UBoxComponent;
@@ -17,6 +18,9 @@ class ATestDamage : public AActor
 
 	UPROPERTY(EditAnywhere, Category="TESTCOLLISION")
 	TObjectPtr<UBoxComponent> Collision;
+
+	UPROPERTY(EditAnywhere, Category="TESTCOLLISION")
+	EDamageType Damage;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -34,6 +38,6 @@ protected:
 	
 public:	
 
-		
+		int8 damage;
 	
 };

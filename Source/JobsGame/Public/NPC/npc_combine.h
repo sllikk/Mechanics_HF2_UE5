@@ -46,10 +46,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category="AttachGun")
 	void SpawnWeapon(TSubclassOf<AActor> GunClass, FName socketName);
 
-	UFUNCTION(BlueprintCallable, Category="AttachGun")
-	void Damage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-				AController* InstigatedBy, AActor* DamageCauser);
-
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 	
@@ -76,9 +72,9 @@ public:
 	FORCEINLINE	void						SetMaxSpeedFly(float fl_MaxSpeedFly)			 { m_flMaxSpeedFly = fl_MaxSpeedFly; }
 	FORCEINLINE	float						GetMassCharacter() const						 { return m_flMassCombine; }
 	FORCEINLINE	void						SetMassCharacter(float fl_MassCharacter)	 	 { m_flMassCombine = fl_MassCharacter; }
-	FORCEINLINE float						GetCurrentHealth() const						 { return m_flCurrentHealth; }				
-	FORCEINLINE float						GetMaxHealth() const							 { return m_flMaxHealth; }				
-	FORCEINLINE	void						SetMaxHealth(float iMaxHealth) 					 { m_flMaxHealth = iMaxHealth; }					
+	FORCEINLINE int32						GetCurrentHealth() const						 { return m_flCurrentHealth; }				
+	FORCEINLINE int32						GetMaxHealth() const							 { return m_flMaxHealth; }				
+	FORCEINLINE	void						SetMaxHealth(int32 iMaxHealth) 					 { m_flMaxHealth = iMaxHealth; }					
 	
 	#pragma endregion			
 
@@ -103,8 +99,8 @@ public:
 	float		m_flMaxSpeedFly;
 	float		m_flMassCombine;
 	float		m_maxFallDead;
-	float		m_flMaxHealth;
-	float		m_flCurrentHealth;
+	int32		m_flMaxHealth;
+	int32		m_flCurrentHealth;
 	float		m_flDistanceFallDead;
 	
 

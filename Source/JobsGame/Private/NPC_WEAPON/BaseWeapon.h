@@ -21,7 +21,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogWeapon, All, Log);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FHitSurface, const FHitResult&, HitResult);
 
 UCLASS(Blueprintable)
-class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract, public Idamageable
+class JOBSGAME_API ABaseWeapon : public AActor, public Iinteract
 {
 	GENERATED_BODY()
 
@@ -102,7 +102,6 @@ public:
 	//virtual void SecondaryAttack();
 	virtual void		Reload();
 	virtual void		Interact(AActor* Actor) override;
-	virtual void        HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
 	virtual void		StartAttack();
 	virtual void		StopAttack();
 	virtual void		ShellDrop();
@@ -113,6 +112,7 @@ public:
 			void        PoolRelease_Decals();	
 			void		FinishReload();
 			void		PhysicsTraceLogic(const FHitResult& HitResult);
+	static void		ApplyDamageHitActor(AActor* Actor, int32 damage, EDamageType Damage); 
 	
 private:
 

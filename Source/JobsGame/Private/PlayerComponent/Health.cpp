@@ -44,6 +44,7 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 
 	imaxhealth = 100;
 	icurrent_health = imaxhealth;
+	m_blsDead = false;
 	
 }
 
@@ -51,15 +52,20 @@ UHealthComponent::UHealthComponent(const FObjectInitializer& ObjectInitializer)
 void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	
+
+
 }
 
 
 void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-	
+
+	if (GEngine)
+	{
+		const FString& strHealth = FString::Printf(TEXT("Health: %d"), icurrent_health);
+		GEngine->AddOnScreenDebugMessage(3, -1, FColor::White ,strHealth);	
+	}	
 	
 }
 
@@ -72,6 +78,38 @@ bool UHealthComponent::RestoreHealth(int32 HealthAmount)
 
 	return GetPlayerHealth() <= GetPlayerMaxHealth();
 	
+}
+
+void UHealthComponent::HandleDamage(int32 damage_amounth, EDamageType DamageType)
+{
+	if(ISDead() || GetPlayerHealth() <= 0)
+	{
+		return;	
+	}
+
+	switch (DamageType)
+	{
+	case EDamageType::DMG_BULLET:
+		
+	case EDamageType::DMG_EXPLODE:	
+		break;
+default:
+	break;
+
+	}
+
+	icurrent_health = FMath::Clamp(icurrent_health - damage_amounth, 0, imaxhealth);
+
+	if (GetPlayerHealth() <= 0)
+	{
+		Dead();
+	}
+	
+}
+
+void UHealthComponent::Dead()
+{
+	UE_LOG(LogHeathComponent, Type::Error, TEXT("Dead: "));
 }
 
 	
