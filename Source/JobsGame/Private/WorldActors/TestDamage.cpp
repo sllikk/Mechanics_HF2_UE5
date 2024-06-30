@@ -48,6 +48,7 @@ void ATestDamage::Damaged(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 			if (Idamageable* DamageableActor = Cast<Idamageable>(OtherActor))
 			{
 				DamageableActor->HandleDamage(damage, Damage);
+				
 			}
 		}
 	}

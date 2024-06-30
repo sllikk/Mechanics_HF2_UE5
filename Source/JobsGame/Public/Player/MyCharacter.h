@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Logging/LogMacros.h"
 #include "GameFramework/Character.h"
+#include "Logging/LogMacros.h"
 #include "PlayerComponent/FlashLightComponent.h"
-#include "GameHud/BaseGameUI.h"
+#include "Shared/PlayerTrigger.h"
 #include "MyCharacter.generated.h"
+
 class UInputAction;
 class UInputMappingContext;
 class USkeletalMeshComponent;
@@ -33,7 +34,7 @@ enum class EWeaponType // SwitchWeapon
 };
 
 UCLASS(Config = Game)
-class JOBSGAME_API AMyCharacter : public ACharacter
+class JOBSGAME_API AMyCharacter : public ACharacter, public IPlayerTrigger
 {
 	GENERATED_BODY()
 	
@@ -109,7 +110,7 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
-	
+	virtual FString GetPlayer() const override;	
 
 protected:
 
@@ -186,11 +187,10 @@ public:
 	void RemoveWeapon(ABaseWeapon* Weapon);
 	void SwitchWeapon(int32 Index);
 	void SwitchWeaponType(EWeaponType WeaponType);
-
 private:
 
-	#pragma region Default_Character_Settings
-
+	FString strPlayerName; 
+	
 	float	m_MaxSpeedWalk = 500.0f;
 	float	m_MaxSpeedRun = 700.0f;
 	float	m_MaxSpeedCrouch = 400.0f;
@@ -203,10 +203,10 @@ private:
 	float	m_DistanceTrace = 190;
 	float	m_MaxGrabMassObject = 80;	
 	float	m_TrowImpulse = 250;
+
 	bool    m_blsGrabProduct;
 	int32   m_icurrent_weapon_index;
 	
-	#pragma endregion
 	
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")
@@ -219,4 +219,10 @@ private:
 
 
 };
+
+
+FORCEINLINE FString AMyCharacter::GetPlayer() const
+{
+	return strPlayerName;
+}
 
