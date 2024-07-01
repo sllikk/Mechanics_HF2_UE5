@@ -24,11 +24,10 @@ AItemBase::AItemBase()
 }
 
 
-// Called when the game starts or when spawned
+
 void AItemBase::BeginPlay()
 {
 	Super::BeginPlay();
-
 	TriggerCollision->OnComponentBeginOverlap.AddDynamic(this, &AItemBase::OnTouch);
 	BaseMeshComponent->SetSimulatePhysics(true);
 	BaseMeshComponent->SetMassOverrideInKg(NAME_Actor, flmassObj);
