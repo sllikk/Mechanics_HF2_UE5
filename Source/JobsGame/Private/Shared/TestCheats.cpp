@@ -4,7 +4,7 @@
 
 #include "WorldActors/BatteryKit.h"
 #include "WorldActors/FlameBarrel.h"
-#include "WorldActors/HealthKit.h"
+#include "WorldActors/item_healthkit.h"
 #include "WorldActors/supply_crate.h"
 
 #if PLATFORM_WINDOWS
@@ -16,7 +16,7 @@ struct FSpawnCheat
 	FSpawnCheat()
 	{
 		SPAWNNER.Add(TEXT("flamebarrel"), AFlameBarrel::StaticClass());
-		SPAWNNER.Add(TEXT("healthkit"), AHealthKit::StaticClass());
+		SPAWNNER.Add(TEXT("healthkit"), Aitem_healthkit::StaticClass());
 		SPAWNNER.Add(TEXT("batterykit"), ABatteryKit::StaticClass());
 		SPAWNNER.Add(TEXT("supply_crate"), Asupply_crate::StaticClass());
 	}

@@ -2,12 +2,10 @@
 
 
 #include "WorldActors/ItemBase.h"
-#include "Shared/PlayerTrigger.h"
-#include "Components/BoxComponent.h"
-
+#include "Components/SphereComponent.h"
 
 // Sets default values
-AItemBase::AItemBase()
+AItemBase::AItemBase() : flradius_sphere(100), flmassObj(15)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
@@ -15,9 +13,11 @@ AItemBase::AItemBase()
 	BaseMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseStaticMesh"));
 	RootComponent = BaseMeshComponent;
 	
-	TriggerCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxTriggerComponent"));
+	TriggerCollision = CreateDefaultSubobject<USphereComponent>(TEXT("SphereTriggerComponent"));
 	TriggerCollision->SetCollisionProfileName(TEXT("Interaction"));
+	TriggerCollision->InitSphereRadius(flradius_sphere);
 	TriggerCollision->SetupAttachment(BaseMeshComponent);	
+
 	
 	flmassObj = 10.0f;
 	bls_use = false;
@@ -39,10 +39,12 @@ void AItemBase::OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 {
 	if (OtherActor != nullptr)
 	{
-		PickupDelegat.Broadcast();
 		Use(OtherActor);
+		UE_LOG( LogCollision, Warning, TEXT("Touch: %s"),*OtherActor->GetClass()->GetName() )
+		
 		if (bls_use == true)
 		{
+			PickupDelegat.Broadcast();
 			TriggerCollision->OnComponentBeginOverlap.RemoveAll(this);
 			this->Destroy();	
 		}
@@ -53,7 +55,7 @@ void AItemBase::OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
 
 void AItemBase::Use(AActor* pCharacter)
 {
-
+// only virtual
 }
 
 

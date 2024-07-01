@@ -23,7 +23,9 @@ DEFINE_LOG_CATEGORY(LogCharacterResouce)
 
 
 // Constructor character: initialization of all components and default settings of the character and its components for the game world
-AMyCharacter::AMyCharacter()
+AMyCharacter::AMyCharacter() : m_HasRifle(false),m_MaxSpeedWalk(500.0f),m_MaxSpeedRun(700.0f), m_MaxSpeedCrouch(400.0f),
+	  m_MaxAcceleration(2048.0f),m_GravityScale(1.0f),m_AirControl(0.8f),m_MaxSpeedFly(200.0f),m_MassCharacter(20.0f),m_JumpHeight(300.0f),
+	  m_DistanceTrace(190.0f),m_MaxGrabMassObject(80.0f), m_TrowImpulse(250.0f), m_imaxhealth(100), m_blsDead(false)
 {
 	//default settings character movement, mesh and FirstPersonCamera
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -55,7 +57,9 @@ AMyCharacter::AMyCharacter()
 
 	// WeaponIndex
 	m_icurrent_weapon_index = -1;
+	m_icurrent_health = m_imaxhealth;
 	strPlayerName = "Player";
+
 	
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -103,6 +107,13 @@ void AMyCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	TickPhysicsHandle();
+
+	if (GEngine != nullptr)
+	{
+		const FString& strHealth = FString::Printf(TEXT("Health: %d"), m_icurrent_health);
+		GEngine->AddOnScreenDebugMessage(3, 120, FColor::White ,strHealth);	  
+	}
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -123,6 +134,7 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(JumpAction, ETriggerEvent::Completed, this, &AMyCharacter::StopJumping);
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AMyCharacter::StartCrouch);
 			EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AMyCharacter::StopCrouch);
+
 			EnhancedInput->BindAction(InteractAction, ETriggerEvent::Started, this, &AMyCharacter::Interact);
 			EnhancedInput->BindAction(FlashLightAction, ETriggerEvent::Started, this, &AMyCharacter::Flashlight);
 			EnhancedInput->BindAction(GrabAction, ETriggerEvent::Started, this, &AMyCharacter::ToggleGrab);
@@ -298,6 +310,44 @@ void AMyCharacter::TickPhysicsHandle() const
 		}
 	}
 }
+
+bool AMyCharacter::RestoreHealth(int32 HealthAmounth)
+{
+	m_icurrent_health += HealthAmounth;
+	m_icurrent_health = FMath::Min(m_icurrent_health, m_imaxhealth);
+	
+	return m_icurrent_health < m_imaxhealth;
+}
+
+void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
+{
+	if(ISDead() || GetPlayerHealth() <= 0) return;	
+
+	switch (DamageType)
+	{
+	case EDamageType::DMG_BULLET:
+		break;
+	case EDamageType::DMG_EXPLODE:	
+		break;
+	default:
+		break;
+
+	}
+
+	m_icurrent_health = FMath::Clamp(m_icurrent_health - damage_amounth, 0, m_imaxhealth);
+
+	if (GetPlayerHealth() <= 0)
+	{
+		Dead();
+	}
+	
+}
+
+void AMyCharacter::Dead()
+{
+
+}
+
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
 //          Function action character

@@ -4,7 +4,7 @@
 
 #include "GeometryCollection/GeometryCollectionComponent.h"
 #include "WorldActors/BatteryKit.h"
-#include "WorldActors/HealthKit.h"
+#include "WorldActors/item_healthkit.h"
 
 Asupply_crate::Asupply_crate()
 {
@@ -71,7 +71,7 @@ void Asupply_crate::SpawnSupply(FVector vecSpawn)
 	int8 MAXSPAWN = 2;
 	TArray<TSubclassOf<AActor>> Classes;
 	Classes.Add(ABatteryKit::StaticClass());
-	Classes.Add(AHealthKit::StaticClass());
+	Classes.Add(Aitem_healthkit::StaticClass());
 
 	for(int8 i = 0; i < MAXSPAWN; i++)
 	{

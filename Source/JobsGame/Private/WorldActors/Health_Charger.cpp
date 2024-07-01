@@ -4,7 +4,6 @@
 
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "PlayerComponent/Health.h"
 #include "Shared/Resourse.h"
 
 DEFINE_LOG_CATEGORY(LogHealthCharger);
@@ -118,6 +117,7 @@ void AHealth_Charger::Interact(AActor* Actor)
 
 void AHealth_Charger::RestoreCharge(AActor* Actor)
 {
+/*
 	UHealthComponent* HealthComponent = Cast<UHealthComponent>(Actor->GetComponentByClass(UHealthComponent::StaticClass()));
 	
 	if (HealthComponent != nullptr && GetCharge() > 0)
@@ -129,4 +129,6 @@ void AHealth_Charger::RestoreCharge(AActor* Actor)
 			HealthComponent->RestoreHealth(m_flInteractCharacter);
 		}
 	}
+
+*/
 }

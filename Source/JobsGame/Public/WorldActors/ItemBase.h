@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/SphereComponent.h"
 #include "GameFramework/Actor.h"
 #include "ItemBase.generated.h"
 class UStaticMeshComponent;
 class UStaticMesh;
-class UBoxComponent;
+class USphereComponent;	
 class USoundBase;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDelegat);
@@ -21,7 +22,7 @@ class JOBSGAME_API AItemBase : public AActor
 	TObjectPtr<UStaticMeshComponent> BaseMeshComponent;
 
 	UPROPERTY(EditAnywhere, Category = "BoxComponent", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> TriggerCollision;
+	TObjectPtr<USphereComponent> TriggerCollision;
 
 	UPROPERTY(EditAnywhere, Category = "BoxComponent", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> TouchSound;	
@@ -36,7 +37,7 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	virtual  void OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+	virtual void OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
@@ -49,20 +50,22 @@ public:
 	
 	TObjectPtr<UStaticMeshComponent> GetBaseStaticMeshComponent() const;
 	TObjectPtr<USoundBase>           GetSoundTouch() const;
+	TObjectPtr<USphereComponent>        GetTriggerCollision() const;
 	float   GetMassObj() const;
-	float	GetBoxRadius() const;
+	float	GetSphereRadius() const;
 	bool    IsUse() const;
 
+	
 	void	SetBaseStaticMeshComponent(UStaticMeshComponent* pStaticMeshComponent);
 	void	SetSoundTouchSound(USoundBase* pSoundBase);
 	void    SetMassObj(float flmass);
-	void    SetBoxRadius(float flbox_radius);
+	void    SetRadiusSphere(float flsphere_radius);
 	void    SetUse(bool bls_stat_use);	
 	
 private:
 
 	float	flmassObj;
-	float	flradius_box;	
+	float	flradius_sphere;	
 	bool 	bls_use;
 };
 
@@ -94,14 +97,14 @@ FORCEINLINE float AItemBase::GetMassObj() const
 	return flmassObj;
 }
 
-FORCEINLINE float AItemBase::GetBoxRadius() const
+FORCEINLINE float AItemBase::GetSphereRadius() const
 {
-	return flradius_box;
+	return flradius_sphere;
 }
 
-FORCEINLINE void AItemBase::SetBoxRadius(float flbox_radius)
+FORCEINLINE void AItemBase::SetRadiusSphere(float flsphere_radius)
 {
-	flradius_box = flbox_radius;
+	flradius_sphere = flsphere_radius;
 }
 
 FORCEINLINE bool AItemBase::IsUse() const
@@ -117,4 +120,9 @@ FORCEINLINE void AItemBase::SetUse(bool bls_stat_use)
 FORCEINLINE TObjectPtr<USoundBase> AItemBase::GetSoundTouch() const
 {
 	return TouchSound;
+}
+
+FORCEINLINE TObjectPtr<USphereComponent> AItemBase::GetTriggerCollision() const
+{
+	return TriggerCollision;
 }

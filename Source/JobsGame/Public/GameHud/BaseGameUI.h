@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "PlayerComponent/Health.h"
 #include "BaseGameUI.generated.h"
 class UTextBlock;
 class UHealthComponent;
@@ -33,6 +32,4 @@ public:
 
 
 private:
-	UPROPERTY()
-	UHealthComponent* PlayerHealthComponent;
 };

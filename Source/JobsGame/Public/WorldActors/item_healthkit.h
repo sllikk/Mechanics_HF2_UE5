@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "PlayerComponent/Health.h"
+#include "Player/MyCharacter.h"
 #include "WorldActors/ItemBase.h"
 #include "item_healthkit.generated.h"
 
@@ -23,12 +23,12 @@ public:
 protected:	
 
 	virtual void BeginPlay() override;
-
 	virtual void Use(AActor* pCharacterUse) override;
-
+	virtual void OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) override;
+	
 private:
 
-	UPROPERTY()	
-	TObjectPtr<UHealthComponent> HealthComponent;
-	
+	UPROPERTY()
+	TObjectPtr<AMyCharacter> ptrPlayer;
+
 };
