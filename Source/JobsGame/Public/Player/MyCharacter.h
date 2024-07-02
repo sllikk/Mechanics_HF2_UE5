@@ -117,6 +117,8 @@ public:
 
 	virtual FString GetPlayer() const override;	
 
+	virtual void   HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
+
 protected:
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -144,10 +146,6 @@ public:
 	int32  GetPlayerHealth() const;
 	int32  GetPlayerMaxHealth() const;
 	bool   ISDead() const;
-	bool   RestoreHealth(int32 HealthAmounth);
-	void   SetMaxPlayerHealth(int32 maxplayer_health);
-	virtual void   HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
-	void   Dead();
 	
 	float GetMaxSpeedWalk() const;
 	float GetMaxSpeedRun() const;
@@ -174,6 +172,7 @@ public:
 	void SetDistanceTrace(float fl_DistanceTrace);
 	void SetMaxGrabMassObject(float fl_MaxGrabMassObject);
 	void SetTrowImpulse(float fl_TrowImpulse);
+	void   SetMaxPlayerHealth(int32 maxplayer_health);
 	
 #pragma region FUNC_INPUT
 
@@ -193,15 +192,18 @@ public:
 	
 	#pragma endregion
 
-	void GrabComponent();
-	void ReleaseComponent() const;
-	void DontInteract() const;
-	void SoundResourceLoad();
-	void AddWeaponToInventory(ABaseWeapon* Weapon);
-	void RemoveWeapon(ABaseWeapon* Weapon);
-	void SwitchWeapon(int32 Index);
-	void SwitchWeaponType(EWeaponType WeaponType);
-
+	void   GrabComponent();
+	void   ReleaseComponent() const;
+	void   DontInteract() const;
+	void   SoundResourceLoad();
+	void   AddWeaponToInventory(ABaseWeapon* Weapon);
+	void   RemoveWeapon(ABaseWeapon* Weapon);
+	void   SwitchWeapon(int32 Index);
+	void   SwitchWeaponType(EWeaponType WeaponType);
+	void   Dead();
+	bool   RestoreHealth(int32 HealthAmounth);
+	bool   RestoreSuit(int32 SuitAmounth);
+	
 private:
 
 	FString strPlayerName; 
@@ -218,13 +220,18 @@ private:
 	float	m_DistanceTrace;
 	float	m_MaxGrabMassObject;	
 	float	m_TrowImpulse;
-
+	
+	
 	     bool		m_blsDead;
 	     bool    m_blsGrabProduct;
-
+	     bool   bls_discharger_suit;
+	
 	 int32		m_icurrent_weapon_index;
 	 int32		m_icurrent_health;
 	 int32		m_imaxhealth;
+	 int32      m_icharger_suit;
+	 int32      m_maxcharger_suit;
+	 int32      m_idamageSave;
 	
 	// Audio my Character
 	UPROPERTY(VisibleAnywhere, Category = "Components")

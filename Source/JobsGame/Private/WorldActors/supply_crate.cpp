@@ -3,8 +3,8 @@
 #include "WorldActors/supply_crate.h"
 
 #include "GeometryCollection/GeometryCollectionComponent.h"
-#include "WorldActors/BatteryKit.h"
 #include "WorldActors/item_healthkit.h"
+#include "WorldActors/item_suitkit.h"
 
 Asupply_crate::Asupply_crate()
 {
@@ -66,11 +66,11 @@ void Asupply_crate::ApplyDamage(float Damage, FVector HitLocation)
 }
 
 
-void Asupply_crate::SpawnSupply(FVector vecSpawn)
+void Asupply_crate::SpawnSupply(FVector vecSpawn) const
 {
 	int8 MAXSPAWN = 2;
 	TArray<TSubclassOf<AActor>> Classes;
-	Classes.Add(ABatteryKit::StaticClass());
+	Classes.Add(Aitem_suitkit::StaticClass());
 	Classes.Add(Aitem_healthkit::StaticClass());
 
 	for(int8 i = 0; i < MAXSPAWN; i++)

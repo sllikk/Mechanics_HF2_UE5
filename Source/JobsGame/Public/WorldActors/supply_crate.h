@@ -37,6 +37,6 @@ protected:
 	
 public:
 
- 	FORCEINLINE void SpawnSupply(FVector vecSpawn);
+ 	FORCEINLINE void SpawnSupply(FVector vecSpawn) const;
 	
 };

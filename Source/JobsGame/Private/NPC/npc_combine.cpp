@@ -5,7 +5,6 @@
 #include "Components/DecalComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Property/CustomDamage.h"
 
 DEFINE_LOG_CATEGORY(LogCombineClass);
 
@@ -110,7 +109,7 @@ void Anpc_combine::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 		break;
 	case EDamageType::DMG_GENERIC:
 		break;
-	case EDamageType::DMG_EXPLODE:
+//	case EDamageType::DMG_EXPLODE:
 		break;
 
 		default:;

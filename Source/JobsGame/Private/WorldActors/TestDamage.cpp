@@ -2,11 +2,7 @@
 
 
 #include "WorldActors/TestDamage.h"
-
 #include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "Player/MyCharacter.h"
-#include "Property/CustomDamage.h"
 #include "Property/damageable.h"
 
 // Sets default values
@@ -20,12 +16,13 @@ ATestDamage::ATestDamage()
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("BoxComponent"));
 	Collision->SetupAttachment(StaticMeshComponent);
 
-	damage = 10;
+	damage = 50;
 }
 
 // Called when the game starts or when spawned
 void ATestDamage::BeginPlay()
 {
+	
 	Super::BeginPlay();
 
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ATestDamage::Damaged);

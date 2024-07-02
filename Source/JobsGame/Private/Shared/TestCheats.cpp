@@ -1,8 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Shared/TestCheats.h"
-
-#include "WorldActors/BatteryKit.h"
+#include "WorldActors/item_suitkit.h"
 #include "WorldActors/FlameBarrel.h"
 #include "WorldActors/item_healthkit.h"
 #include "WorldActors/supply_crate.h"
@@ -17,7 +16,7 @@ struct FSpawnCheat
 	{
 		SPAWNNER.Add(TEXT("flamebarrel"), AFlameBarrel::StaticClass());
 		SPAWNNER.Add(TEXT("healthkit"), Aitem_healthkit::StaticClass());
-		SPAWNNER.Add(TEXT("batterykit"), ABatteryKit::StaticClass());
+		SPAWNNER.Add(TEXT("batterykit"), Aitem_suitkit::StaticClass());
 		SPAWNNER.Add(TEXT("supply_crate"), Asupply_crate::StaticClass());
 	}
 };

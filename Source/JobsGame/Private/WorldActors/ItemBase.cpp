@@ -5,7 +5,7 @@
 #include "Components/SphereComponent.h"
 
 // Sets default values
-AItemBase::AItemBase() : flradius_sphere(100), flmassObj(15)
+AItemBase::AItemBase() : flmassObj(15), flradius_sphere(100)
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;

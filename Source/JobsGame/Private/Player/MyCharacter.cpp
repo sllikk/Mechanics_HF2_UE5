@@ -14,18 +14,16 @@
 #include "PhysicsEngine/PhysicsHandleComponent.h"
 #include "Shared/interact.h"
 #include "Shared/Resourse.h"
-#include "GameHud/BaseGameUI.h"
-#include "Player/BasePlayerController.h"
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
 
 
-
 // Constructor character: initialization of all components and default settings of the character and its components for the game world
-AMyCharacter::AMyCharacter() : m_HasRifle(false),m_MaxSpeedWalk(500.0f),m_MaxSpeedRun(700.0f), m_MaxSpeedCrouch(400.0f),
-	  m_MaxAcceleration(2048.0f),m_GravityScale(1.0f),m_AirControl(0.8f),m_MaxSpeedFly(200.0f),m_MassCharacter(20.0f),m_JumpHeight(300.0f),
-	  m_DistanceTrace(190.0f),m_MaxGrabMassObject(80.0f), m_TrowImpulse(250.0f), m_imaxhealth(100), m_blsDead(false)
+AMyCharacter::AMyCharacter()
+      : m_HasRifle(false),m_MaxSpeedWalk(500.0f),m_MaxSpeedRun(700.0f), m_MaxSpeedCrouch(400.0f),
+		m_MaxAcceleration(2048.0f),m_GravityScale(1.0f),m_AirControl(0.8f),m_MaxSpeedFly(200.0f),m_MassCharacter(20.0f),m_JumpHeight(300.0f),
+	    m_DistanceTrace(190.0f),m_MaxGrabMassObject(80.0f), m_TrowImpulse(250.0f), m_blsDead(false), bls_discharger_suit(false), m_imaxhealth(100), m_maxcharger_suit(100)
 {
 	//default settings character movement, mesh and FirstPersonCamera
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -58,6 +56,7 @@ AMyCharacter::AMyCharacter() : m_HasRifle(false),m_MaxSpeedWalk(500.0f),m_MaxSpe
 	// WeaponIndex
 	m_icurrent_weapon_index = -1;
 	m_icurrent_health = m_imaxhealth;
+	m_icharger_suit = m_maxcharger_suit;
 	strPlayerName = "Player";
 
 	
@@ -111,7 +110,10 @@ void AMyCharacter::Tick(float DeltaTime)
 	if (GEngine != nullptr)
 	{
 		const FString& strHealth = FString::Printf(TEXT("Health: %d"), m_icurrent_health);
-		GEngine->AddOnScreenDebugMessage(3, 120, FColor::White ,strHealth);	  
+		const FString& strSuit = FString::Printf(TEXT("Suit: %d"), m_icharger_suit);
+		GEngine->AddOnScreenDebugMessage(1, 120, FColor::Yellow ,strHealth);	  
+		GEngine->AddOnScreenDebugMessage(2, 120, FColor::Yellow ,strSuit);	  
+		
 	}
 
 }
@@ -319,22 +321,52 @@ bool AMyCharacter::RestoreHealth(int32 HealthAmounth)
 	return m_icurrent_health < m_imaxhealth;
 }
 
+bool AMyCharacter::RestoreSuit(int32 SuitAmounth)
+{
+	m_icharger_suit += SuitAmounth;
+	m_icharger_suit = FMath::Min(m_icharger_suit, m_maxcharger_suit);
+	
+	return m_icharger_suit < m_maxcharger_suit;
+}
+
+/*----------------------------------------------------------------------------------------------------------------------------------*/
+/*----------------------------------------------------------------------------------------------------------------------------------*/
 void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 {
 	if(ISDead() || GetPlayerHealth() <= 0) return;	
 
-	switch (DamageType)
+	// Check if the character has armor and whether the armor protects against this type of damage
+	if (m_icharger_suit > 0 && !(DamageType & (EDamageType::DMG_FALL | EDamageType::DMG_DROWN | EDamageType::DMG_POISON | EDamageType::DMG_RADIATION)))
 	{
-	case EDamageType::DMG_BULLET:
-		break;
-	case EDamageType::DMG_EXPLODE:	
-		break;
-	default:
-		break;
+	const float ArmorRatio = 0.3f;  // Percentage of damage that armor absorbs (30%)
+	const float ArmorBonus = 1.0f;  // Armor coefficient
+
+	// Calculate how much damage will be dealt to health (NewDamage) and how much armor will absorb (ArmorDamage)
+	float NewDamage = damage_amounth * ArmorRatio;
+	float ArmorDamage = (damage_amounth - NewDamage) * ArmorBonus;
+
+	if (ArmorDamage < 1.0f)
+	{
+		ArmorDamage = 1.0f;
+	}
+		// If the armor is not enough to absorb all the damage
+		if (ArmorDamage > m_icharger_suit)
+		 {
+			ArmorDamage = m_icharger_suit;
+			NewDamage = damage_amounth - (ArmorDamage * (1.0f / ArmorBonus));
+			m_icharger_suit = 0;  
+		}
+		else
+		{
+			m_icharger_suit -= ArmorDamage;
+		}
+
+		m_idamageSave =  damage_amounth = static_cast<int32>(NewDamage);
 
 	}
 
-	m_icurrent_health = FMath::Clamp(m_icurrent_health - damage_amounth, 0, m_imaxhealth);
+	m_icurrent_health = FMath::Clamp(m_icurrent_health - m_idamageSave, 0.0f, m_imaxhealth);
+
 
 	if (GetPlayerHealth() <= 0)
 	{
