@@ -10,6 +10,7 @@ class UStaticMeshComponent;
 class UStaticMesh;
 class USphereComponent;	
 class USoundBase;
+class AMyCharacter;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupDelegat);
 
@@ -67,6 +68,8 @@ private:
 	float	flmassObj;
 	float	flradius_sphere;	
 	bool 	bls_use;
+
+
 };
 
 /*

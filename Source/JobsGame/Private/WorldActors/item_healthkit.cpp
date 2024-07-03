@@ -2,14 +2,13 @@
 
 
 #include "WorldActors/item_healthkit.h"
-
-#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
 Aitem_healthkit::Aitem_healthkit()
 {
 	healthkit_mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	healthkit_mesh->SetWorldScale3D(FVector(0.015f, 0.015f, 0.015f));
+	healthkit_mesh->ComponentTags.Add(FName( "PhysicsObject"));
 	RootComponent = healthkit_mesh;
 
 	const FSoftObjectPath FindMesh(TEXT("/Game/WorldActors/RestoreKits/HealthKit/health_kit"));

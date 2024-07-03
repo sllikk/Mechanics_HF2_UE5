@@ -3,10 +3,14 @@
 
 #include "WorldActors/item_suitkit.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "Player/MyCharacter.h"
+
 Aitem_suitkit::Aitem_suitkit()
 {
 	suitkit_mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
 	suitkit_mesh->SetWorldScale3D(FVector(0.05f, 0.05f, 0.05f));
+	suitkit_mesh->ComponentTags.Add(FName("PhysicsObject"));
 	RootComponent = suitkit_mesh;
 
 	const FSoftObjectPath FindMesh(TEXT("/Game/WorldActors/RestoreKits/SuitKit/suit_kit"));
@@ -36,13 +40,32 @@ void Aitem_suitkit::BeginPlay()
 	Super::BeginPlay();
 }
 
-void Aitem_suitkit::Use(AActor* pCharacterUse)
-{
-	Super::Use(pCharacterUse);
-}
-
 void Aitem_suitkit::OnTouch(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnTouch(OverlappedComp, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+}
+
+constexpr uint8 UE_SUIT_AMOUNTH = 15;
+void Aitem_suitkit::Use(AActor* pCharacterUse)
+{
+	Super::Use(pCharacterUse);
+
+	ptrPlayer = Cast<AMyCharacter>(pCharacterUse);
+
+	if (ptrPlayer != nullptr)
+	{
+		if (ptrPlayer->GetSuitCharger() < ptrPlayer->GetSuitMaxCharger())
+		{
+			ptrPlayer->RestoreSuit(UE_SUIT_AMOUNTH);	
+
+			if (GetSoundTouch() != nullptr)
+			{
+				SetUse(true);
+				UGameplayStatics::PlaySoundAtLocation(this, GetSoundTouch(), GetActorLocation());
+			}
+		}
+	}
+
+	
 }
