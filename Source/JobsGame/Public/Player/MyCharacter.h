@@ -52,9 +52,6 @@ class JOBSGAME_API AMyCharacter : public ACharacter, public IPlayerTrigger, publ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkeletalMeshComponent> Mesh1P;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = RayCast, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UCapsuleComponent> RayCastCapsule;	
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
 
@@ -109,6 +106,15 @@ public:
 	
 	AMyCharacter();
 
+	
+protected:
+
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	virtual void Landed(const FHitResult& Hit) override;
+
+	void TickPhysicsHandle() const;
+
 	virtual void PostInitializeComponents() override;
 	
 	virtual void BeginPlay() override;
@@ -119,14 +125,14 @@ public:
 
 	virtual void   HandleDamage(int32 damage_amounth, EDamageType DamageType) override;
 
-protected:
+public:
+	
+	UPROPERTY(EditAnywhere, Category="Interact")
+	float flinteract_sphere_radius;
 
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	virtual void Landed(const FHitResult& Hit) override;
-
-	void TickPhysicsHandle() const;
-
+	UPROPERTY()
+	TArray<FName> array_interact_name;
+	
 public:
 	
 	// Animation
@@ -145,34 +151,37 @@ public:
 
 	int32  GetPlayerHealth() const;
 	int32  GetPlayerMaxHealth() const;
+	int32  GetSuitCharger() const;
+	int32  GetSuitMaxCharger() const;
 	bool   ISDead() const;
 	
-	float GetMaxSpeedWalk() const;
-	float GetMaxSpeedRun() const;
-	float GetMaxSpeedCrouch() const;
-	float GetMaxAcceleration() const;
-	float GetAirControl() const;
-	float GetGravityScale() const;
-	float GetMaxSpeedFly() const;
-	float GetJumpHeight() const;
-	float GetMassCombine() const;
-	float GetDistanceTrace() const;
-	float GetMaxGrabMassObject() const;
-	float GetTrowImpulse() const;
+	float  GetMaxSpeedWalk() const;
+	float  GetMaxSpeedRun() const;
+	float  GetMaxSpeedCrouch() const;
+	float  GetMaxAcceleration() const;
+	float  GetAirControl() const;
+	float  GetGravityScale() const;
+	float  GetMaxSpeedFly() const;
+	float  GetJumpHeight() const;
+	float  GetMassCombine() const;
+	float  GetDistanceTrace() const;
+	float  GetMaxGrabMassObject() const;
+	float  GetTrowImpulse() const;
 
-	void SetMaxSpeedWalk(float fl_MaxSpeedWalk);
-	void SetMaxSpeedRun(float fl_MaxSpeedRun);
-	void SetMaxSpeedCrouch(float fl_MaxSpeedCrouch);
-	void SetMaxAcceleration(float fl_MaxAcceleration);
-	void SetGravityScale(float fl_GravityScale);
-	void SetAirControl(float fl_AirControl);
-	void SetMaxSpeedFly(float fl_MaxSpeedFly);
-	void SetMassCombine(float fl_MassCharacter);
-	void SetJumpHeight(float fl_JumpHeight);
-	void SetDistanceTrace(float fl_DistanceTrace);
-	void SetMaxGrabMassObject(float fl_MaxGrabMassObject);
-	void SetTrowImpulse(float fl_TrowImpulse);
-	void   SetMaxPlayerHealth(int32 maxplayer_health);
+	void  SetMaxSpeedWalk(float fl_MaxSpeedWalk);
+	void  SetMaxSpeedRun(float fl_MaxSpeedRun);
+	void  SetMaxSpeedCrouch(float fl_MaxSpeedCrouch);
+	void  SetMaxAcceleration(float fl_MaxAcceleration);
+	void  SetGravityScale(float fl_GravityScale);
+	void  SetAirControl(float fl_AirControl);
+	void  SetMaxSpeedFly(float fl_MaxSpeedFly);
+	void  SetMassCombine(float fl_MassCharacter);
+	void  SetJumpHeight(float fl_JumpHeight);
+	void  SetDistanceTrace(float fl_DistanceTrace);
+	void  SetMaxGrabMassObject(float fl_MaxGrabMassObject);
+	void  SetTrowImpulse(float fl_TrowImpulse);
+	void  SetMaxPlayerHealth(int32 maxplayer_health);
+	void  SetMaxSuitCharger(int32 maxsuit_charger);
 	
 #pragma region FUNC_INPUT
 
@@ -220,7 +229,6 @@ private:
 	float	m_DistanceTrace;
 	float	m_MaxGrabMassObject;	
 	float	m_TrowImpulse;
-	
 	
 	     bool		m_blsDead;
 	     bool    m_blsGrabProduct;
@@ -400,6 +408,17 @@ FORCEINLINE int32 AMyCharacter::GetPlayerMaxHealth() const
 	return m_imaxhealth;
 }
 
+FORCEINLINE int32 AMyCharacter::GetSuitCharger() const
+{
+	return m_icharger_suit;
+}
+
+FORCEINLINE int32 AMyCharacter::GetSuitMaxCharger() const
+{
+	return m_maxcharger_suit;
+}
+
+
 FORCEINLINE bool AMyCharacter::ISDead() const
 {
 	return m_blsDead;
@@ -410,6 +429,10 @@ FORCEINLINE void AMyCharacter::SetMaxPlayerHealth(int32 maxplayer_health)
 	m_imaxhealth = maxplayer_health;
 }
 
+FORCEINLINE void AMyCharacter::SetMaxSuitCharger(int32 maxsuit_charger)
+{
+	m_maxcharger_suit = maxsuit_charger;	
+}
 
 
 

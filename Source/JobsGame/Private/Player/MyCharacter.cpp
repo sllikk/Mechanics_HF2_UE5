@@ -48,18 +48,20 @@ AMyCharacter::AMyCharacter()
 	Mesh1P->CastShadow = false;	
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 	
+	
 	//PhysicsHandle for grab and physics interact 
 	PhysicsHandle = CreateDefaultSubobject<UPhysicsHandleComponent>(TEXT("PhysicsHandle")); 
-	//RayCastCapsule 
-	RayCastCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("CapsuleComponent"));
 
 	// WeaponIndex
 	m_icurrent_weapon_index = -1;
 	m_icurrent_health = m_imaxhealth;
 	m_icharger_suit = m_maxcharger_suit;
 	strPlayerName = "Player";
+	flinteract_sphere_radius = 25.0f;
 
-	
+	array_interact_name.Add("PhysicsObject");
+	array_interact_name.Add("Destruction"); 
+
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -144,7 +146,6 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInput->BindAction(Switch1Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon1);
 			EnhancedInput->BindAction(Switch2Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon2);
 			EnhancedInput->BindAction(Switch3Action, ETriggerEvent::Started, this, &AMyCharacter::SwitchWeapon3);
-		
 		}		
 	}	
 	else
@@ -262,12 +263,9 @@ void AMyCharacter::Interact()
 
 		FVector const&  StartLocation = FirstPersonCamera->GetComponentLocation();
 		FVector const&  EndLocation = StartLocation + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace);
-
-		FCollisionShape CollisionShape;
-		CollisionShape.SetCapsule(RayCastCapsule->GetScaledCapsuleRadius(), RayCastCapsule->GetScaledCapsuleHalfHeight());
-
+		
 		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, ECC_Visibility,
-			CollisionShape, QueryParams))
+			FCollisionShape::MakeSphere(flinteract_sphere_radius), QueryParams))
 		{
 			TObjectPtr<AActor> HitActor = HitResult.GetActor();
 			if (HitActor != nullptr)
@@ -338,11 +336,11 @@ void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 	// Check if the character has armor and whether the armor protects against this type of damage
 	if (m_icharger_suit > 0 && !(DamageType & (EDamageType::DMG_FALL | EDamageType::DMG_DROWN | EDamageType::DMG_POISON | EDamageType::DMG_RADIATION)))
 	{
-	const float ArmorRatio = 0.3f;  // Percentage of damage that armor absorbs (30%)
-	const float ArmorBonus = 1.0f;  // Armor coefficient
+		constexpr float ArmorRatio = 0.3f;  // Percentage of damage that armor absorbs (30%)
+		constexpr float ArmorBonus = 1.0f;  // Armor coefficient
 
 	// Calculate how much damage will be dealt to health (NewDamage) and how much armor will absorb (ArmorDamage)
-	float NewDamage = damage_amounth * ArmorRatio;
+	float NewDamage = damage_amounth * ArmorRatio; // health damage calc
 	float ArmorDamage = (damage_amounth - NewDamage) * ArmorBonus;
 
 	if (ArmorDamage < 1.0f)
@@ -365,7 +363,7 @@ void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 
 	}
 
-	m_icurrent_health = FMath::Clamp(m_icurrent_health - m_idamageSave, 0.0f, m_imaxhealth);
+	m_icurrent_health = FMath::Clamp(m_icurrent_health - damage_amounth, 0.0f, m_imaxhealth);
 
 
 	if (GetPlayerHealth() <= 0)
@@ -377,7 +375,7 @@ void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 
 void AMyCharacter::Dead()
 {
-
+	
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -422,33 +420,37 @@ void AMyCharacter::GrabComponent()
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		FVector const& End = Start + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace); 
 	
-		if (GetWorld()->LineTraceSingleByChannel(GrabResults, Start, End, ECC_GameTraceChannel2, QueryParams))
+		if (GetWorld()->SweepSingleByChannel(GrabResults, Start, End, FQuat::Identity,ECC_GameTraceChannel2, FCollisionShape::MakeSphere(flinteract_sphere_radius) , QueryParams))
 		{	
-			
+			#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
 			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-			DrawDebugPoint(GetWorld(), Start, 20, FColor::Red, false);
-			DrawDebugPoint(GetWorld(), End, 20, FColor::Red, false);		
+			DrawDebugSphere(GetWorld(), End, flinteract_sphere_radius, 32, FColor::Red, false, 2.0f);
+			#endif
+			
 			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
-		
-				
-			if (!ComponentToGrab && !ComponentToGrab->IsSimulatingPhysics() || ComponentToGrab->GetMass() <= 0) 
-			{
-				DontInteract();
-				return;
-			}
 
+			if(!ComponentToGrab) return;
 			FBoxSphereBounds3d Bounds = ComponentToGrab->Bounds;
 			FVector const& CentreComponent = Bounds.Origin;
 			FVector const& GrabLocation = CentreComponent;
 			FRotator const& Rotator = ComponentToGrab->GetComponentRotation();
 			
-			if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
+		 	const TArray<FName>& PhyTags = GrabResults.Component->ComponentTags;  
+			for (const FName& ComponentTags : PhyTags)
 			{
-				if (CharacterSound.IsValidIndex(1) && CharacterSound[1] != nullptr)
+				if (array_interact_name.Contains(ComponentTags))
 				{
-					UGameplayStatics::PlaySoundAtLocation(this, CharacterSound[1], GetActorLocation());	
-					PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, Rotator);
+					
+					if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
+					{
+						if (CharacterSound.IsValidIndex(1) && CharacterSound[1] != nullptr)
+						{
+							UGameplayStatics::PlaySoundAtLocation(this, CharacterSound[1], GetActorLocation());	
+							PhysicsHandle->GrabComponentAtLocationWithRotation(ComponentToGrab, NAME_None, GrabLocation, Rotator);
+						}
+					}
 				}
+
 			}
 		}
 	}
