@@ -3,6 +3,7 @@
 #include "BaseWeapon.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "JobsGame/JobsGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "Property/ImpactEffectHandler.h"
 #include "Property/object_pool.h"
@@ -41,7 +42,7 @@ ABaseWeapon::ABaseWeapon()
 	SwitchSound = LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/switch_burst_Cue"));   // Shared sound 
 
 	//hit_physics_material =  {"", "", "", ""};
-	
+	Tags.Add(FName("Interactive"));
 	
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
@@ -51,6 +52,7 @@ void ABaseWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWeaponMeshComponent()->SetSimulatePhysics(true);
 }
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
@@ -111,6 +113,7 @@ void ABaseWeapon::AttachWeapon(AMyCharacter* Character, const FName& SocketName)
 		{
 			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Started, this, &ABaseWeapon::StartAttack);
 			EIC->BindAction(PrimaryAttackAction, ETriggerEvent::Completed, this, &ABaseWeapon::StopAttack);
+			EIC->BindAction(SecondaryAttackAction, ETriggerEvent::Started, this, &ABaseWeapon::SecondaryAttack);
 			EIC->BindAction(ReloadAction, ETriggerEvent::Started, this, &ABaseWeapon::Reload);
 		}
 	}
@@ -159,7 +162,7 @@ void ABaseWeapon::PrimaryAttack()
 	const FVector& Spread = CalculateBulletSpread(ForwardVector);
 	const FVector& End =  Start + (Spread * GetMaxShootDistance());
 
-	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_GameTraceChannel4, QueryParams);
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, COLLISION_TRACE_WEAPON, QueryParams);
 	
 	blsPrimaryAttack = true;
 	EDamageType DamageType = EDamageType::DMG_BULLET;  
@@ -184,6 +187,13 @@ void ABaseWeapon::PrimaryAttack()
 	}
 	
 }
+
+void ABaseWeapon::SecondaryAttack()
+{
+// only virtual
+	
+}
+
 /*-----------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
 void ABaseWeapon::Reload()
@@ -224,8 +234,10 @@ void ABaseWeapon::Interact(AActor* Actor) // Interface for grab weapon
 		const TObjectPtr<AMyCharacter> PlayerCharacter = Cast<AMyCharacter>(Actor);
 		if (PlayerCharacter != nullptr)
 		{
+			GetWeaponMeshComponent()->SetSimulatePhysics(false);
+			GetWeaponMeshComponent()->SetCollisionProfileName("Weapons");
 			PlayerCharacter->AddWeaponToInventory(this); // Add Character inventory
-			AttachWeapon(PlayerCharacter, "Smg");
+			AttachWeapon(PlayerCharacter, GetNameAttachSocket());
 		}
 	}
 }

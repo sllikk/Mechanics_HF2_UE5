@@ -25,9 +25,14 @@ Aweapon_smg1::Aweapon_smg1()
 		smg1_mesh->SetSkeletalMesh(LoadMesh);
 	}
 
+	// Load Sound for this weapon
+	SetFireSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_fire_Cue")));
+	SetReloadSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_reload_Cue")));
+	
 	SetSkeletalMesh(smg1_mesh);
 	SetBulletSpread(5.0f);
 	SetSocetName("Muzzle");
+	SetNameAttachedSocked("Smg");
 	SetMaxShootDistance(6000);
 	SetMaxAmmo(45);
 	SetInvAmmo(225);
@@ -40,9 +45,7 @@ void Aweapon_smg1::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// Load Sound for this weapon
-	SetFireSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_fire_Cue")));
-	SetReloadSound(LoadObject<USoundBase>(nullptr, TEXT("/Game/Sound/Weapon/Cue/smg_reload_Cue")));
+	
 
 }
 
@@ -50,7 +53,6 @@ void Aweapon_smg1::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	//Debug();
 }
 
 void Aweapon_smg1::PrimaryAttack()

@@ -63,6 +63,7 @@ public:
 	// Methods for getting values
 	//Aobject_pool* GetShellPool() const;		
 	FName GetSocketName() const;
+	FName GetNameAttachSocket() const;
 	int32 GetMaxAmmo() const;
 	int32 GetCurrentAmmo() const;
 	int32 GetInvAmmo() const;
@@ -81,6 +82,7 @@ public:
 	void SetSkeletalMesh(USkeletalMeshComponent* NewMesh);
 	void SetMaxShootDistance(float fldistance);
 	void SetSocetName(FName newName);
+	void SetNameAttachedSocked(const FName& strNewName);
 	void SetMaxAmmo(int32 iAmmo);
 	void SetCurrentAmmo(int32 iAmmo);
 	void SetInvAmmo(int32 i_invammo);
@@ -89,7 +91,7 @@ public:
 	void SetAttackRate(float fl_rateattack);
 	void SetBulletSpread(float flspread);
 	void SetPhysicsImpulse(float fl_impulse);
-
+	
 	// Sound effects and load
 	 void	SetFireSound(USoundBase* NewSound);				
 	 void	SetReloadSound(USoundBase* NewSound);			
@@ -99,7 +101,7 @@ public:
 	FORCEINLINE	void	AttachWeapon(AMyCharacter* Character, const FName& SocketName);
 
 	virtual void		PrimaryAttack();	
-	//virtual void SecondaryAttack();
+	virtual void		SecondaryAttack();
 	virtual void		Reload();
 	virtual void		Interact(AActor* Actor) override;
 	virtual void		StartAttack();
@@ -139,7 +141,8 @@ private:
 	int32	 imaxInventoryAmmo;
 	int32    idamage;
 	FName	 fSocketName;			// Socket for shoot 
-
+	FName    strSocketAttached;
+	
 	float	 m_flmaxTraceLength;
 	float    m_flBulletSpread; 
 	float    m_flReloadTime;
@@ -337,7 +340,6 @@ FORCEINLINE void ABaseWeapon::SetPhysicsImpulse(float fl_impulse)
 }
 
 
-// Sound effects and load
 FORCEINLINE void ABaseWeapon::SetFireSound(USoundBase* NewSound)
 {
 	FireSound = NewSound;
@@ -353,6 +355,16 @@ FORCEINLINE void ABaseWeapon::SetReloadSound(USoundBase* NewSound)
 FORCEINLINE void ABaseWeapon::SetMuzzleFlash(UParticleSystem* NewEffect)
 {
 	MuzzleFlash = NewEffect;
+}
+
+FORCEINLINE FName ABaseWeapon::GetNameAttachSocket() const
+{
+	return strSocketAttached;
+}
+
+FORCEINLINE void ABaseWeapon::SetNameAttachedSocked(const FName& strNewName)
+{
+	strSocketAttached = strNewName;
 }
 
 

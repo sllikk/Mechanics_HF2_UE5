@@ -9,15 +9,16 @@
 #include "InputActionValue.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "DrawDebugHelpers.h"
+#include "JobsGame/JobsGame.h"
 #include "Kismet/GameplayStatics.h"
 #include "NPC_WEAPON/BaseWeapon.h"
 #include "PhysicsEngine/PhysicsHandleComponent.h"
+#include "Player/BasePlayerCameraManager.h"
 #include "Shared/interact.h"
 #include "Shared/Resourse.h"
 
 DEFINE_LOG_CATEGORY(LogCharacter)
 DEFINE_LOG_CATEGORY(LogCharacterResouce)
-
 
 // Constructor character: initialization of all components and default settings of the character and its components for the game world
 AMyCharacter::AMyCharacter()
@@ -59,9 +60,12 @@ AMyCharacter::AMyCharacter()
 	strPlayerName = "Player";
 	flinteract_sphere_radius = 25.0f;
 
-	array_interact_name.Add("PhysicsObject");
-	array_interact_name.Add("Destruction"); 
+	array_grab_name.Add(FName("PhysicsObject"));
+	array_grab_name.Add(FName("Destruction")); 
 
+	array_interact_name.Add(FName("Interactive"));
+	array_interact_name.Add(FName("Trigger"));
+	
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -96,6 +100,7 @@ void AMyCharacter::BeginPlay()
 		{
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
+
 	}
 
 
@@ -113,6 +118,7 @@ void AMyCharacter::Tick(float DeltaTime)
 	{
 		const FString& strHealth = FString::Printf(TEXT("Health: %d"), m_icurrent_health);
 		const FString& strSuit = FString::Printf(TEXT("Suit: %d"), m_icharger_suit);
+
 		GEngine->AddOnScreenDebugMessage(1, 120, FColor::Yellow ,strHealth);	  
 		GEngine->AddOnScreenDebugMessage(2, 120, FColor::Yellow ,strSuit);	  
 		
@@ -264,21 +270,31 @@ void AMyCharacter::Interact()
 		FVector const&  StartLocation = FirstPersonCamera->GetComponentLocation();
 		FVector const&  EndLocation = StartLocation + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace);
 		
-		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, ECC_Visibility,
+		if (GetWorld()->SweepSingleByChannel(HitResult, StartLocation, EndLocation, FQuat::Identity, COLLISION_INTERACT_TRACE,
 			FCollisionShape::MakeSphere(flinteract_sphere_radius), QueryParams))
 		{
 			TObjectPtr<AActor> HitActor = HitResult.GetActor();
 			if (HitActor != nullptr)
-			{
-				if (HitActor->GetClass()->ImplementsInterface(Uinteract::StaticClass()))
+			{	
+				const TArray<FName>& TagsActor = HitActor->Tags;
+				for (const FName& InteractTags : TagsActor)
 				{
-					DrawDebugSphere(GetWorld(), HitResult.Location, 20, 20, FColor::Green);
-
-					if (Iinteract* InteractableActor = Cast<Iinteract>(HitActor))
+					if (array_interact_name.Contains(InteractTags))
 					{
-						InteractableActor->Interact(this);
+						if (HitActor->GetClass()->ImplementsInterface(Uinteract::StaticClass()))
+						{
+							#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
+							DrawDebugSphere(GetWorld(), HitResult.Location, 20, 20, FColor::Green);
+							#endif
+							
+							if (Iinteract* InteractableActor = Cast<Iinteract>(HitActor))
+							{
+								InteractableActor->Interact(this);
+							}
+						}
 					}
 				}	
+					
 			}
 		}
 	}
@@ -375,7 +391,13 @@ void AMyCharacter::HandleDamage(int32 damage_amounth, EDamageType DamageType)
 
 void AMyCharacter::Dead()
 {
-	
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
+	{
+		if (ABasePlayerCameraManager* CameraManager = Cast<ABasePlayerCameraManager>(PlayerController->PlayerCameraManager))
+		{
+			CameraManager->PlayDeathCameraAnim();
+		}
+	}
 }
 
 //--------------------------------------------------------------------------------------------------------------------------------------------------
@@ -409,7 +431,7 @@ void AMyCharacter::ToggleGrab()
 // Physics grab
 void AMyCharacter::GrabComponent()
 {
-	if (FirstPersonCamera == nullptr)return;
+	if (FirstPersonCamera == nullptr) return;
 	{
 		FHitResult GrabResults;
 		FCollisionQueryParams QueryParams(FName(TEXT("RV_TRACE")), true, this);
@@ -420,11 +442,11 @@ void AMyCharacter::GrabComponent()
 		FVector const& Start = FirstPersonCamera->GetComponentLocation();
 		FVector const& End = Start + (FirstPersonCamera->GetForwardVector() * m_DistanceTrace); 
 	
-		if (GetWorld()->SweepSingleByChannel(GrabResults, Start, End, FQuat::Identity,ECC_GameTraceChannel2, FCollisionShape::MakeSphere(flinteract_sphere_radius) , QueryParams))
+		if (GetWorld()->SweepSingleByChannel(GrabResults, Start, End, FQuat::Identity, COLLISION_PHYSICS_HANDLE, FCollisionShape::MakeSphere(flinteract_sphere_radius) , QueryParams))
 		{	
 			#if UE_BUILD_DEBUG || UE_BUILD_DEVELOPMENT
-			DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 2.0f);
-			DrawDebugSphere(GetWorld(), End, flinteract_sphere_radius, 32, FColor::Red, false, 2.0f);
+			DrawDebugLine(GetWorld(), Start, End, FColor::Cyan, false, 2.0f);
+			DrawDebugSphere(GetWorld(), End, flinteract_sphere_radius, 32, FColor::Cyan, false, 2.0f);
 			#endif
 			
 			UPrimitiveComponent* ComponentToGrab = GrabResults.GetComponent();
@@ -438,7 +460,7 @@ void AMyCharacter::GrabComponent()
 		 	const TArray<FName>& PhyTags = GrabResults.Component->ComponentTags;  
 			for (const FName& ComponentTags : PhyTags)
 			{
-				if (array_interact_name.Contains(ComponentTags))
+				if (array_grab_name.Contains(ComponentTags))
 				{
 					
 					if (ComponentToGrab->GetMass() <= m_MaxGrabMassObject && ComponentToGrab->IsSimulatingPhysics())
@@ -458,7 +480,6 @@ void AMyCharacter::GrabComponent()
 }
 //--------------------------------------------------------------------------------------------------------------------------------------------------
 
-// Release Grab object
 void AMyCharacter::ReleaseComponent() const
 {
 	PhysicsHandle->ReleaseComponent();

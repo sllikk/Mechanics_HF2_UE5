@@ -24,6 +24,7 @@ class UPhysicsHandleComponent;
 class UHealthComponent;
 class UCostumeComponent;
 class ABaseWeapon;
+class ABasePlayerCameraManager;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogCharacter, Log, All);
@@ -54,8 +55,6 @@ class JOBSGAME_API AMyCharacter : public ACharacter, public IPlayerTrigger, publ
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> FirstPersonCamera;
-
-
 	
 	#pragma region INPUT
 
@@ -131,13 +130,16 @@ public:
 	float flinteract_sphere_radius;
 
 	UPROPERTY()
+	TArray<FName> array_grab_name;
+
+	UPROPERTY()
 	TArray<FName> array_interact_name;
 	
 public:
 	
 	// Animation
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon)
-	bool					m_HasRifle;
+	bool m_HasRifle;
 
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
