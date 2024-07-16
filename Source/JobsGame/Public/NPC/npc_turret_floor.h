@@ -6,8 +6,6 @@
 #include "GameFramework/Pawn.h"
 #include "npc_turret_floor.generated.h"
 
-class UAIPerceptionComponent;
-class UAISenseConfig_Sight;
 class UPointLightComponent;
 class UPoseableMeshComponent;
 class USoundBase;
@@ -35,8 +33,7 @@ enum EDetectedState
 	TURRET_EYE_ALARM,				// On side, but warning player to pick it back up
 };
 
-
-UCLASS()
+UCLASS(Blueprintable)
 class JOBSGAME_API Anpc_turret_floor : public APawn
 {
 	GENERATED_BODY()
@@ -47,13 +44,6 @@ class JOBSGAME_API Anpc_turret_floor : public APawn
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> detected_light;
 	
-	UPROPERTY(VisibleAnywhere, Category="Ai", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAIPerceptionComponent> PerceptionComponent;
-
-	UPROPERTY(EditAnywhere, Category="Mesh", meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UAISenseConfig_Sight> Config_Sight;
-
-	
 public:
 	// Sets default values for this pawn's properties
 	Anpc_turret_floor();
@@ -63,11 +53,11 @@ protected:
 	virtual void BeginPlay() override;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
-	
+
 public:
-	
+
 	// Think functions
 	virtual void	Retire( void );
 	virtual void	Deploy( void );
@@ -81,19 +71,7 @@ public:
 	virtual void	SelfDestructThink( void );
 	virtual void	BreakThink( void );
 		
-			void LightUpdate();
-			void SetTurretState(ETurretState State);
-
-					
-private:
-
-	bool blstarget_detected;
-	
-	FVector vecTargetDirection;
-	FRotator RotCurrentBoneRotator;
-
-	float flattack_tracelenght;
-
-
+	void LightUpdate(EDetectedState DetectedState);
+	void SetTurretState(ETurretState State);
 	
 };
