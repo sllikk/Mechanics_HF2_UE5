@@ -2,6 +2,8 @@
 
 
 #include "NPC/npc_turret_floor.h"
+
+#include "AI/EntityAiControllers/turret_controller.h"
 #include "Components/PointLightComponent.h"
 #include "Components/PoseableMeshComponent.h"
 
@@ -33,6 +35,8 @@ Anpc_turret_floor::Anpc_turret_floor()
 	detected_light->SetVisibility(true);
 	detected_light->AttenuationRadius = 60.0f;
 	detected_light->Intensity = 120;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -58,60 +62,6 @@ void Anpc_turret_floor::GetActorEyesViewPoint(FVector& OutLocation, FRotator& Ou
 	OutRotation = turret_mesh->GetSocketTransform("ViewSocket", RTS_ParentBoneSpace).Rotator();	
 }
 
-void Anpc_turret_floor::Retire()
-{
-
-}
-
-void Anpc_turret_floor::Deploy()
-{
-
-}
-
-void Anpc_turret_floor::ActiveThink()
-{
-
-}
-
-void Anpc_turret_floor::SearchThink()
-{
-
-}
-
-void Anpc_turret_floor::AutoSearchThink()
-{
-
-}
-
-void Anpc_turret_floor::TippedThink()
-{
-
-}
-
-void Anpc_turret_floor::InactiveThink()
-{
-
-}
-
-void Anpc_turret_floor::SuppressThink()
-{
-
-}
-
-void Anpc_turret_floor::DisabledThink()
-{
-
-}
-
-void Anpc_turret_floor::SelfDestructThink()
-{
-
-}
-
-void Anpc_turret_floor::BreakThink()
-{
-
-}
 
 void Anpc_turret_floor::LightUpdate(EDetectedState DetectedState)
 {
@@ -141,7 +91,3 @@ void Anpc_turret_floor::LightUpdate(EDetectedState DetectedState)
 }
 
 
-void Anpc_turret_floor::SetTurretState(ETurretState State)
-{
-
-}

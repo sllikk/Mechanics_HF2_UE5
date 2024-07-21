@@ -10,18 +10,6 @@ class UPointLightComponent;
 class UPoseableMeshComponent;
 class USoundBase;
 
-enum ETurretState
-{
-	TURRET_SEARCHING,
-	TURRET_AUTO_SEARCHING,
-	TURRET_ACTIVE,
-	TURRET_SUPPRESSING,
-	TURRET_DEPLOYING,
-	TURRET_RETIRING,
-	TURRET_TIPPED,
-	TURRET_SELF_DESTRUCTING,
-	TURRET_STATE_TOTAL
-};
 
 enum EDetectedState
 {
@@ -43,6 +31,9 @@ class JOBSGAME_API Anpc_turret_floor : public APawn
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Mesh", meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UPointLightComponent> detected_light;
+
+	UPROPERTY(EditAnywhere, Category="Sound", meta=(AllowPrivateAccess = "true"))
+	TArray<USoundBase*> TurretSound;
 	
 public:
 	// Sets default values for this pawn's properties
@@ -58,20 +49,11 @@ protected:
 
 public:
 
-	// Think functions
-	virtual void	Retire( void );
-	virtual void	Deploy( void );
-	virtual void	ActiveThink( void );
-	virtual void	SearchThink( void );
-	virtual void	AutoSearchThink( void );
-	virtual void	TippedThink( void );
-	virtual void	InactiveThink( void );
-	virtual void	SuppressThink( void );
-	virtual void	DisabledThink( void );
-	virtual void	SelfDestructThink( void );
-	virtual void	BreakThink( void );
-		
-	void LightUpdate(EDetectedState DetectedState);
-	void SetTurretState(ETurretState State);
+	FORCEINLINE UPoseableMeshComponent* GetPoseableMesh() const { return turret_mesh; }
 	
+	void LightUpdate(EDetectedState DetectedState);
+	
+	
+private:	
+
 };
