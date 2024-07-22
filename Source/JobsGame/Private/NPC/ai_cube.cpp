@@ -33,7 +33,16 @@ Aai_cube::Aai_cube(const FObjectInitializer& ObjectInitializer)
 	PerceptionStimuliSourceComponent = ObjectInitializer.CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(this, "PerceptionComponent");
 	PerceptionStimuliSourceComponent->bAutoRegister = true;
 
+	pdebug_entity = ObjectInitializer.CreateDefaultSubobject<Udebug_entity>(this, TEXT("debug-entity"));	
+	pdebug_entity->SetDebugEntity(this);
+	pdebug_entity->SetDebugMesh(StaticMeshComponent);
+	pdebug_entity->SetDebugHealth(100);
+
+	State = ECubeState::IDLE;
 	
+	Debug = pdebug_entity->GetEnumValueAsString("ECubeState", static_cast<int32>(State));
+	pdebug_entity->SetDebugEnumAsString(Debug);
+
 }
 
 void Aai_cube::PostInitializeComponents()
@@ -44,7 +53,6 @@ void Aai_cube::PostInitializeComponents()
 	{
 		PerceptionStimuliSourceComponent->RegisterForSense(UAISense_Sight::StaticClass());
 		PerceptionStimuliSourceComponent->RegisterWithPerceptionSystem();
-
 	}
 }
 
@@ -52,12 +60,33 @@ void Aai_cube::PostInitializeComponents()
 void Aai_cube::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (StaticMeshComponent)
+	{
+		StaticMeshComponent->SetSimulatePhysics(true);
+		StaticMeshComponent->SetNotifyRigidBodyCollision(true);
+		StaticMeshComponent->SetMassOverrideInKg(NAME_Name, 50, true);
+		StaticMeshComponent->OnComponentHit.AddDynamic(this, &Aai_cube::OnHit);
+		
+	}
+	
 }
+
 
 // Called every frame
 void Aai_cube::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+}
+
+void Aai_cube::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent,
+	FVector NormalImpulse, const FHitResult& Hit)
+{
+	
+	const float ImaxStress = NormalImpulse.Size();
+	pdebug_entity->SetDebugStress(ImaxStress);
+	
 }
 

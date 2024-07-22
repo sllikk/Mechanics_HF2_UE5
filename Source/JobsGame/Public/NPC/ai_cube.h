@@ -1,14 +1,26 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
+//																ONLY TEST ACTOR DON'T PACK GAME
+
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Perception/AIPerceptionComponent.h"
+#include "Property/debug_entity.h"	
 #include "ai_cube.generated.h"
 class UStaticMeshComponent;
 class UAIPerceptionStimuliSourceComponent; 
 class UAIPerceptionComponent;
+class Udebug_entity;
+
+UENUM()
+enum ECubeState
+{
+	IDLE,
+	CHASE,
+	ATTACK,
+	
+};
 
 UCLASS(Blueprintable)
 class JOBSGAME_API Aai_cube : public AActor
@@ -31,9 +43,14 @@ protected:
 	virtual void BeginPlay() override;
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	UFUNCTION()
+	virtual void  OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
 public:
 
-	
-};
+	UPROPERTY()
+	TObjectPtr<Udebug_entity> pdebug_entity;
+
+	ECubeState State;
+	FString Debug;
+};	
 
