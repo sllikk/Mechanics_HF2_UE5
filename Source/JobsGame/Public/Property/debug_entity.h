@@ -66,7 +66,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE void SetDebugEnumAsString(const FString& strEnum) { DebugInfo.EnumAsString = strEnum; }
-	
+	 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Debug")
 	FDebugInfo DebugInfo;
 

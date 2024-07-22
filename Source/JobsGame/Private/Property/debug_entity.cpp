@@ -45,7 +45,6 @@ void Udebug_entity::UpdateDebug() const
 										   "Mass: %.2f\n"
 										   "Stress: %.2f\n"
 										   "Health: %d\n"),
-											
 										*DebugInfo.Entity->GetName(),
 									   *DebugInfo.debug_mesh->GetName(),
 									   *DebugInfo.EnumAsString,		
