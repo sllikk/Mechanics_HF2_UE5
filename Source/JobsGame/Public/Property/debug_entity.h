@@ -28,6 +28,11 @@ struct FDebugInfo
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
 	FString EnumAsString;
+
+	FDebugInfo(): Entity(nullptr), debug_mesh(nullptr), flmassEntity(0), flstressEntity(0), ihealth(0)
+	{
+	};
+
 };
 
 

@@ -15,7 +15,7 @@ Aai_cube::Aai_cube(const FObjectInitializer& ObjectInitializer)
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	StaticMeshComponent = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, "StaticMesh");
+	StaticMeshComponent = ObjectInitializer.CreateDefaultSubobject<UStaticMeshComponent>(this, "CubeMesh");
 	RootComponent = StaticMeshComponent;
 
 	const FSoftObjectPath ObjectPath(TEXT("/Game/LevelPrototyping/Meshes/Prototype"));
@@ -25,6 +25,7 @@ Aai_cube::Aai_cube(const FObjectInitializer& ObjectInitializer)
 	{
 		StaticMesh = Cast<UStaticMesh>(ObjectPath.TryLoad());
 	}
+
 	if (StaticMesh != nullptr)
 	{
 		StaticMeshComponent->SetStaticMesh(StaticMesh);
@@ -38,7 +39,7 @@ Aai_cube::Aai_cube(const FObjectInitializer& ObjectInitializer)
 	pdebug_entity->SetDebugMesh(StaticMeshComponent);
 	pdebug_entity->SetDebugHealth(100);
 
-	State = ECubeState::IDLE;
+	State = ECubeState::ATTACK;
 	
 	Debug = pdebug_entity->GetEnumValueAsString("ECubeState", static_cast<int32>(State));
 	pdebug_entity->SetDebugEnumAsString(Debug);

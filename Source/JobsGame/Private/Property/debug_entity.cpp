@@ -30,7 +30,7 @@ void Udebug_entity::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	
-	UpdateDebug();
+	this->UpdateDebug();
 
 	
 }

@@ -21,7 +21,5 @@ class JOBSGAME_API Iamunition_interface
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 
-	FORCEINLINE virtual EAmunition GetCurrentAmunition() const = 0;
-	FORCEINLINE virtual int32 GetAmmunitionAmounth() const = 0;
 	
 };
